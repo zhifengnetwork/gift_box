@@ -18,9 +18,7 @@ class Index extends ApiBase
         
         $data['banner'] = $banner;
 
-        $this->ajaxReturn(['status' => 0, 'msg' => '获取成功', 'data' => $data]);
+        $this->ajaxReturn(['status' => 1, 'msg' => '获取成功', 'data' => $data]);
     }
-
-  
 
 }
