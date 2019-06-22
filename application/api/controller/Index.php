@@ -14,25 +14,13 @@ class Index extends ApiBase
      */
     public function index()
     {
-        $user_id = $this->get_user_id();
-
-        $data = '首页数据';
+        $banner = M('banner')->order('sort')->field('url')->select();
+        
+        $data['banner'] = $banner;
 
         $this->ajaxReturn(['status' => 0, 'msg' => '获取成功', 'data' => $data]);
     }
 
-    /***
-     * 首页ID
-     */
-    public function page()
-    {
-        // $user_id = $this->get_user_id();
-        // if(!$user_id){
-        //     $this->ajaxReturn(['status' => -1 , 'msg'=>'用户不存在','data'=>'']);
-        // }
-        $ewei = Db::name('diy_ewei_shop')->where(['status' => 1])->find();
-
-        $this->ajaxReturn(['status' => 1, 'msg' => '获取首页成功！', 'data' => $ewei['id']]);
-    }
+  
 
 }

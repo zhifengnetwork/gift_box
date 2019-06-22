@@ -45,6 +45,13 @@ return [
                         'url'   => 'site/index',
                         'hide'  => 1,
                     ],
+                    [
+                        'id'    => 20105,
+                        'title' => '轮播图设置',
+                        'sort'  => 1,
+                        'url'   => 'site/banner',
+                        'hide'  => 1,
+                    ],
                 ],
             ],
             [
