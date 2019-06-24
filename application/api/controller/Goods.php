@@ -15,152 +15,32 @@ use think\Db;
 class Goods extends ApiBase
 {
 
-    /**
-    * 商品分类接口
-    */
-    /*public function categoryList(){
-        $list = Db::name('category')->where('is_show',1)->field('cat_id,cat_name,pid,img')->order('sort DESC,cat_id DESC')->select();
-        $list  = getTree1($list);
-        
-        if($list){
-            foreach($list as $key=>&$value){
-                //热销
-                $list[$key]['hot'] = Db::table('goods')->alias('g')
-                                        ->join('goods_img gi','gi.goods_id=g.goods_id','LEFT')
-                                        ->where('cat_id1',$value['cat_id'])
-                                        ->where('g.is_show',1)
-                                        ->where('gi.main',1)
-                                        ->where('FIND_IN_SET(3,g.goods_attr)')
-                                        ->field('g.goods_id,goods_name,gi.picture img,price,original_price,g.goods_attr')
-                                        ->select();
-                if(isset($value['children'])){
-                    foreach($value['children'] as $ke=>&$val){
-
-                        $val['goods'] = Db::table('goods')->alias('g')
-                                ->join('goods_img gi','gi.goods_id=g.goods_id','LEFT')
-                                ->where('cat_id2',$val['cat_id'])
-                                ->where('g.is_show',1)
-                                ->where('gi.main',1)
-                                ->field('g.goods_id,goods_name,gi.picture img,price,original_price,g.goods_attr')
-                                ->select();
-                        if($val['goods']){
-                            foreach($val['goods'] as $g=>$v){
-                                if(strpos($v['goods_attr'], '3') !== false){
-                                    $list[$key]['hot'][] = $v;
-                                }
-                            }
-                        }
-                    }
-                }
-                if( $list[$key]['hot'] ){
-                    $list[$key]['hot'] = array_unique($list[$key]['hot'],SORT_REGULAR);
-                    foreach($list[$key]['hot'] as $hot=>$hot_val){
-                        $list[$key]['hot'][$hot]['attr_name'] = Db::table('goods_attr')->where('attr_id','in',$hot_val['goods_attr'])->field('attr_name')->select();
-                    }
-                }
-            }
-        }
-        
-        $this->ajaxReturn(['status' => 1 , 'msg'=>'获取成功','data'=>$list]);
-    }*/
-
-
-
-
-
-
+    
    /**
     * 商品分类接口
+    * 有pid就是 获取 当前 pid
+    * 没有 pid 就是获取 最大分类
     */
     public function categoryList()
     {
         
-        $list = Db::name('category')->where('is_show',1)->order('sort DESC,cat_id DESC')->select();
-        $list  = getTree1($list);
-        foreach($list as $key=>$value){
-            $list[$key]['goods'] = Db::table('goods')->alias('g')
-                                ->join('goods_attr ga','FIND_IN_SET(ga.attr_id,g.goods_attr)','LEFT')
-                                ->where('cat_id1',$value['cat_id'])
-                                ->where('g.is_show',1)
-                                ->where('gi.main',1)
-                                ->group('g.goods_id')
-                                ->join('goods_img gi','gi.goods_id=g.goods_id','LEFT')
-                                ->order('g.goods_id DESC')
-                                ->limit(4)
-                                ->field('g.goods_id,goods_name,gi.picture img,price,original_price,GROUP_CONCAT(ga.attr_name) attr_name,g.cat_id1 comment')
-                                ->select();
-            if($list[$key]['goods']){
-                foreach($list[$key]['goods'] as $k=>$v){
-                    if($v['attr_name']){
-                        $list[$key]['goods'][$k]['attr_name'] = explode(',',$v['attr_name']);
-                    }else{
-                        $list[$key]['goods'][$k]['attr_name'] = array();
-                    }
+        $pid = I('pid');
 
-                    $list[$key]['goods'][$k]['comment'] = Db::table('goods_comment')->where('goods_id',$v['goods_id'])->count();
-                }
-            }
+        if($pid){
+            $list = Db::name('category')->where(['is_show'=>1,'pid'=>$pid])->order('sort DESC,cat_id')->select();
+        }else{
+            $list = Db::name('category')->where(['is_show'=>1,'level'=>1])->order('sort DESC,cat_id')->select();
+        }
+
+        foreach($list as $k=>$v){
+            $list[$k]['img'] = SITE_URL.'/public/upload/images/'.$v['img'];
+            unset($list[$k]["is_show"]);
+            unset($list[$k]["desc"]);
         }
         
         $this->ajaxReturn(['status' => 1 , 'msg'=>'获取成功','data'=>$list]);
     }
 
-    public function category(){
-        $cat_id = input('cat_id');
-        $cat_id2 = 'cat_id1';
-        $sort = input('sort');
-        $goods_attr = input('goods_attr');
-        $page = input('page',1);
-
-        $where = [];
-        $whereRaw = [];
-        $pageParam = ['query' => []];
-        if($cat_id){
-            $cate_list = Db::name('category')->where('is_show',1)->where('cat_id',$cat_id)->value('pid');
-            if($cate_list){
-                $cate_list = Db::name('category')->where('is_show',1)->where('pid',$cate_list)->select();
-                $cat_id2 = 'cat_id2';
-            }else{
-                $cate_list = Db::name('category')->where('is_show',1)->where('pid',$cat_id)->select();
-            }
-            $where[$cat_id2] = $cat_id;
-            $pageParam['query'][$cat_id2] = $cat_id;
-        }else{
-            $cate_list = Db::name('category')->where('is_show',1)->order('sort DESC,cat_id ASC')->select();
-        }
-        $cate_list  = getTree1($cate_list);
-
-        if($goods_attr){
-            $whereRaw = "FIND_IN_SET($goods_attr,goods_attr)";
-            $pageParam['query']['goods_attr'] = $goods_attr;
-        }
-
-        if($sort){
-            $order['price'] = $sort;
-        }else{
-            $order['goods_id'] = 'DESC';
-        }
-        
-        $goods_list = Db::name('goods')->alias('g')
-                        ->join('goods_img gi','gi.goods_id=g.goods_id','LEFT')
-                        ->where('gi.main',1)
-                        ->where('is_show',1)
-                        ->where($where)
-                        ->where($whereRaw)
-                        ->order($order)
-                        ->field('g.goods_id,gi.picture img,goods_name,desc,price,original_price,g.goods_attr')
-                        ->paginate(10,false,$pageParam)
-                        ->toArray();
-        if($goods_list['data']){
-            foreach($goods_list['data'] as $key=>&$value){
-                $value['comment'] = Db::table('goods_comment')->where('goods_id',$value['goods_id'])->count();
-                $value['attr_name'] = Db::table('goods_attr')->where('attr_id','in',$value['goods_attr'])->column('attr_name');
-            }
-        }
-        
-        $this->ajaxReturn(['status' => 1 , 'msg'=>'获取成功','data'=>['cate_list'=>$cate_list,'goods_list'=>$goods_list['data']]]);
-
-    }
 
     /**
      * 商品详情
