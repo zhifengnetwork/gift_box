@@ -43,21 +43,16 @@ class Goods extends ApiBase
 
 
     public function brand(){
-
-        $list = M('brand')->select();
-    
+        $list = M('brand')->field('name,img')->select();
         $list = $this->chartSort($list);
-
         $this->ajaxReturn(['status' => 1 , 'msg'=>'获取成功','data'=>$list]);
     }
-
 
     /**
     * 将数组按字母A-Z排序
     * @return [type] [description]
     */
     protected function chartSort($list){
-        
         foreach ($list as $k => &$v) {
             $v['key'] = $this->getFirstChart( $v['name'] );
             $list[$k]['img'] = SITE_URL.'/public/upload/images/'.$v['img'];
@@ -66,10 +61,7 @@ class Goods extends ApiBase
         foreach ($list as $ks => $vs) {
             $data[$vs['key']][] = $vs;
         }
-        
-
         ksort($data);
-       
         return $data;
     }
 
