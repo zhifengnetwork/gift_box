@@ -1,0 +1,102 @@
+{extend name="common:base" /}
+
+{block name="content"}
+
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="ibox float-e-margins">
+                <div class="ibox-title">
+                    <h5>{$meta_title}</h5>
+                    <div class="pull-right" style="margin-top:-8px;">
+                            <a class="btn btn-info" href="{:url('music/add')}"><i class="fa fa-plus"></i> 添加音乐</a>
+                    </div>
+                </div>
+                <div class="ibox-content">
+
+                    <div class="table-responsive">
+                        <form action="{:URL('Box/delMusicAll')}" method="post">
+                        <table class="table table-striped">
+                            <thead>
+                            <tr>
+                                <th>音乐名</th>
+                                <th>状态</th>
+                                <th>添加时间 </th>
+                                <th>操作</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {volist name="list" id="vo"}
+                            <tr>
+                                <td>{$vo.name}</td>
+                                <td>{if condition="$vo.status"}启用{else /}禁用{/if}</td>
+                                <td>{$vo.addtime|date="Y-m-d",###}</td>
+                                <td>
+                                    <a class="btn btn-default delete" href="{:url('music/edit',['id'=>$vo.id],false)}" >编辑 </i></a>
+                                    <a class="btn btn-default delete" is_show="{$vo.status}" onclick="is_show(this,{$vo.id})" href="javascript:;" >{if condition="$vo.status"}禁用{else /}启用{/if} </i></a>
+                                    <a class="btn btn-default delete" onclick="del(this,{$vo.id})" href="javascript:;" >删除 </i></a>
+                                </td>
+                            </tr>
+                            {/volist}
+                            </tbody>
+                        </table>
+                        </form>
+                    </div>
+                    <style>
+                        .pagination{}
+                        .pagination li{float:left;position:relative;margin-top:10px;padding:0 12px;}
+                        .pagination li{float:left;width:42px;height:28px;border:1px solid #DDD; text-align:center;line-height:30px;border-left:none;}
+                        .pagination li.active{color:#f00;}
+                        .pagination li a{float:left;width:42px;height:28px; text-align:center;line-height:30px;border-left:none;color:#3399d5;}
+                    </style>
+                    <ul class="pagination">
+                        {$list->render()}
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+{/block}
+{block name='script'}
+<script>
+    function del(obj,music_id){
+        if(window.confirm('确认删除该音乐吗？')){
+            $.post("{:url('music/del')}",{'music_id':music_id},function(data){
+                alert(data.msg);
+                if(data.status == 1){
+                    $(obj).parents('tr').remove();
+                }
+            },'json');
+        }
+    }
+
+    function is_show(obj,music_id){
+        var is_show = $(obj).attr('is_show');
+
+        if( is_show == 1 ){
+            is_show = 0;
+            ts = '是否禁用?';
+        }else{
+            is_show = 1;
+            ts = '是否启用?';
+        }
+
+        if(window.confirm(ts)){
+            $.post("{:url('music/is_show')}",{'music_id':music_id,'status':is_show},function(data){
+                if(data.status == 1){
+                    $(obj).attr('is_show',is_show);
+                    if( is_show ){
+                        $(obj).parents('tr').find('td').eq(4).html('已启用');
+                        $(obj).html('禁用');
+                        alert('启用成功！');
+                    }else{
+                        $(obj).parents('tr').find('td').eq(4).html('未禁用');
+                        $(obj).html('启用');
+                        alert('禁用成功！');
+                    }
+                }
+            },'json');
+        }
+    }
+
+</script>
+{/block}

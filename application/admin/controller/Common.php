@@ -43,7 +43,6 @@ class Common extends Controller
         $this->auth();
         $this->view->mginfo     = $this->mginfo    = session('admin_user_auth');
         $leftmenu =  self::get_leftmenu();
-   
         $this->view->lefts_menu  = self::lefts_menu($leftmenu);
         $this->view->left_menu   = $leftmenu;
         
@@ -86,7 +85,6 @@ class Common extends Controller
                 $list[] = $val;
             }
         }
-    
         $menu_tree = list_to_tree($list);
         Session::set('ALL_MENU_LIST', $menu_tree);
         $left_menu = self::menu($menu_tree);
