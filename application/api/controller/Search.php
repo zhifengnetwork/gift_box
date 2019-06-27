@@ -53,13 +53,10 @@ class Search extends ApiBase
         $this->ajaxReturn(['status' => 1 , 'msg'=>'成功！','data'=>$data]);
     }
 
-
+    /**
+     * 搜索接口
+     */
     public function search(){
-
-        $user_id = $this->get_user_id();
-        if(!$user_id){
-            $this->ajaxReturn(['status' => -1 , 'msg'=>'用户不存在','data'=>'']);
-        }
 
         $keywords = input('keywords');
 
@@ -115,25 +112,28 @@ class Search extends ApiBase
                 foreach($goods_list['data'] as $key=>&$value){
                     $value['comment'] = Db::table('goods_comment')->where('goods_id',$value['goods_id'])->count();
                     $value['attr_name'] = Db::table('goods_attr')->where('attr_id','in',$value['goods_attr'])->column('attr_name');
+                    $value['img'] = SITE_URL.$value['img'];
                 }
             }
             
             //添加搜索记录
-            $where = [];
-            $where['user_id']   =   $user_id;
-            $where['keywords']  =   $keywords;
-            $where['cat_id']    =   $cat_id;
-            $id = Db::table('search')->where($where)->value('id');
-            if($id){
-                Db::table('search')->where('id',$id)->setInc('number',1);
-                Db::table('search')->where('id',$id)->update(['add_time'=>time()]);
-            }else{
-                $where['number'] = 1;
-                $where['add_time'] = time();
-                Db::table('search')->insert($where);
-            }
+
+            // $where = [];
+            // $where['user_id']   =   $user_id;
+            // $where['keywords']  =   $keywords;
+            // $where['cat_id']    =   $cat_id;
+            // $id = Db::table('search')->where($where)->value('id');
+            // if($id){
+            //     Db::table('search')->where('id',$id)->setInc('number',1);
+            //     Db::table('search')->where('id',$id)->update(['add_time'=>time()]);
+            // }else{
+            //     $where['number'] = 1;
+            //     $where['add_time'] = time();
+            //     Db::table('search')->insert($where);
+            // }
 
             $this->ajaxReturn(['status' => 1 , 'msg'=>'获取成功','data'=>['cate_list'=>$cate_list,'goods_list'=>$goods_list['data']]]);
+
         }else{
 
             if($sort){
@@ -151,26 +151,30 @@ class Search extends ApiBase
                         ->order($order)
                         ->paginate(10,false,$pageParam)
                         ->toArray();
+
+           
+
             if($goods_list['data']){
                 foreach($goods_list['data'] as $key=>&$value){
                     $value['comment'] = Db::table('goods_comment')->where('goods_id',$value['goods_id'])->count();
                     $value['attr_name'] = Db::table('goods_attr')->where('attr_id','in',$value['goods_attr'])->column('attr_name');
+                    $value['img'] = SITE_URL.$value['img'];
                 }
             }
             
             //添加搜索记录
-            $where = [];
-            $where['user_id']   =   $user_id;
-            $where['keywords']  =   $keywords;
-            $where['cat_id']    =   0;
-            $id = Db::table('search')->where($where)->value('id');
-            if($id){
-                Db::table('search')->where('id',$id)->setInc('number',1);
-            }else{
-                $where['number'] = 1;
-                $where['add_time'] = time();
-                Db::table('search')->insert($where);
-            }
+            // $where = [];
+            // $where['user_id']   =   $user_id;
+            // $where['keywords']  =   $keywords;
+            // $where['cat_id']    =   0;
+            // $id = Db::table('search')->where($where)->value('id');
+            // if($id){
+            //     Db::table('search')->where('id',$id)->setInc('number',1);
+            // }else{
+            //     $where['number'] = 1;
+            //     $where['add_time'] = time();
+            //     Db::table('search')->insert($where);
+            // }
 
             $this->ajaxReturn(['status' => 1 , 'msg'=>'获取成功','data'=>['cate_list'=>[],'goods_list'=>$goods_list['data']]]);
         }

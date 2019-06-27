@@ -107,7 +107,10 @@ class ApiBase extends Controller
     public function get_user_id()
     {
         $headers = $this->em_getallheaders();
-        $token = input('token');
+        $token = isset($headers['Token']) ? $headers['Token'] : '';
+        if(!$token){
+            $token = input('token');
+        }
         if (!$token) {
             $this->ajaxReturn(['status' => -1, 'msg' => 'token不存在', 'data' => null]);
         }
