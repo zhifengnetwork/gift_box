@@ -17,15 +17,19 @@ use app\common\util\jwt\JWT;
 
 class Login extends \think\Controller
 {
+
+    /**
+     * 微信登录
+     */
     public function index () {
-        redirect('login/login')->send();
-        exit;
+       
+
+        
+        $code = 
+
+        $this->ajaxReturn(['status' => 1 , 'msg'=>'获取成功','data'=>$data]);
+
     }
-
-
-
-
-
 
     /**
      * 登录接口
@@ -60,25 +64,7 @@ class Login extends \think\Controller
 
     }
 
-    /**
-     * 生成token
-     */
-    private function create_token($user_id){
-        $time = time();
-        $payload = array(
-            "iss"=> "DC",
-            "iat"=> $time ,
-            "exp"=> $time + 36000 ,
-            "user_id"=> $user_id
-        );
-        $key = 'zhelishimiyao';
-        $token = JWT::encode($payload, $key, $alg = 'HS256', $keyId = null, $head = null);
-        return $token;
-    }
-
-
-
-
+    
 
 //    public function login () {
 //        if (Request::instance()->isPost()) {

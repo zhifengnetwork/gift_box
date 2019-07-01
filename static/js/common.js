@@ -1,5 +1,5 @@
 //dom加载完成后执行的js
-;$(function(){
+$(function(){
 
     var alert_speed = 1500;
 
@@ -253,4 +253,32 @@ function highlight_subnav(url){
     $subnav.find('a[href="'+url+'"]').parent().addClass("active");
 	$subnav.find("a[href='" + url + "']").parent().parents('li').addClass("active");
 	$subnav.find("a[href='" + url + "']").parent().parents('li').addClass("open");
+}
+
+// 修改指定表的指定字段值
+function changeTableVal(table,id_name,id_value,field,obj)
+{
+    var text = obj.innerHTML ;
+
+    var src = "";
+    if(text.indexOf("是") > 0 )
+    {          
+        src = '<i class="fa fa-ban"></i>否';
+        var value = 0;
+    }else{                    
+        src = '<i class="fa fa-check-circle"></i>是</span>';       
+        var value = 1;
+    }
+
+    $.ajax({
+        url:"/Api/Index/changeTableVal?table="+table+"&id_name="+id_name+"&id_value="+id_value+"&field="+field+'&value='+value,			
+        success: function(data){
+            if(data.status == 1){
+                updateAlert(data.msg ,'alert-success');
+            }else{
+                updateAlert(data.msg ,'alert-danger');                
+            }
+            $(obj).html(src);        
+        }
+    });		
 }

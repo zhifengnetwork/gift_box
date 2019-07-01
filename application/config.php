@@ -143,7 +143,7 @@ return [
         '__INSPINIA__' => '/static/inspinia',
         '__IMG__'      => '/static/images',
     	'__STATIC__'   => '/static',
-        '__LIB__'      => '/lib',
+        '__LIB__'      => '/static/lib',
         '__MOBILE__'   => '/mobile',
         '__IMAGES__'   => '/public/upload/images',
         '__PLIST__'    => '/plist',

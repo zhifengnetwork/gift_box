@@ -1,4 +1,5 @@
 .idea
+.user.ini
 composer.lock
 *.log
 runtime
