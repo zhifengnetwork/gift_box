@@ -18,17 +18,47 @@ use app\common\util\jwt\JWT;
 class Login extends \think\Controller
 {
 
+    public function ajaxReturn($data)
+    {
+        header('Access-Control-Allow-Origin:*');
+        header('Access-Control-Allow-Headers:*');
+        header("Access-Control-Allow-Methods:GET, POST, OPTIONS, DELETE");
+        header('Content-Type:application/json; charset=utf-8');
+        exit(str_replace("\\/", "/", json_encode($data, JSON_UNESCAPED_UNICODE)));
+    }
+
     /**
      * 微信登录
      */
     public function index () {
-       
+        $code = I('code');
+        if(!$code){
+            $this->ajaxReturn(['status' => -1 , 'msg'=>'code不能为空','data'=>'']);
+        }
 
+        $appid = M('config')->where(['name'=>'appid'])->value('value');
+        $appsecret = M('config')->where(['name'=>'appsecret'])->value('value');
         
-        $code = 
+        $url = 'https://api.weixin.qq.com/sns/jscode2session?appid='.$appid.'&secret='.$appsecret.'&js_code='.$code.'&grant_type=authorization_code' ;
+        $result = httpRequest($url, 'GET');
+        $arr = json_decode($result, true);
+        if(!isset($arr['openid'])){
+            $this->ajaxReturn(['status' => -1 , 'msg'=>$arr['errmsg'],'data'=>'']);
+        }
 
-        $this->ajaxReturn(['status' => 1 , 'msg'=>'获取成功','data'=>$data]);
+        $openid = $arr['openid'];
 
+        // 查询数据库，判断是否有此openid
+        $data = Db::table('member')->where('openid',$openid)->find(); 
+        if(!$data){
+            Db::table('member')->insert(['openid'=>$openid]); 
+            $data = Db::table('member')->where('openid',$openid)->find(); 
+
+            $this->ajaxReturn(['status' => 1 , 'msg'=>'获取成功','data'=>$data]);
+        }else{
+            $res = ['status'=>1,'msg'=>'获取用户信息成功','data'=>$data];
+        }
+       
     }
 
     /**
