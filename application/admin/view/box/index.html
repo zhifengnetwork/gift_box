@@ -8,13 +8,13 @@
                 <div class="ibox-title">
                     <h5>{$meta_title}</h5>
                     <div class="pull-right" style="margin-top:-8px;">
-                            <a class="btn btn-info" href="{:url('goods/add')}"><i class="fa fa-plus"></i> 添加商品</a>
+                            <a class="btn btn-info" href="{:url('add')}"><i class="fa fa-plus"></i> 添加礼盒</a>
                     </div>
                 </div>
                 <div class="ibox-content">
                     <div class="row" style="margin-left:0px;" >
-                        <a class="btn btn-default delete" href="{:url('Goods/add')}" >添加商品 </i></a>
-                        <a class="btn btn-default delete" onclick="del_all(0)" href="javascript:;" >批量删除 <i class="fa fa-trash-o"></i></a>
+                        <a class="btn btn-default delete" href="{:url('add')}" >添加礼盒 </i></a>
+                        <!-- <a class="btn btn-default delete" onclick="del_all(0)" href="javascript:;" >批量删除 <i class="fa fa-trash-o"></i></a> -->
                     </div>
 
                     <div class="table-responsive">
@@ -22,12 +22,10 @@
                         <table class="table table-striped">
                             <thead>
                             <tr>
-
-                                <th><input class="ch_all" type="checkbox">ID</th>
+                                <th>ID</th>
                                 <th>类别 </th>
                                 <th>制作人 </th>
                                 <th>发送的对象</th>
-                                <th>音乐</th>
                                 <th>添加时间</th>
                                 <th>操作</th>
                             </tr>
@@ -35,14 +33,14 @@
                             <tbody>
                             {volist name="list" id="vo"}
                             <tr>
-                                <td><input type="checkbox" class="i-checks ch_item" name="goods_id[]"   value="{$vo.goods_id}">{$vo.cate_id}</td>
-                                <td>{$vo.user_id}</td>
-                                <td>{$vo.sender_id}</td>
-                                <td>{$vo.music_id}</td>
+                                <td>{$vo.id}</td>
+                                <td>{$vo.name}</td>
+                                <td>{$vo.u_nickname}</td>
+                                <td>{$vo.sender_nickname}</td>
                                 <td>{$vo.addtime|date="Y-m-d",###}</td>
                                 <td>
-                                    <a class="btn btn-default delete" href="{:url('Goods/edit',['goods_id'=>$vo.goods_id],false)}" >编辑 </i></a>
-                                    <a class="btn btn-default delete" onclick="del(this,{$vo.goods_id})" href="javascript:;" >删除 </i></a>
+                                    <a class="btn btn-default delete" href="{:url('box/edit',['id'=>$vo.id],false)}" >编辑 </i></a>
+                                    <a class="btn btn-default delete" onclick="del(this,{$vo.id})" href="javascript:;" >删除 </i></a>
                                 </td>
                             </tr>
                             {/volist}
@@ -67,11 +65,11 @@
 {/block}
 {block name='script'}
 <script>
-    function del(obj,goods_id){
+    function del(obj,id){
         if(window.confirm('确认删除该商品吗？')){
-            $.post("{:url('Goods/del')}",{'goods_id':goods_id},function(data){
+            $.post("{:url('del')}",{'id':id},function(data){
                 alert(data.msg);
-                if(data.code){
+                if(data.status){
                     $(obj).parents('tr').remove();
                 }
             },'json');
@@ -139,23 +137,23 @@
 
     }
 
-    function del_all(obj,goods_id){
-        var goods_id = '';
+    function del_all(obj,box_id){
+        var box_id = '';
         var flag = 0
         $('.ch_item').each(function(k,v){
             if( $(v).is(':checked') ){
                 flag = 1;
-                goods_id += $(v).val() + ',';
+                box_id += $(v).val() + ',';
             }
         });
         if( !flag ){
             alert('请勾选需要批量删除的ID！');
             return;
         }
-        goods_id = goods_id.substring(0, goods_id.length - 1);
+        box_id = box_id.substring(0, box_id.length - 1);
 
         if(window.confirm('确认批量删除商品吗？')){
-            $.post("{:url('Goods/del_all')}",{'goods_id':goods_id},function(data){
+            $.post("{:url('box/del_all')}",{'box_id':box_id},function(data){
                 if(data.code){
                     alert('批量删除成功！');
                     location.reload();

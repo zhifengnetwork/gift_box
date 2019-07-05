@@ -1,0 +1,149 @@
+{extend name="common:base" /}
+{block name="content"}
+<link rel="stylesheet"  type="text/css"  href="__STATIC__/layui/build/css/layui.css"  >
+<link rel="stylesheet"  type="text/css"  href="__STATIC__/css/form.css"  >
+<div class="wrapper wrapper-content animated fadeInRight">
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="ibox float-e-margins">
+                <div class="ibox-title">
+                    <h5>添加盒子</h5>
+                </div>
+                <div class="ibox-content">
+                    <form method="post" class="form-horizontal" id="ajaxForm" action="{:url('box/box_post')}" enctype="multipart/form-data">
+                        <input type="hidden" name="photo_url" value="{$info.photo_url}">
+                        <input type="hidden" name="voice_url" value="{$info.voice_url}">
+                        <input type="hidden" name="id" value="{$info.id}">
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label ">选择音乐</label>
+                            <div class="col-sm-9">
+                                <select name="music_id"  class="form-control">
+                                    <option value="">请选择音乐</option>
+                                    {volist name="music" id="vo"}
+                                        <option value="{$vo.id}" {if condition="$vo.id eq $info.music_id"}selected="true"{/if}>{$vo.name}</option>
+                                    {/volist}
+                                </select> 
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label ">选择类别</label>
+                            <div class="col-sm-9">
+                                <select name="cate_id"  class="form-control">
+                                    <option value="">请选择类别</option>
+                                    {volist name="cate" id="vo"}
+                                        <option value="{$vo.id}">{$vo.name}</option>
+                                    {/volist}
+                                </select> 
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">接收用户id</label>
+                            <div class="col-sm-9">
+                                <input type="text" name="sender_id" value="{$info.sender_id}" class="form-control">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">照片/视频</label>
+                            <div class="col-sm-9">
+                                <dd class="upload_area clearfix" style="margin: 0 auto;">
+                                    <ul id="imglist" class="post_imglist">
+                                        <li><a href="{$info.photo_url}" class="photo_css"><img class="wh60" id="file0" {if condition="$info.photo_url"}src="/static/images/photo.jpg"{else/} src="static/images/default.jpg"{/if} ></a></li>
+                                    </ul>
+                                    <label for="photo_file"><div class="upload_btn"></div></label>
+                                </dd>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">语音</label>
+                            <div class="col-sm-9">
+                                <dd class="upload_area clearfix" style="margin: 0 auto;">
+                                    <ul id="imglist" class="post_imglist">
+                                        <li><a href="{$info.voice_url}" class="music_css" ><img class="wh60" id="file1" {if condition="$info.voice_url"}src="/static/images/music.jpg"{else/} src="static/images/default.jpg"{/if}></a></li>
+                                    </ul>
+                                    <label for="voice_file"><div class="upload_btn"></div></label>
+                                </dd>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">祝福</label>
+                            <div class="col-sm-9">
+                                <textarea name="content" required lay-verify="required" placeholder="请输入" class="layui-textarea">{$info.content}</textarea>
+                            </div>
+                        </div>
+                        
+
+                        <div class="form-group">
+                            <div class="col-sm-4 col-sm-offset-2">
+                                <input value="提交" type="submit" class="btn btn-primary ajax-post" target-form="form-horizontal" type="submit" onclick="formsub()">
+                                <button class="btn btn-white" onclick="javascript:history.back(-1);return false;">取消</button>
+                            </div>
+                        </div>
+                    </form>
+                    <!-- ajax上传文件s -->
+                    <form action="{:url('upload_photo')}" id="form_photo" method="post" enctype="multipart/form-data">
+                        <input type="file" name="photo_file" style="display: none" onchange="photo_upload()" id="photo_file">
+                    </form>
+                    <form action="{:url('upload_music')}" id="form_voice" method="post" enctype="multipart/form-data">
+                        <input type="file" name="voice_file" style="display: none" onchange="music_upload()" id="voice_file" accept=".wav,.mp3,.ogg,.acc,.webm">
+                    </form>
+                    <!-- ajax上传文件e -->
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{/block}
+
+{block name="script"}
+<script src="__STATIC__/js/jquery.form.js" type="text/javascript"></script>
+<script type="text/javascript">
+    //语音上传
+    function music_upload(){
+        $("#form_voice").ajaxSubmit(function (data) {
+            console.log(data);
+            // data = eval('('+data+')');
+            if(data.status == 1){
+                $('input[name="voice_url"]').val(data.url);
+                $('#file1').attr('src','/static/images/music.jpg');
+                $('.music_css').attr('href',data.url);
+                tiao();
+            }else{
+                alert(data.msg);
+            }
+        });
+    }
+    //照片上传
+    function photo_upload(){
+        $("#form_photo").ajaxSubmit(function (data) {
+            // data = eval('('+data+')');
+            if(data.status == 1){
+                $('input[name="photo_url"]').val(data.url);
+                $('#file0').attr('src','/static/images/photo.jpg');
+                $('.photo_css').attr('href',data.url);
+                tiao();
+            }else{
+                alert(data.msg);
+            }
+        });
+    }
+    //跳窗口
+    tiao();
+    function tiao(){
+        //音乐
+        if($('.music_css').attr('href') != '' && $('.music_css').attr('href') != 'javascript:;'){
+            $('.music_css').attr('target','_blank');
+        }else{
+            $('.music_css').attr('href','javascript:;');
+        }
+        //照片
+        if($('.photo_css').attr('href') != '' && $('.photo_css').attr('href') != 'javascript:;'){
+            $('.photo_css').attr('target','_blank');
+        }else{
+            $('.photo_css').attr('href','javascript:;');
+        }
+    }
+    
+</script>
+{/block}

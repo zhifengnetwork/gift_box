@@ -1,67 +1,7 @@
 {extend name="common:base" /}
 {block name="content"}
 <link rel="stylesheet"  type="text/css"  href="__STATIC__/layui/build/css/layui.css"  >
-<style type="text/css">
-    .form .row dd{
-        float: left;
-        display: inline-block;
-        width: calc(100% - 85px);
-    }
-  
-    ul, ol, li {
-        list-style: none;
-    }
-    .upload_area .post_imglist li {
-        position: relative;
-        float: left;
-        padding: 0 10px 5px 0;
-        line-height: 38px;
-    }
-    .upload_area .upload_btn {
-        background: url(__STATIC__/layui/src/images/upload_btn.png) center no-repeat;
-        background-size: 60px auto;
-        float: left;
-        overflow: hidden;
-        position: relative;
-        width: 60px;
-        height: 60px;
-    }
-    .del {
-        position: absolute;
-        right: 0px;
-        top: -10px;
-        background: url(__STATIC__/layui/src/images/icon_del.png) no-repeat 15px 0;
-        background-size: 20px auto;
-        width: 40px;
-        height: 20px;
-        display: inline-block;
-    }
-    .upload_area .upload_btn input {
-        opacity: 0;
-        position: absolute;
-        left: 0;
-        top: 0;
-        z-index: 10;
-        overflow: hidden;
-        height: 60px;
-        width: 60px;
-    }
-    #imglist li img.wh60 {
-        margin: 0 auto;
-        display: block;
-        width: 60px;
-        height: 60px;
-    }
-    #back div{
-      position: fixed;
-      top: 50%;
-      left: 50%;
-      width: 30%;
-      height: auto;
-      margin-left: -20%;
-  
-    }
-  </style>
+<link rel="stylesheet"  type="text/css"  href="__STATIC__/css/form.css"  >
 
 <div class="wrapper wrapper-content animated fadeInRight">
     <div class="row">
@@ -71,7 +11,7 @@
                     <h5>添加音乐</h5>
                 </div>
                 <div class="ibox-content">
-                    <form method="post" class="form-horizontal" id="ajaxForm" action="{:url('music/upload_music')}" enctype="multipart/form-data">
+                    <form method="post" class="form-horizontal" action="{:url('music/add')}" enctype="multipart/form-data">
                         <input type="hidden" name="music_url" >
                         <div class="form-group">
                             <label class="col-sm-2 control-label"><span style="color:red;">*</span>音乐名称</label>
@@ -84,11 +24,9 @@
                             <div class="col-sm-9">
                                     <dd class="upload_area clearfix" style="margin: 0 auto;">
                                         <ul id="imglist" class="post_imglist">
-                                            <li><img class="wh60" id="file0" src="__STATIC__/images/default.jpg"></li>
+                                            <li><a href="" class="music_css"><img class="wh60" id="file0" src="__STATIC__/images/default.jpg"></a></li>
                                         </ul>
-                                        <div class="upload_btn">
-                                            <input type="file" id="upload_music" value="" accept=".wav,.mp3,.ogg,.acc,.webm" name="music" onchange="music_upload()">
-                                        </div>
+                                        <label for="file_apload"><div class="upload_btn"></div></label>
                                     </dd>
                             </div>
                         </div>
@@ -108,11 +46,13 @@
 
                         <div class="form-group">
                             <div class="col-sm-4 col-sm-offset-2">
-                                <input type="hidden" name="pid" value="{$Request.param.pid}" />
-                                <input value="提交" type="button" class="btn btn-primary ajax-post" target-form="form-horizontal" type="submit" onclick="formsub()">
+                                <input value="提交" type="submit" class="btn btn-primary ajax-post" target-form="form-horizontal" type="submit" onclick="formsub()">
                                 <button class="btn btn-white" onclick="javascript:history.back(-1);return false;">取消</button>
                             </div>
                         </div>
+                    </form>
+                    <form method="post" class="form-horizontal" id="ajaxForm" action="{:url('music/upload_music')}" enctype="multipart/form-data">
+                        <input type="file" id="file_apload" value="" accept=".wav,.mp3,.ogg,.acc,.webm" name="music" onchange="music_upload()" style="display: none">
                     </form>
                 </div>
             </div>
@@ -132,16 +72,23 @@
             if(data.status == 1){
                 $('input[name="music_url"]').val(data.url);
                 $('#file0').attr('src','/static/images/music.jpg');
+                $('.music_css').attr('href','data.url');
+                tiao();
             }else{
                 alert(data.msg);
             }
         });
     }
-    //提交
-    function formsub(){
-        var url = '{:url('music/add')}';
-        $('#ajaxForm').attr('action',url);
-        $('#ajaxForm').submit();
+
+    //跳窗口
+    tiao();
+    function tiao(){
+        //音乐
+        if($('.music_css').attr('href') != '' && $('.music_css').attr('href') != 'javascript:;'){
+            $('.music_css').attr('target','_blank');
+        }else{
+            $('.music_css').attr('href','javascript:;');
+        }
     }
 </script>
 {/block}

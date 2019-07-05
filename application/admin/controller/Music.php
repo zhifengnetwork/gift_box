@@ -39,7 +39,7 @@ class Music extends Common
         	$data['addtime'] = time();
         	$res = Db::table('box_music')->insert($data);
         	if($res){
-        		$this->success('添加成功');
+        		$this->success('添加成功',url('index'));
         	}else{
         		$this->error('添加失败');
         	}
@@ -134,7 +134,7 @@ class Music extends Common
         	$data['status'] = $post['status'];
         	$res = Db::table('box_music')->where('id',$post['id'])->update($data);
         	if($res){
-        		$this->success('修改成功');
+        		$this->success('修改成功',url('index'));
         	}else{
         		$this->error('修改失败');
         	}
