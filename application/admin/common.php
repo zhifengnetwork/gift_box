@@ -674,3 +674,18 @@ function delDirAndFile($path, $delDir = false)
         return false;
     }
 }
+
+/**
+ *  获取某个表的所有字段
+ *  table_name 表名
+ */
+function getTableField($table_name = '')
+{
+    $table_field_list = Db::query("select COLUMN_NAME from information_schema.COLUMNS where table_name = '$table_name'");
+    $result = array();
+    foreach($table_field_list as $val){
+        $result[$val['COLUMN_NAME']] = '';
+    }
+    return $result;
+}
+

@@ -7,7 +7,7 @@ use think\Request;
 /**
  * 音乐管理控制器
  */
-class Music extends Common
+class BoxMusic extends Common
 {
 
     /**
@@ -29,6 +29,9 @@ class Music extends Common
         	$post = input('post.');
         	if(!$post['name']){
         		$this->error('音乐名称不能为空');
+			}
+			if(!$post['musician']){
+        		$this->error('音乐人不能为空');
         	}
         	if(!$post['music_url']){
         		$this->error('请上传音乐文件');
@@ -36,6 +39,7 @@ class Music extends Common
         	$data['name'] = $post['name'];
         	$data['music_url'] = $post['music_url'];
         	$data['status'] = $post['status'];
+        	$data['musician'] = $post['musician'];
         	$data['addtime'] = time();
         	$res = Db::table('box_music')->insert($data);
         	if($res){
@@ -125,11 +129,15 @@ class Music extends Common
         	}
         	if(!$post['name']){
         		$this->error('音乐名称不能为空');
+			}
+			if(!$post['musician']){
+        		$this->error('音乐人不能为空');
         	}
         	if(!$post['music_url']){
         		$this->error('请上传音乐文件');
         	}
         	$data['name'] = $post['name'];
+        	$data['musician'] = $post['musician'];
         	$data['music_url'] = $post['music_url'];
         	$data['status'] = $post['status'];
         	$res = Db::table('box_music')->where('id',$post['id'])->update($data);

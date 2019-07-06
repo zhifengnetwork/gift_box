@@ -10,7 +10,7 @@
                     <h5>添加类别</h5>
                 </div>
                 <div class="ibox-content">
-                    <form method="post" class="form-horizontal" id="ajaxForm" action="{:url('cate/cate_post')}" enctype="multipart/form-data">
+                    <form method="post" class="form-horizontal" id="ajaxForm" action="{:url('box_cate/cate_post')}" enctype="multipart/form-data">
                         <div class="form-group">
                             <label class="col-sm-2 control-label">名称</label>
                             <div class="col-sm-9">
@@ -35,36 +35,6 @@
 {block name="script"}
 <script src="__STATIC__/js/jquery.form.js" type="text/javascript"></script>
 <script type="text/javascript">
-    //语音上传
-    function music_upload(){
-        $("#form_voice").ajaxSubmit(function (data) {
-            console.log(data);
-            // data = eval('('+data+')');
-            if(data.status == 1){
-                $('input[name="voice_url"]').val(data.url);
-                $('#file1').attr('src','/static/images/music.jpg');
-            }else{
-                alert(data.msg);
-            }
-        });
-    }
-    //照片上传
-    function photo_upload(){
-        $("#form_photo").ajaxSubmit(function (data) {
-            // data = eval('('+data+')');
-            if(data.status == 1){
-                $('input[name="photo_url"]').val(data.url);
-                $('#file0').attr('src','/static/images/music.jpg');
-            }else{
-                alert(data.msg);
-            }
-        });
-    }
-    // //提交
-    // function formsub(){
-    //     var url = '{:url('box/box_post')}';
-    //     $('#ajaxForm').attr('action',url);
-    //     $('#ajaxForm').submit();
-    // }
+   
 </script>
 {/block}

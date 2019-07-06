@@ -8,18 +8,17 @@
                 <div class="ibox-title">
                     <h5>{$meta_title}</h5>
                     <div class="pull-right" style="margin-top:-8px;">
-                            <a class="btn btn-info" href="{:url('music/add')}"><i class="fa fa-plus"></i> 添加音乐</a>
+                            <a class="btn btn-info" href="{:url('site/add_problem_cate')}"><i class="fa fa-plus"></i> 添加分类</a>
                     </div>
                 </div>
                 <div class="ibox-content">
-
                     <div class="table-responsive">
-                        <form action="{:URL('Box/delMusicAll')}" method="post">
                         <table class="table table-striped">
                             <thead>
                             <tr>
-                                <th>音乐名</th>
-                                <th>状态</th>
+                                <th>ID</th>
+                                <th>分类名称</th>
+                                <th>排序</th>
                                 <th>添加时间 </th>
                                 <th>操作</th>
                             </tr>
@@ -27,19 +26,18 @@
                             <tbody>
                             {volist name="list" id="vo"}
                             <tr>
+                                <td>{$vo.id}</td>
                                 <td>{$vo.name}</td>
-                                <td>{if condition="$vo.status"}启用{else /}禁用{/if}</td>
+                                <td>{$vo.sort}</td>
                                 <td>{$vo.addtime|date="Y-m-d",###}</td>
                                 <td>
-                                    <a class="btn btn-default delete" href="{:url('music/edit',['id'=>$vo.id],false)}" >编辑 </i></a>
-                                    <!-- <a class="btn btn-default delete" is_show="{$vo.status}" onclick="is_show(this,{$vo.id})" href="javascript:;" >{if condition="$vo.status"}禁用{else /}启用{/if} </i></a> -->
+                                    <a class="btn btn-default delete" href="{:url('site/add_problem_cate',['id'=>$vo.id],false)}" >编辑 </i></a>
                                     <a class="btn btn-default delete" onclick="del(this,{$vo.id})" href="javascript:;" >删除 </i></a>
                                 </td>
                             </tr>
                             {/volist}
                             </tbody>
                         </table>
-                        </form>
                     </div>
                     <style>
                         .pagination{}
@@ -58,9 +56,9 @@
 {/block}
 {block name='script'}
 <script>
-    function del(obj,music_id){
-        if(window.confirm('确认删除该音乐吗？')){
-            $.post("{:url('music/del')}",{'music_id':music_id},function(data){
+    function del(obj,id){
+        if(window.confirm('确认删除该分类吗？')){
+            $.post("{:url('del_problem_cate')}",{'id':id},function(data){
                 alert(data.msg);
                 if(data.status == 1){
                     $(obj).parents('tr').remove();

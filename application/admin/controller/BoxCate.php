@@ -7,7 +7,7 @@ use think\Request;
 /**
  * 电子礼盒
  */
-class Cate extends Common
+class BoxCate extends Common
 {
     /**
      * 礼盒列表列表

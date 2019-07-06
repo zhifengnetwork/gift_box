@@ -8,22 +8,22 @@
                 <div class="ibox-title">
                     <h5>{$meta_title}</h5>
                     <div class="pull-right" style="margin-top:-8px;">
-                            <a class="btn btn-info" href="{:url('add')}"><i class="fa fa-plus"></i> 添加类别</a>
+                            <a class="btn btn-info" href="{:url('music/add')}"><i class="fa fa-plus"></i> 添加音乐</a>
                     </div>
                 </div>
                 <div class="ibox-content">
-                    <div class="row" style="margin-left:0px;" >
-                        <!-- <a class="btn btn-default delete" href="{:url('add')}" >添加礼盒 </i></a> -->
-                        <!-- <a class="btn btn-default delete" onclick="del_all(0)" href="javascript:;" >批量删除 <i class="fa fa-trash-o"></i></a> -->
-                    </div>
 
                     <div class="table-responsive">
-                        <form action="{:URL('Admin/delAll')}" method="post">
+                        <form action="{:URL('Box/delMusicAll')}" method="post">
                         <table class="table table-striped">
                             <thead>
                             <tr>
                                 <th>ID</th>
-                                <th>类别名称</th>
+                                <th>音乐名</th>
+                                <th>音乐人</th>
+                                <th>状态</th>
+                                <th>添加时间 </th>
+                                <th>操作</th>
                             </tr>
                             </thead>
                             <tbody>
@@ -31,8 +31,12 @@
                             <tr>
                                 <td>{$vo.id}</td>
                                 <td>{$vo.name}</td>
+                                <td>{$vo.musician}</td>
+                                <td>{if condition="$vo.status"}启用{else /}禁用{/if}</td>
+                                <td>{$vo.addtime|date="Y-m-d",###}</td>
                                 <td>
-                                    <a class="btn btn-default delete" href="{:url('edit',['id'=>$vo.id],false)}" >编辑 </i></a>
+                                    <a class="btn btn-default delete" href="{:url('music/edit',['id'=>$vo.id],false)}" >编辑 </i></a>
+                                    <!-- <a class="btn btn-default delete" is_show="{$vo.status}" onclick="is_show(this,{$vo.id})" href="javascript:;" >{if condition="$vo.status"}禁用{else /}启用{/if} </i></a> -->
                                     <a class="btn btn-default delete" onclick="del(this,{$vo.id})" href="javascript:;" >删除 </i></a>
                                 </td>
                             </tr>
@@ -58,15 +62,45 @@
 {/block}
 {block name='script'}
 <script>
-    function del(obj,id){
-        if(window.confirm('确认删除该分类吗？')){
-            $.post("{:url('del')}",{'id':id},function(data){
+    function del(obj,music_id){
+        if(window.confirm('确认删除该音乐吗？')){
+            $.post("{:url('music/del')}",{'music_id':music_id},function(data){
                 alert(data.msg);
-                if(data.status){
+                if(data.status == 1){
                     $(obj).parents('tr').remove();
                 }
             },'json');
         }
     }
+
+    function is_show(obj,music_id){
+        var is_show = $(obj).attr('is_show');
+
+        if( is_show == 1 ){
+            is_show = 0;
+            ts = '是否禁用?';
+        }else{
+            is_show = 1;
+            ts = '是否启用?';
+        }
+
+        if(window.confirm(ts)){
+            $.post("{:url('music/is_show')}",{'music_id':music_id,'status':is_show},function(data){
+                if(data.status == 1){
+                    $(obj).attr('is_show',is_show);
+                    if( is_show ){
+                        $(obj).parents('tr').find('td').eq(4).html('已启用');
+                        $(obj).html('禁用');
+                        alert('启用成功！');
+                    }else{
+                        $(obj).parents('tr').find('td').eq(4).html('未禁用');
+                        $(obj).html('启用');
+                        alert('禁用成功！');
+                    }
+                }
+            },'json');
+        }
+    }
+
 </script>
 {/block}
