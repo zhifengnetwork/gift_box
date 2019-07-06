@@ -17,7 +17,8 @@ class ApiBase extends Controller
     protected $uid;
     protected $user_name;
     protected $is_bing_mobile;
-
+    protected $http_host;
+    
     public function _initialize()
     {
         header("Access-Control-Allow-Origin:*");
@@ -26,7 +27,7 @@ class ApiBase extends Controller
         header('Content-Type:application/json; charset=utf-8');
 
         config((new Config)->getConfig());
-
+        $this->http_host ='http://'.$_SERVER['HTTP_HOST'];
     }
 
     private static $redis = null;

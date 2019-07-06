@@ -64,7 +64,7 @@ class Advertisement extends Common
                 $this->error($res[0]);
             } else {
                 $pictureName                             = $res[1];
-                !empty($pictureName) && $data['picture'] = $pictureName;
+                !empty($pictureName) && $data['picture'] = '/public'.$pictureName;
             }
             if ($id) {
                 $Advertise = new Advertise;
@@ -116,7 +116,7 @@ class Advertisement extends Common
                 $this->error('页面唯一标识不能为空！');
             }
             $old_page =  Db::table('page_advertisement')->where(['status'=>['<>',-1],'only_logo'=>$only_logo])->value('id');
-            if ($id){
+            if ($id && $old_page){
                 if ($old_page != $id){
                     $this->error('该页面标识已经存在！');
                 }
