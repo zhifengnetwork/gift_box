@@ -25,13 +25,18 @@ class Index extends ApiBase
             ['goods_name'=>'Rolex','price'=>'1999','goods_id'=>7,'picture'=>'http://articleimg.xbiao.com/2019/0705/201907051562323156794.jpg'],
             ['goods_name'=>'Rolex','price'=>'1999','goods_id'=>8,'picture'=>'http://articleimg.xbiao.com/2019/0705/201907051562323156794.jpg'],
         ];
+
+        
         //首页轮播图
         $banner = Db::table('advertisement')->field('id,picture,url')->where(['page_id'=>1,'state'=>1])->order('sort')->select();
         foreach($banner as $key=>$val){
             if($val['picture']){
-                $banner[$key]['picture'] = $this->http_host.$val['picture'];
+                //第一位不是h
+                $banner[$key]['picture'] =  substr($val['picture'],0,-1) == 'h'? $val['picture']: SITE_URL.$val['picture'];
             }
         }
+    
+
         //热门推荐8大分类
         $hot_category = [
             ['cat_name'=>'澳门星选','english_name'=>'Nine Point','cat_id'=>1],
@@ -48,13 +53,20 @@ class Index extends ApiBase
         foreach($home_category as $key=>$val){
             $home_category[$key]['goods_list'] = $goods_list;
         }
-        $data['status'] = 1;
-        $data['msg'] = '成功获取数据';
-        $data['data']['banner'] = $banner;
-        $data['data']['home_category'] = $home_category;
-        $data['data']['hot_category'] = $hot_category;
-        $data['data']['guess_like'] = $goods_list;
-        $this->ajaxReturn($data);
+
+
+        $jializhigong = M('goods')->where(['is_jializhigong'=>1,'is_show'=>1])->limit(8)->field('goods_id')->select();
+        foreach ($jializhigong as $k => $v) {
+            $jializhigong[$k]['img'] = SITE_URL.M('goods_img')->where(['goods_id'=>$v['goods_id'],'main'=>1])->value('picture');
+        }
+      
+        $data['banner'] = $banner;
+        $data['jializhigong'] = $jializhigong;
+        $data['home_category'] = $home_category;
+        $data['hot_category'] = $hot_category;
+        $data['guess_like'] = $goods_list;
+        
+        $this->ajaxReturn(['status' => 1, 'msg' => '成功获取数据','data'=>$data]);
     }
 
     /**
