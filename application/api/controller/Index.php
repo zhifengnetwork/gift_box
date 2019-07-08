@@ -44,18 +44,17 @@ class Index extends ApiBase
             ['cat_name'=>'欧洲北部','english_name'=>'Nine Point','cat_id'=>8],
         ];
         //获取首页分类
-        $home_caetgory = Db::table('category')->field('cat_name,english_name,cat_id')->where(['pid'=>45,'is_show'=>1])->order('sort')->limit('6')->select();
-        foreach($home_caetgory as $key=>$val){
-            $home_caetgory[$key]['goods_list'] = $goods_list;
+        $home_category = Db::table('category')->field('cat_name,english_name,cat_id')->where(['pid'=>45,'is_show'=>1])->order('sort')->limit('6')->select();
+        foreach($home_category as $key=>$val){
+            $home_category[$key]['goods_list'] = $goods_list;
         }
-        $data['banner'] = $banner;
-        $data['home_caetgory'] = $home_caetgory;
-        $data['hot_category'] = $hot_category;
-        //猜你喜欢
-        $data['guess_like'] = $goods_list;
         $data['status'] = 1;
         $data['msg'] = '成功获取数据';
-        return json($data);
+        $data['data']['banner'] = $banner;
+        $data['data']['home_category'] = $home_category;
+        $data['data']['hot_category'] = $hot_category;
+        $data['data']['guess_like'] = $goods_list;
+        $this->ajaxReturn($data);
     }
 
     /**

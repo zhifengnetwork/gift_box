@@ -25,7 +25,7 @@ class Box extends ApiBase
         $data['status'] = 1;
         $data['data'] = $list;
         $data['msg'] = '获取数据成功';
-        return json($data);
+        $this->ajaxReturn($data);
     }
 
     /*
@@ -39,7 +39,7 @@ class Box extends ApiBase
             $data['data'] = array();
             $data['status'] = 1;
             $data['msg'] = '获取数据成功';
-            return json($data);
+            $this->ajaxReturn($data);
         }
         if($id == 0){
             $list[0]['list'] = Db::table('box_cate')->field('id,name,picture')->where('pid',$list[0]['id'])->order('sort')->select();
@@ -53,7 +53,7 @@ class Box extends ApiBase
         $data['data'] = $list;
         $data['status'] = 1;
         $data['msg'] = '获取数据成功';
-        return json($data);
+        $this->ajaxReturn($data);
     }
     
 
@@ -69,20 +69,23 @@ class Box extends ApiBase
 	        $info = $file->validate(['size'=>1024*1024*10])->move(ROOT_PATH . 'public' . DS . 'uploads' . DS . 'box' . DS);
 	        if($info){
 	            // 成功上传后 获取上传信息
-	            $result['url'] = $this->http_host.'/public/uploads/box/'.$info->getSaveName();
+	            $result['data'] = $this->http_host.'/public/uploads/box/'.$info->getSaveName();
 	            $result['status'] = 1;
-	            return json($result);
+	            $result['msg'] = '上传成功';
+	            $this->ajaxReturn($result);
 	        }else{
 	            // 上传失败获取错误信息
 	            $result['msg'] = $file->getError();
-	            $result['status'] = 2;
-	            return json($result);
+	            $result['status'] = -1;
+	            $result['data'] = '';
+	            $this->ajaxReturn($result);
 	        }
         }
         // 上传失败获取错误信息
         $result['msg'] = '上传文件不存在';
-        $result['status'] = 2;
-        return json($result);
+        $result['status'] = -1;
+        $result['data'] = '';
+        $this->ajaxReturn($result);
     }
 
     //选择音乐页面
@@ -95,19 +98,19 @@ class Box extends ApiBase
         $result['status'] = 1;
         $result['data'] = $list;
         $result['msg'] = '获取数据成功';
-        return json($result);
+        $this->ajaxReturn($result);
     }
 
-    //制作电子礼盒2的界面
+    //制作电子礼盒的界面
     public function get_box()
     {
-        $id = input('id');
-        $cate_id = input('cate_id');
+        $id = input('id',0);
+        $cate_id = input('cate_id',0);
         $data['user_id'] = $this->get_user_id();
         if(!$id && !$cate_id){
-            $result['status'] = 2;
+            $result['status'] = -1;
             $result['msg'] = '创建盒子需要传类别id';
-            return json($result);
+            $this->ajaxReturn($result);
         }
         if($id){
             $info = Db::table('box')->field('id,music_id,photo_url,voice_url,content')->where('id',$id)->find();
@@ -115,21 +118,21 @@ class Box extends ApiBase
             $data['addtime'] = time();
             $data['cate_id'] = $cate_id;
             $id = Db::table('box')->insertGetId($data);
-            $result['id'] = $id;
-            $result['music_id'] = 0;
-            $result['photo_url'] = '';
-            $result['voice_url'] = '';
-            $result['content'] = '';
+            $result['data']['id'] = $id;
+            $result['data']['music_id'] = 0;
+            $result['data']['photo_url'] = '';
+            $result['data']['voice_url'] = '';
+            $result['data']['content'] = '';
             $result['status'] = 1;
             $result['msg'] = '获取数据成功';
-            return json($result);
+            $this->ajaxReturn($result);
         }
-        $info['photo_url'] = $info['photo_url']?$this->http_host.$info['photo_url']:'';
-        $info['voice_url'] = $info['voice_url']?$this->http_host.$info['voice_url']:'';
-        $info['content'] = $info['content']?$this->http_host.$info['content']:'';
+        $info['data']['photo_url'] = $info['photo_url']?$this->http_host.$info['photo_url']:'';
+        $info['data']['voice_url'] = $info['voice_url']?$this->http_host.$info['voice_url']:'';
+        $info['data']['content'] = $info['content']?$this->http_host.$info['content']:'';
         $info['status'] = 1;
         $info['msg'] = '获取数据成功';
-        return json($info);
+        $this->ajaxReturn($info);
     }
 
     //修改盒子某一个字段
@@ -142,9 +145,9 @@ class Box extends ApiBase
         $content = input('post.content','');
         $user_id = $this->get_user_id();
         if(!$id){
-            $result['status'] = 2;
+            $result['status'] = -1;
             $result['msg'] = '请提供礼盒ID';
-            return json($result);
+            $this->ajaxReturn($result);
         }
         if($music_id){
             $data['music_id'] = $music_id;
@@ -160,19 +163,19 @@ class Box extends ApiBase
         }
         $count = Db::table('box')->where('id',$id)->where('user_id',$user_id)->count();
         if(!$count){
-            $result['status'] = 2;
+            $result['status'] = -1;
             $result['msg'] = '该盒子不存在';
-            return json($result);
+            $this->ajaxReturn($result);
         }
         $res = Db::table('box')->where('id',$id)->save($data);
         if($res){
             $result['status'] = 1;
             $result['msg'] = '修改成功';
-            return json($result);
+            $this->ajaxReturn($result);
         }else{
             $result['status'] = 1;
             $result['msg'] = '数据未改变';
-            return json($result);
+            $this->ajaxReturn($result);
         }
     }
 }
