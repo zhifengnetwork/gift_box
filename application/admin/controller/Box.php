@@ -60,14 +60,15 @@ class Box extends Common
     public function upload_music()
     {
     	// 获取表单上传文件 例如上传了001.jpg
-	    $file = request()->file('voice_file');
+        $file = request()->file('voice_file');
 	    // 移动到框架应用根目录/public/uploads/ 目录下
 	    if($file){
-	        $info = $file->move(ROOT_PATH . 'public' . DS . 'uploads' . DS . 'voice' . DS);
+	        $info = $file->move(ROOT_PATH . 'public' . DS . 'uploads' . DS . 'box' . DS);
 	        if($info){
 	            // 成功上传后 获取上传信息
-	            $result['url'] = '/public/uploads/voice/'.$info->getSaveName();
+	            $result['url'] = '/public/uploads/box/'.$info->getSaveName();
 	            $result['status'] = 1;
+	            $result['msg'] = '上传成功';
 	            return json($result);
 	        }else{
 	            // 上传失败获取错误信息
@@ -87,10 +88,10 @@ class Box extends Common
 	    $file = request()->file('photo_file');
 	    // 移动到框架应用根目录/public/uploads/ 目录下
 	    if($file){
-	        $info = $file->move(ROOT_PATH . 'public' . DS . 'uploads' . DS . 'photo' . DS);
+	        $info = $file->move(ROOT_PATH . 'public' . DS . 'uploads' . DS . 'box' . DS);
 	        if($info){
 	            // 成功上传后 获取上传信息
-	            $result['url'] = '/public/uploads/photo/'.$info->getSaveName();
+	            $result['url'] = '/public/uploads/box/'.$info->getSaveName();
 	            $result['status'] = 1;
 	            return json($result);
 	        }else{

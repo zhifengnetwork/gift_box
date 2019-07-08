@@ -23,6 +23,10 @@
                             <tr>
                                 <th>ID</th>
                                 <th>类别名称</th>
+                                <th>状态</th>
+                                <th>添加时间</th>
+                                <th>排序</th>
+                                <th>操作</th>
                             </tr>
                             </thead>
                             <tbody>
@@ -30,11 +34,28 @@
                             <tr>
                                 <td>{$vo.id}</td>
                                 <td>{$vo.name}</td>
+                                <td>{if condition="$vo.status eq 1"}启用{else/}禁用{/if}</td>
+                                <td>{$vo.addtime|date='Y-m-d',###}</td>
+                                <td>{$vo.sort}</td>
                                 <td>
                                     <a class="btn btn-default delete" href="{:url('edit',['id'=>$vo.id],false)}" >编辑 </i></a>
+                                    <a class="btn btn-default delete" href="{:url('add',['pid'=>$vo.pid],false)}" >添加子分类</i></a>
                                     <a class="btn btn-default delete" onclick="del(this,{$vo.id})" href="javascript:;" >删除 </i></a>
                                 </td>
                             </tr>
+                                {volist name="vo.list" id="v"}
+                                <tr>
+                                    <td>{$v.id}</td>
+                                    <td>------ {$v.name}</td>
+                                    <td>{if condition="$v.status eq 1"}启用{else/}禁用{/if}</td>
+                                    <td>{$v.addtime|date='Y-m-d',###}</td>
+                                    <td>{$v.sort}</td>
+                                    <td>
+                                        <a class="btn btn-default delete" href="{:url('edit',['id'=>$v.id],false)}" >编辑 </i></a>
+                                        <a class="btn btn-default delete" onclick="del(this,{$v.id})" href="javascript:;" >删除 </i></a>
+                                    </td>
+                                </tr>
+                                {/volist}
                             {/volist}
                             </tbody>
                         </table>
@@ -47,7 +68,6 @@
                         .pagination li a{float:left;width:42px;height:28px; text-align:center;line-height:30px;border-left:none;color:#3399d5;}
                     </style>
                     <ul class="pagination">
-                        {$list->render()}
                     </ul>
                 </div>
             </div>

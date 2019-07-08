@@ -35,7 +35,7 @@
                                 <td>{if condition="$vo.status"}启用{else /}禁用{/if}</td>
                                 <td>{$vo.addtime|date="Y-m-d",###}</td>
                                 <td>
-                                    <a class="btn btn-default delete" href="{:url('music/edit',['id'=>$vo.id],false)}" >编辑 </i></a>
+                                    <a class="btn btn-default delete" href="{:url('edit',['id'=>$vo.id],false)}" >编辑 </i></a>
                                     <!-- <a class="btn btn-default delete" is_show="{$vo.status}" onclick="is_show(this,{$vo.id})" href="javascript:;" >{if condition="$vo.status"}禁用{else /}启用{/if} </i></a> -->
                                     <a class="btn btn-default delete" onclick="del(this,{$vo.id})" href="javascript:;" >删除 </i></a>
                                 </td>
