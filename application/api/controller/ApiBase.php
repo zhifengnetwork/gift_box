@@ -27,7 +27,6 @@ class ApiBase extends Controller
         header('Content-Type:application/json; charset=utf-8');
 
         config((new Config)->getConfig());
-        $this->http_host ='http://'.$_SERVER['HTTP_HOST'];
     }
 
     private static $redis = null;

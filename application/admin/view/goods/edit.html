@@ -112,7 +112,7 @@
                                              {/if}	
                                              {/volist}
                                              <th><input type="text" readonly="readonly" style="border: 0px;" name="pri_th[pri][]" value="本店售价(元)"></th>
-                                             <th><input type="text" readonly="readonly" style="border: 0px;" name="pri_th[pri][]" value="拼团价格"></th>
+                                             <!-- <th><input type="text" readonly="readonly" style="border: 0px;" name="pri_th[pri][]" value="拼团价格"></th> -->
                                              <th><input type="text" readonly="readonly" style="border: 0px;" name="goods_th[num][]" value="库存"></th>
                                              <th>冻结库存</th>
                                              <th style="width: 25px;">操作</th>
@@ -136,11 +136,7 @@
                                                          <input type="text" class="pri_id" value="{$vo}" name="pri_td[pri][]">
                                                      </td>
                                                      {/if}
-                                                     {if condition="($key === 'groupon_price')"}
-                                                     <td>
-                                                         <input type="text" class="pri_id" value="{$vo}" name="pri_td[group_pri][]">
-                                                     </td>
-                                                     {/if}
+                                                     
                                                      {if condition="($key === 'sku_id')"}
                                                          <td><input type="text" readonly class="input-text" name="sku_id[]" value="{$vo}"></td>
                                                      {/if}
@@ -174,30 +170,10 @@
                             <div class="col-sm-9">
                                 {volist name="goods_attr" id="vo"}
                                 <label style="margin-top:4px; margin-right:20px;">
-                                    <input {if condition="is_array($info.goods_attr) and in_array($vo.attr_id,$info.goods_attr)"} checked {/if} type="checkbox" value="{$vo.attr_id}" class="goods_attr" name="goods_attr[]" /> {$vo.attr_name}
+                                    <input {if condition="is_array($info.goods_attr) and in_array($vo.id,$info.goods_attr)"} checked {/if} type="checkbox" value="{$vo.id}" class="goods_attr" name="goods_attr[]" /> {$vo.name}
                                 </label>
                                 {/volist}
                             </div>
-                        </div>
-
-                        <div class="form-group">
-                            <label class="col-sm-2 control-label"></label>
-                            <div class="col-sm-9">
-                                <div style="line-height:34px;">
-                                    <span style="float:left;margin: 0 7px;">限时卖时间 </span>
-                                    <span style="float:left;margin: 0 7px;"><input type="text" {if condition="is_array($info.goods_attr) and !in_array(6,$info.goods_attr)"} disabled {/if} id="limited_start" name="limited_start" value="{$info.limited_start|date='Y-m-d',###}" class="form-control"></span>
-                                    <span style="float:left;margin: 0 7px;"><input type="text" {if condition="is_array($info.goods_attr) and !in_array(6,$info.goods_attr)"} disabled {/if} id="limited_end" name="limited_end" value="{$info.limited_end|date='Y-m-d',###}" class="form-control"></span>
-                                </div>
-
-                                <div style="line-height:34px;">
-                                <span style="float:left;margin: 0 7px;">puls会员折扣 </span>
-                                <span style="float:left;margin: 0 7px;"><input type="text"  name="puls_discount" value="{$info.puls_discount}" class="form-control">商品现价的%</span>
-                                </div>
-                                <div style="line-height:34px;">
-                                <span style="float:left;margin: 0 7px;">分享金 </span>
-                                <span style="float:left;margin: 0 7px;"><input type="text"  name="share_discount" value="{$info.share_discount}" class="form-control">商品现价的%</span>
-                                </div>
-                                    </div>
                         </div>
 
                         <style type="text/css">
@@ -243,7 +219,7 @@
                                     <span style="float:left;margin: 0 7px;">元</span>
                                 </div>
 
-                                <div style="line-height:34px;">
+                                <!-- <div style="line-height:34px;">
                                     <span style="float:left;margin: 0 7px;">原价 </span>
                                     <span style="float:left;width:10%;"><input type="text" name="original_price" value="{$info.original_price}" class="form-control"></span>
                                     <span style="float:left;margin: 0 7px;">元</span>
@@ -253,38 +229,12 @@
                                     <span style="float:left;margin: 0 7px;">成本 </span>
                                     <span style="float:left;width:10%;"><input type="text" name="cost_price" value="{$info.cost_price}" class="form-control"></span>
                                     <span style="float:left;margin: 0 7px;">元</span>
-                                </div>
+                                </div> -->
 
 
 
                             </div>
                         </div>
-
-
-                        <div class="form-group">
-                            <label class="col-sm-2 control-label">返利（现价的百分比）</label>
-
-                                <div style="line-height:34px;">
-                                    <span style="float:left;margin: 0 7px;">省代返佣 </span>
-                                    <span style="float:left;width:10%;"><input type="text" name="province_proportion" value="{$info.province_proportion}" class="form-control"></span>
-                                    <span style="float:left;margin: 0 7px;">%</span>
-                                </div>
-
-                                <div style="line-height:34px;">
-                                    <span style="float:left;margin: 0 7px;">2级返佣 </span>
-                                    <span style="float:left;width:10%;"><input type="text" name="tow_proportion" value="{$info.tow_proportion}" class="form-control"></span>
-                                    <span style="float:left;margin: 0 7px;">%</span>
-                                </div>
-
-                                <div style="line-height:34px;">
-                                    <span style="float:left;margin: 0 7px;">无限级返佣 </span>
-                                    <span style="float:left;width:10%;"><input type="text" name="infinite_proportion" value="{$info.infinite_proportion}" class="form-control"></span>
-                                    <span style="float:left;margin: 0 7px;">%</span>
-                                </div>
-                        </div>
-
-
-
                         <div class="form-group">
                             <label class="col-sm-2 control-label"><span style="color:red;">*</span>商品分类</label>
                             <div class="col-sm-9">
@@ -314,7 +264,7 @@
                             </div>
                         </div>
 
-                        <div class="form-group">
+                        <!-- <div class="form-group">
                             <label class="col-sm-2 control-label">减库存方式</label>
                             <div class="col-sm-9">
                                 <label style="margin-top:4px; margin-right:20px;">
@@ -327,7 +277,7 @@
                                     <input type="radio" value="3" name="less_stock_type" {if condition="$info.less_stock_type eq 3"} checked {/if} /> 永不减库存
                                 </label>
                             </div>
-                        </div>
+                        </div> -->
 
                         <div class="form-group">
                             <label class="col-sm-2 control-label">运费设置</label>
@@ -421,7 +371,7 @@
                                 </label>
                             </div>
                         </div>
-                        <div class="form-group">
+                        <!-- <div class="form-group">
                             <label class="col-sm-2 control-label">是否升级PULS会员</label>
                             <div class="col-sm-9">
                                 <label style="margin-top:4px; margin-right:20px;">
@@ -431,9 +381,7 @@
                                     <input type="radio" value="0" name="is_puls" {if condition="!$info.is_puls"} checked {/if} /> 否
                                 </label>
                             </div>
-                        </div>
-                        
-
+                        </div> -->
                         <div class="form-group">
                             <div class="col-sm-4 col-sm-offset-2">
                                 <input type="hidden" name="goods_id" value="{$info.goods_id}" />
@@ -469,19 +417,6 @@
   </style>
 <script type="text/javascript">
 
-Calendar.setup({
-    inputField     :    "limited_start",
-    ifFormat       :    "%Y-%m-%d %H:%M:%S",
-    showsTime      :    true,
-    timeFormat     :    "12"
-});
-
-Calendar.setup({
-    inputField     :    "limited_end",
-    ifFormat       :    "%Y-%m-%d %H:%M:%S",
-    showsTime      :    true,
-    timeFormat     :    "12"
-});
 
     var rowCount = $("#goods_table tbody").find("tr").length - 1; //行数
     var colCount = $("#goods_table thead").find("tr").find("th").length - 6; //列数

@@ -24,7 +24,7 @@
                                 <select name="pid"  class="form-control">
                                     <option value="0">顶级分类</option>
                                     {volist name="cate_list" id="vo"}
-                                        <option value="{$vo.id}" {if condition="$vo.id eq $info.pid"}selected="true"{/if}>{$vo.name}</option>
+                                        <option value="{$vo.id}" {if condition="$info.id eq $info.pid"}selected="true"{/if}>{$vo.name}</option>
                                     {/volist}
                                 </select> 
                             </div>

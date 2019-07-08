@@ -92,47 +92,11 @@ class Goods extends Common
                 $this->error( $validate->getError() );
             }
             
-            // $data['img_td'] = $_FILES['img_td'];
-
-            // $img = [];
-            // foreach($data['img_td'] as $key=>$value){
-            //     foreach($value['img'] as $k=>$v){
-            //         $img[$k][$key] = $v;
-            //     }
-            // }
-
-            // foreach($img as $key=>$value){
-            //     if($value['error']==0){
-
-            //         $file_name = 'sku_img/';
-            //         $name = $file_name . request()->time().rand(0,99999) . '.png';
-            //         $names = ROOT_PATH .Config('c_pub.img');
-
-            //         //防止文件名重复
-            //         $filename = $names . $name;
-            //         //转码，把utf-8转成gb2312,返回转换后的字符串， 或者在失败时返回 FALSE。
-            //         $filename =iconv("UTF-8","gb2312",$filename);
-                    
-            //         if (!file_exists($names . $file_name)){
-            //             mkdir($names . $file_name,0777,true);
-            //         }
-                    
-            //         //保存文件,   move_uploaded_file 将上传的文件移动到新位置
-            //         move_uploaded_file($value["tmp_name"],$filename);//将临时地址移动到指定地址
-
-            //         $data_spec[$key]['img'] = ['key' => 'img', 'value' => $name];
-            //     }else{
-            //         $data_spec[$key]['img'] = ['key' => 'img', 'value' => ''];
-            //     }
-            // }
-
             // 本店售价
             $pri = $data['pri_td']['pri'];
-            $group_pri = $data['pri_td']['group_pri'];
             $pri_count = count($pri);
             for ($m = 0; $m < $pri_count; $m++) {
                 $data_spec[$m]['pri'] = ['key' => 'pri', 'value' => $pri[$m]];
-                $data_spec[$m]['group_pri'] = ['key' => 'group_pri', 'value' => $group_pri[$m]];
             }
 
             // 初始化规格数据格式
@@ -190,7 +154,7 @@ class Goods extends Common
             }
             
             
-            $data['add_time'] = strtotime( $data['add_time'] );
+            // $data['add_time'] = strtotime( $data['add_time'] );
             $goods_id = Db::table('goods')->strict(false)->insertGetId($data);
             
             if ( $goods_id ) {
@@ -252,7 +216,7 @@ class Goods extends Common
         }
 
         //商品属性
-        $goods_attr = Db::table('goods_attr')->select();
+        $goods_attr = Db::table('goods_attr')->where('pid','<>',0)->select();
         //商品一级分类
         $cat_id1 = Db::table('category')->where('level',1)->select();
         //商品二级分类
@@ -302,11 +266,9 @@ class Goods extends Common
 
             // 本店售价
             $pri = $data['pri_td']['pri'];
-            $group_pri = $data['pri_td']['group_pri'];
             $pri_count = count($pri);
             for ($m = 0; $m < $pri_count; $m++) {
                 $data_spec[$m]['pri'] = ['key' => 'pri', 'value' => $pri[$m]];
-                $data_spec[$m]['group_pri'] = ['key' => 'group_pri', 'value' => $group_pri[$m]];
             }
             // 初始化规格数据格式
             $count = count($data['goods_td'][1]);
@@ -433,7 +395,7 @@ class Goods extends Common
         $rsts = $this->get_spec_info($goods_id);
         
         //商品属性
-        $goods_attr = Db::table('goods_attr')->select();
+        $goods_attr = Db::table('goods_attr')->where('pid','<>',0)->select();
         //商品一级分类
         $cat_id1 = Db::table('category')->where('level',1)->select();
         //商品二级分类
@@ -1412,87 +1374,147 @@ class Goods extends Common
         ]);
     }
 
+    //品牌列表
+    public function goods_brand()
+    {
+        $list = Db::table('goods_brand')->paginate(10);
+        $this->assign('list',$list);
+        return $this->fetch();
+    }
+
+    //添加修改
+    public function add_goods_brand()
+    {
+        if(Request::instance()->isPost()){
+            $id = input('post.id');
+            $post = input('post.');
+            if(!$post['name']){
+                $this->error('请输入品牌名称');
+            }
+            $count = Db::table('goods_brand')->where('name',$post['name'])->where('id','<>',$id)->count();
+            if($count){
+                $this->error('品牌名称已存在');
+            }
+            if($id){
+                Db::name('goods_brand')->where('id',$id)->update($post);
+            }else{
+                $post['addtime'] = time();
+                Db::name('goods_brand')->insert($post);
+            }
+            $this->success('操作成功',url('goods_brand'));
+        }
+        $id = input('id');
+        if($id){
+            $info = Db::table('goods_brand')->where('id',$id)->find();
+        }else{
+            $info = getTableField('goods_brand');
+        }
+        $this->assign('info',$info);
+        return $this->fetch();
+    }
+
+    //删除品牌
+    public function del_goods_brand()
+    {
+        $id = input('id');
+        if($id){
+            $result['status'] = 1;
+            $result['msg'] = '删除成功';
+            return json($result);
+        }
+        Db::table('goods_brand')->where('id',$id)->delete();
+        $result['status'] = 1;
+        $result['msg'] = '删除成功';
+        return json($result);
+    }
 
     /**
-     * 升级PULS会员商品
+     * 文件上传
      */
-//    public function puls_goods_list () {
-//        $name = request()->param('name');
-//        $where = [];
-//        if (!empty($name)){
-//            $where['b.goods_name'] = ['like',"%$name%"];
-//        }
-//        $where['a.status'] = ['>',-1];
-//        $field = 'a.*,b.goods_name,b.price,b.limited_start,b.limited_end,b.stock,b.is_show,b.is_del';
-//        $list = model('PulsGoods')->alias('a')
-//            ->join('goods b','a.goods_id = b.goods_id','left')
-//            ->where($where)
-//            ->order('a.id desc')
-//            ->field($field)
-//            ->paginate(15,'',['query'=>request()->param()]);
-//        $this->assign('list',$list);
-//        $this->assign('name',$name);
-//        $this->assign('meta_title','升级PULS会员商品列表');
-//        return $this->fetch('goods/puls_goods_list');
-//
-//    }
-//
-//    /**
-//     * 添加升级PULS会员商品
-//     */
-//    public function puls_goods_add () {
-//        $goods_id = request()->param('goods_id',0,'intval');
-//        $status = request()->param('status',0,'intval');
-//        if (request()->isPost()){
-//            if (empty($goods_id)){
-//                $this->error('请选择商品',url('puls_goods_add'));
-//            }
-//            $insert = model('PulsGoods')->insert(['goods_id'=>$goods_id,'status'=>$status]);
-//            if ($insert){
-//                $this->success('添加成功！',url('goods/puls_goods_list'));
-//            }else{
-//                $this->error('添加失败！');
-//            }
-//        }
-//
-//        return $this->fetch('goods/puls_goods_add');
-//    }
-////dddd
-//    /**
-//     *AJAX搜索商品
-//     */
-//    public function search_goods () {
-//        $name = request()->param('name','');
-//        $where = [];
-//        if (!empty($name)){
-//            $id_arr = model('PulsGoods')->where(['status'=>['>',-1]])->column('goods_id');
-//            $where['goods_id'] = ['notin',$id_arr];
-//            $where['goods_name'] = ["like","%$name%"];
-//            $list = model('Goods')->where($where)->field('goods_id,goods_name')->select();
-//            return json(['code'=>1,'msg'=>'','data'=>$list]);
-//        }else{
-//            return json(['code'=>0,'msg'=>'没有商品名称','data'=>[]]);
-//        }
-//
-//
-//    }
-//
-//    /**
-//     * 修改升级PULS会员商品状态
-//     */
-//    public function puls_goods_update () {
-//        $id = request()->param('id',0,'intval');
-//        $status = request()->param('status',0,'intval');
-//        if (empty($id)){
-//            return json(['code'=>0,'msg'=>'id不存在！','data'=>[]]);
-//        }
-//        $update = model('PulsGoods')->update(['id'=>$id,'status'=>$status]);
-//        if ($update){
-//            return json(['code'=>1,'msg'=>'操作成功！','data'=>[]]);
-//        }else{
-//            return json(['code'=>0,'msg'=>'操作失败！','data'=>[]]);
-//
-//        }
-//    }
+    public function upload_file()
+    {
+    	// 获取表单上传文件 例如上传了001.jpg
+        $file = request()->file('file');
+	    // 移动到框架应用根目录/public/uploads/ 目录下
+	    if($file){
+	        $info = $file->validate(['size'=>1024*1024*10])->move(ROOT_PATH . 'public' . DS . 'uploads' . DS . 'goods' . DS);
+	        if($info){
+	            // 成功上传后 获取上传信息
+	            $result['data'] = '/public/uploads/goods/'.$info->getSaveName();
+	            $result['status'] = 1;
+	            $result['msg'] = '上传成功';
+	            return json($result);
+	        }else{
+	            // 上传失败获取错误信息
+	            $result['msg'] = $file->getError();
+	            $result['status'] = -1;
+	            $result['data'] = '';
+	            return json($result);
+	        }
+        }
+        // 上传失败获取错误信息
+        $result['msg'] = '上传文件不存在';
+        $result['status'] = -1;
+        $result['data'] = '';
+        return json($result);
+    }
 
+    //商品栏目
+    public function goods_attr()
+    {
+        $list = Db::table('goods_attr')->where("pid",0)->order('sort')->paginate(5)->each(function($v,$k){
+            $v['list'] = Db::name('goods_attr')->where('pid',$v['id'])->select();
+            return $v;
+        });
+        $this->assign('list',$list);
+        return $this->fetch();
+    }
+
+    //添加修改栏目
+    public function add_goods_attr()
+    {
+        if(Request::instance()->isPost()){
+            $id = input('post.id');
+            $post = input('post.');
+            if(!$post['name']){
+                $this->error('请输入栏目名称');
+            }
+            $count = Db::table('goods_attr')->where('name',$post['name'])->where('id','<>',$id)->count();
+            if($count){
+                $this->error('栏目名称已存在');
+            }
+            if($id){
+                Db::name('goods_attr')->where('id',$id)->update($post);
+            }else{
+                $post['addtime'] = time();
+                Db::name('goods_attr')->insert($post);
+            }
+            $this->success('操作成功',url('goods_attr'));
+        }
+        $id = input('id');
+        if($id){
+            $info = Db::table('goods_attr')->where('id',$id)->find();
+        }else{
+            $info = getTableField('goods_attr');
+        }
+        $cate_list = Db::name('goods_attr')->field('name,id')->where('pid',0)->select();
+        $this->assign('cate_list',$cate_list);
+        $this->assign('info',$info);
+        return $this->fetch();
+    }
+
+    //删除栏目
+    public function del_goods_attr()
+    {
+        $id = input('id');
+        if($id){
+            $result['status'] = 1;
+            $result['msg'] = '删除成功';
+            return json($result);
+        }
+        Db::table('goods_attr')->where('id',$id)->delete();
+        $result['status'] = 1;
+        $result['msg'] = '删除成功';
+        return json($result);
+    }
 }

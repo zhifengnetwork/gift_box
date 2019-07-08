@@ -78,7 +78,7 @@
             if(data.status == 1){
                 $('input[name="music_url"]').val(data.url);
                 $('#file0').attr('src','/static/images/music.jpg');
-                $('.music_css').attr('href','data.url');
+                $('.music_css').attr('href',data.url);
                 tiao();
             }else{
                 alert(data.msg);

@@ -6,7 +6,7 @@ use think\Request;
 use app\common\model\Advertisement as Advertise;
 
 /**
- * 电子礼盒
+ * 电子礼盒类别
  */
 class BoxCate extends Common
 {

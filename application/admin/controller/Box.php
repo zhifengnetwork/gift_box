@@ -112,13 +112,13 @@ class Box extends Common
         if(Request::instance()->isPost()){
             $id = input('post.id');
             $post = input('post.');
-            $post['addtime'] = time();
             if(!$post['music_id']){
                 $this->error('请选择音乐');
             }
             if($id){
                 Db::name('box')->where('id',$id)->update($post);
             }else{
+                $post['addtime'] = time();
                 Db::name('box')->insert($post);
             }
             $this->success('操作成功',url('index'));
