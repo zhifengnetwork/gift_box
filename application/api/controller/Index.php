@@ -32,11 +32,10 @@ class Index extends ApiBase
         foreach($banner as $key=>$val){
             if($val['picture']){
                 //第一位不是h
-                $banner[$key]['picture'] =  substr($val['picture'],0,-1) == 'h'? $val['picture']: SITE_URL.$val['picture'];
+                $banner[$key]['picture'] =  substr($val['picture'],0,1) == 'h'? $val['picture']: SITE_URL.$val['picture'];
             }
         }
     
-
         //热门推荐8大分类
         $hot_category = [
             ['cat_name'=>'澳门星选','english_name'=>'Nine Point','cat_id'=>1],
