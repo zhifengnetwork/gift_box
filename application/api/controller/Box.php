@@ -97,4 +97,82 @@ class Box extends ApiBase
         $result['msg'] = '获取数据成功';
         return json($result);
     }
+
+    //制作电子礼盒2的界面
+    public function get_box()
+    {
+        $id = input('id');
+        $cate_id = input('cate_id');
+        $data['user_id'] = $this->get_user_id();
+        if(!$id && !$cate_id){
+            $result['status'] = 2;
+            $result['msg'] = '创建盒子需要传类别id';
+            return json($result);
+        }
+        if($id){
+            $info = Db::table('box')->field('id,music_id,photo_url,voice_url,content')->where('id',$id)->find();
+        }else{
+            $data['addtime'] = time();
+            $data['cate_id'] = $cate_id;
+            $id = Db::table('box')->insertGetId($data);
+            $result['id'] = $id;
+            $result['music_id'] = 0;
+            $result['photo_url'] = '';
+            $result['voice_url'] = '';
+            $result['content'] = '';
+            $result['status'] = 1;
+            $result['msg'] = '获取数据成功';
+            return json($result);
+        }
+        $info['photo_url'] = $info['photo_url']?$this->http_host.$info['photo_url']:'';
+        $info['voice_url'] = $info['voice_url']?$this->http_host.$info['voice_url']:'';
+        $info['content'] = $info['content']?$this->http_host.$info['content']:'';
+        $info['status'] = 1;
+        $info['msg'] = '获取数据成功';
+        return json($info);
+    }
+
+    //修改盒子某一个字段
+    public function set_box()
+    {
+        $id = input('post.id',0);
+        $music_id = input('post.music_id',0);
+        $photo_url = input('post.photo_url','');
+        $voice_url = input('post.voice_url','');
+        $content = input('post.content','');
+        $user_id = $this->get_user_id();
+        if(!$id){
+            $result['status'] = 2;
+            $result['msg'] = '请提供礼盒ID';
+            return json($result);
+        }
+        if($music_id){
+            $data['music_id'] = $music_id;
+        }
+        if($photo_url){
+            $data['photo_url'] = str_replace($this->http_host,'',$photo_url);
+        }
+        if($voice_url){
+            $data['voice_url'] = str_replace($this->http_host,'',$voice_url);
+        }
+        if($content){
+            $data['content'] = $content;
+        }
+        $count = Db::table('box')->where('id',$id)->where('user_id',$user_id)->count();
+        if(!$count){
+            $result['status'] = 2;
+            $result['msg'] = '该盒子不存在';
+            return json($result);
+        }
+        $res = Db::table('box')->where('id',$id)->save($data);
+        if($res){
+            $result['status'] = 1;
+            $result['msg'] = '修改成功';
+            return json($result);
+        }else{
+            $result['status'] = 1;
+            $result['msg'] = '数据未改变';
+            return json($result);
+        }
+    }
 }
