@@ -218,17 +218,14 @@ class Goods extends Common
         //商品栏目
         $goods_attr = Db::table('goods_attr')->where('pid',0)->select();
         //商品一级分类
-        $cat_id1 = Db::table('category')->where('level',1)->select();
-        //商品二级分类
-        $cat_id2 = Db::table('category')->where('level',2)->select();
+        $goods_cat = Db::table('category')->where('pid',0)->select();
         //配送方式
         $delivery = Db::table('goods_delivery')->field('delivery_id,name')->where('is_show',1)->select();
 
         return $this->fetch('goods/add',[
             'meta_title'    =>  '添加商品',
             'goods_attr'    =>  $goods_attr,
-            'cat_id1'       =>  $cat_id1,
-            'cat_id2'       =>  $cat_id2,
+            'goods_cat'       =>  $goods_cat,
             'delivery'      =>  $delivery,
         ]);
     }
@@ -236,12 +233,10 @@ class Goods extends Common
     //ajax获取二级栏目
     public function ajaxGetAttr()
     {
-        $this->error('垃圾系统')
         $id = input('id');
         if(!$id){
             return json(['status'=>0]);
         }
-        echo $id;
         $list = Db::table('goods_attr')->field('id,name')->where('pid',$id)->select();
         $result['status'] = 1;
         $result['data'] = $list;
@@ -266,13 +261,10 @@ class Goods extends Common
      */
     public function edit(){
         $goods_id = input('goods_id');
-
         if(!$goods_id){
             $this->error('参数错误！');
         }
         $info = Db::table('goods')->find($goods_id);
-
-//        dump($info);die;
         if($info['goods_attr']){
             $info['goods_attr'] = explode(',',$info['goods_attr']);
         }
@@ -422,12 +414,12 @@ class Goods extends Common
 
         $rsts = $this->get_spec_info($goods_id);
         
-        //商品属性
-        $goods_attr = Db::table('goods_attr')->where('pid','<>',0)->select();
+        //商品栏目
+        $goods_attr = Db::table('goods_attr')->where('pid',0)->select();
+        $goods_attr2 = Db::table('goods_attr')->where('pid',$info['goods_attr1'])->select();
         //商品一级分类
-        $cat_id1 = Db::table('category')->where('level',1)->select();
-        //商品二级分类
-        $cat_id2 = Db::table('category')->where('level',2)->select();
+        $goods_cat = Db::table('category')->where('pid',0)->select();
+        $goods_cat2 = Db::table('category')->where('pid',$info['cat_id1'])->select();
         //商品组图
         $img = Db::table('goods_img')->where('goods_id','=',$goods_id)->select();
         //配送方式
@@ -437,8 +429,9 @@ class Goods extends Common
             'meta_title'  =>  '编辑商品',
             'info'        =>  $info,
             'goods_attr'  =>  $goods_attr,
-            'cat_id1'     =>  $cat_id1,
-            'cat_id2'     =>  $cat_id2,
+            'goods_attr2'  =>  $goods_attr2,
+            'goods_cat'     =>  $goods_cat,
+            'goods_cat2'     =>  $goods_cat2,
             'delivery'    =>  $delivery,
             'img'         =>  $img,
             'rsts'        =>  $rsts,
