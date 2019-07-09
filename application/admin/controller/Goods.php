@@ -228,7 +228,7 @@ class Goods extends Common
                         }else{
                             $datas[$key]['main'] = 0;
                         }
-                        $datas[$key]['picture'] = $value;
+                        $datas[$key]['picture'] = '/public/upload/images/'.$name.$value;
                         $datas[$key]['goods_id'] = $goods_id;
                     }
 
@@ -253,12 +253,15 @@ class Goods extends Common
         $goods_cat = Db::table('category')->where('pid',0)->select();
         //配送方式
         $delivery = Db::table('goods_delivery')->field('delivery_id,name')->where('is_show',1)->select();
-
+        //获取品牌
+        $brand = Db::table('goods_brand')->where('status',0)->field('id,name')->select();
+        
         return $this->fetch('goods/add',[
             'meta_title'    =>  '添加商品',
             'goods_attr'    =>  $goods_attr,
             'goods_cat'       =>  $goods_cat,
             'delivery'      =>  $delivery,
+            'brand'      =>  $brand,
         ]);
     }
 
@@ -428,7 +431,7 @@ class Goods extends Common
                         }
                     }
                     
-                    $datas[$key]['picture'] = $value;
+                    $datas[$key]['picture'] = '/public/upload/images/'.$value;
                     $datas[$key]['goods_id'] = $data['goods_id'];
                 }
 
@@ -445,7 +448,6 @@ class Goods extends Common
         }
 
         $rsts = $this->get_spec_info($goods_id);
-        
         //商品栏目
         $goods_attr = Db::table('goods_attr')->where('pid',0)->select();
         $goods_attr2 = Db::table('goods_attr')->where('pid',$info['goods_attr1'])->select();
@@ -456,7 +458,8 @@ class Goods extends Common
         $img = Db::table('goods_img')->where('goods_id','=',$goods_id)->select();
         //配送方式
         $delivery = Db::table('goods_delivery')->field('delivery_id,name')->where('is_show',1)->select();
-
+         //获取品牌
+         $brand = Db::table('goods_brand')->where('status',0)->field('id,name')->select();
         return $this->fetch('goods/edit',[
             'meta_title'  =>  '编辑商品',
             'info'        =>  $info,
@@ -467,6 +470,7 @@ class Goods extends Common
             'delivery'    =>  $delivery,
             'img'         =>  $img,
             'rsts'        =>  $rsts,
+            'brand'        =>  $brand,
         ]);
     }
     

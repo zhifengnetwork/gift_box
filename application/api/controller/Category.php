@@ -1,0 +1,106 @@
+<?php
+/**
+ * 购物车API
+ */
+namespace app\api\controller;
+use think\Request;
+use think\Db;
+
+class Category extends ApiBase
+{
+    
+    /**
+    * 获取品牌列表
+    */
+    public function getGoodsBrand()
+    {
+        $list = Db::name('goods_brand')->field('id,name,priture')->where('status',0)->select();
+        $new_list = array();
+        foreach($list as $key=>$val){
+            $val['key'] = getfirstchar($val['name']);
+            $val['priture'] = $val['priture']?SITE_URL.$val['priture']:'';
+            $new_list[$val['key']][] = $val;
+        }
+        ksort($new_list);
+        $category = Db::table('category')->field('cat_id,cat_name')->where('pid',0)->where('is_show',1)->order('sort')->select();
+        $data['category_list'] = $category;
+        $data['brand_list'] = $new_list;
+        $this->ajaxReturn(['status' => 1 , 'msg'=>'获取成功','data'=>$data]);
+    }
+
+    /**
+    * 获取分类
+    */
+    public function getCategoryList()
+    {
+        $pid = input('cat_id',0);
+        $list = Db::table('category')->field('cat_id,cat_name,img')->where('pid',$pid)->where('is_show',1)->order('sort')->select();
+        foreach($list as $key=>$val){
+            $list[$key]['img'] = $val['img']?SITE_URL.$val['img']:'';
+        }
+        $this->ajaxReturn(['status' => 1 , 'msg'=>'获取成功','data'=>$list]);
+    }
+
+    /**
+    * 搜索商品
+    */
+    public function search_goods()
+    {
+        $keyword = input('keyword');
+        $page = input('page',1);
+        $num = input('num',10);
+        $order = input('order','goods_id');
+        if(!$keyword){
+            $this->ajaxReturn(['status'=>-1,'msg'=>'请输入搜索关键字']);
+        }
+        //写进搜索记录
+        $search['user_id'] = 1;
+        $search['addtime'] = time();
+        $search['keyword'] = $keyword;
+        if($page == 1){
+            Db::table('search')->insert($search);
+        }
+        
+        $where['g.goods_name'] = ['like','%'.$keyword.'%'];
+        $where['g.is_show'] = 1;
+        $where['g.is_del'] = 0;
+        $where['i.main'] = 1;
+        //判断排序方式
+        switch ($order)
+        {
+        case 'goods_id':
+            $order = 'g.goods_id';
+            break;  
+        case 'new':
+            $order = 'g.add_time desc';
+            break;
+        case 'sales_volume':
+            $order = 'g.number_sales desc';
+            break;
+        case 'price':
+            $order = 'g.price';
+            break;
+        case 'price_desc':
+            $order = 'g.price desc';
+            break;
+        default:
+            $order = 'g.goods_id';
+        }
+        $list = Db::table('goods')->alias('g')
+                ->join('goods_brand b','g.brand_id=b.id','LEFT')
+                ->join('goods_img i','i.goods_id=g.goods_id','LEFT')
+                ->field('g.goods_id,g.goods_name,g.price,i.picture,b.name')
+                ->where($where)->order($order)->page($page,$num)
+                ->select();
+        $list = $this->setGoodsList($list);
+        $this->ajaxReturn(['status'=>1,'msg'=>'获取数据成功','data'=>$list]);
+    }
+
+    //获取热门搜索
+    public function hot_search()
+    {
+        $time = time()-24*3600*7;
+        $list = Db::table('search')->field('id,keyword,count(*) count')->where('addtime','>',$time)->group('keyword')->order('count desc')->limit(10)->select();
+        $this->ajaxReturn(['status'=>1,'msg'=>'获取数据成功','data'=>$list]);
+    }
+}
