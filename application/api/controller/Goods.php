@@ -96,8 +96,8 @@ class Goods extends ApiBase
         $goods_id = input('goods_id');
 
         $goodsRes = Db::table('goods')->alias('g')
-                    ->join('goods_attr ga','FIND_IN_SET(ga.attr_id,g.goods_attr)','LEFT')
-                    ->field('g.*,GROUP_CONCAT(ga.attr_name) attr_name')
+                    ->join('goods_attr ga','FIND_IN_SET(ga.id,g.goods_attr)','LEFT')
+                    ->field('g.*,GROUP_CONCAT(ga.name) attr_name')
                     ->where('g.is_show',1)
                     ->find($goods_id);
         if (empty($goodsRes)) {
@@ -251,13 +251,18 @@ class Goods extends ApiBase
     public function getGoodsSpec($goods_id){
 
         //从规格-属性表中查到所有规格id
-        $spec = Db::name('goods_spec_attr')->field('spec_id')->where('goods_id',$goods_id)->select();
-
+        //$spec = Db::name('goods_spec_attr')->field('spec_id')->where('goods_id',$goods_id)->select();
+        $spec = Db::name('goods_sku')->field('sku_attr')->where('goods_id',$goods_id)->select();
         $specArray = array();
-        foreach ($spec as $spec_k => $spec_v){
-            array_push($specArray,$spec_v['spec_id']);
-        }
+        $specvalArray = array();
 
+        foreach ($spec as $spec_k => $spec_v){   
+            foreach($sku_attr as $v){
+                $arr = explode(':',$v);
+                array_push($specArray,$arr[0]);
+            }
+            //array_push($specArray,$spec_v['spec_id']);
+        }
         $specArray = array_unique($specArray);
         $specStr = implode(',',$specArray);
 
