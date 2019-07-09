@@ -56,7 +56,9 @@ class Login extends \think\Controller
 
             $this->ajaxReturn(['status' => 1 , 'msg'=>'获取成功','data'=>$data]);
         }else{
-            $res = ['status'=>1,'msg'=>'获取用户信息成功','data'=>$data];
+            
+            $this->ajaxReturn( ['status'=>1,'msg'=>'获取用户信息成功','data'=>$data]);
+            
         }
        
     }
