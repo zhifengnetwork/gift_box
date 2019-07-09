@@ -247,6 +247,17 @@ class Goods extends ApiBase
         $this->ajaxReturn(['status' => 1 , 'msg'=>'获取成功','data'=>$comment]);
     }
 
+    public function getGoodsAttrSpec(){
+        $goods_id = I('post.goods_id/d',0);
+        $sku = I('post.sku/s','');
+        if(!$goods_id)$this->ajaxReturn(['status' => -1 , 'msg'=>'参数错误！','data'=>[]]);
+        if($sku){
+            $data = M('goods_sku')->where(['goods_id'=>$goods_id,'sku_attr'=>$sku])->find();
+        }else
+            $data = $this->getGoodsSpec($goods_id);
+
+        $this->ajaxReturn(['status' => 1 , 'msg'=>'获取成功','data'=>$data]);
+    }
 
     public function getGoodsSpec($goods_id){
 
@@ -257,6 +268,7 @@ class Goods extends ApiBase
         $specvalArray = array();
 
         foreach ($spec as $spec_k => $spec_v){   
+            $sku_attr = explode(',', trim(trim($spec_v['sku_attr'], '{'), '}'));
             foreach($sku_attr as $v){
                 $arr = explode(':',$v);
                 array_push($specArray,$arr[0]);
