@@ -60,10 +60,11 @@ class Index extends ApiBase
         $data['xinpinshangshi']['goods_list'] = $goods_list;
         $data['chaoliudaogou'] = ['name'=>'潮流导购','english'=>'Selection goods','id'=>6];
         $data['chaoliudaogou']['goods_list'] = $goods_list;
-        
+        $data['cainixihuan'] = ['name'=>'猜你喜欢','english'=>'You May Also Like','id'=>7];
+        $data['cainixihuan']['goods_list'] = $goods_list;
+
         $data['banner'] = $banner;
         $data['hot_category'] = $hot_category;
-        $data['guess_like'] = $goods_list;
         
         $this->ajaxReturn(['status' => 1, 'msg' => '成功获取数据','data'=>$data]);
     }
