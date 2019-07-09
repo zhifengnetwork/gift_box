@@ -100,6 +100,41 @@ class Goods extends Common
                 $data_spec[$m]['pri'] = ['key' => 'pri', 'value' => $pri[$m]];
             }
 
+            if(isset($_FILES['img_td'])){
+                $data['img_td'] = $_FILES['img_td'];
+            }else{
+                $data['img_td'] =array();
+            }
+            $img = [];
+            foreach($data['img_td'] as $key=>$value){
+                foreach($value['img'] as $k=>$v){
+                    $img[$k][$key] = $v;
+                }
+            }
+
+            foreach($img as $key=>$value){
+                if($value['error']==0){
+
+                    $file_name = 'sku_img/';
+                    $name = $file_name . request()->time().rand(0,99999) . '.png';
+                    $names = ROOT_PATH .Config('c_pub.img');
+                    //防止文件名重复
+                    $filename = $names . $name;
+                    //转码，把utf-8转成gb2312,返回转换后的字符串， 或者在失败时返回 FALSE。
+                    $filename =iconv("UTF-8","gb2312",$filename);
+                    
+                    if (!file_exists($names . $file_name)){
+                        mkdir($names . $file_name,0777,true);
+                    }
+                    //保存文件,   move_uploaded_file 将上传的文件移动到新位置
+                    move_uploaded_file($value["tmp_name"],$filename);//将临时地址移动到指定地址
+                    $name = '\public\upload\images\\'.$name;
+                    $data_spec[$key]['img'] = ['key' => 'img', 'value' => $name];
+                }else{
+                    $data_spec[$key]['img'] = ['key' => 'img', 'value' => ''];
+                }
+            }
+
             // 初始化规格数据格式
             $count = count($data['goods_td'][1]);
             for ($i = 0; $i < $count; $i++) {
@@ -118,7 +153,9 @@ class Goods extends Common
             if (is_string($data_spec)) {
                 $this->error('规格错误！');
             }
-            
+            if(!$data['goods_td'][1][0]){
+                $this->error('请填写规格');
+            }
             foreach ($data['goods_th'] as $key => $val) {
                 if ($key !== 'num' && $key !== 'pri') {
                     if (!empty($data['goods_td'][$key])) {
@@ -141,6 +178,7 @@ class Goods extends Common
                     if (!$rst) {
                         $this->error('添加新商品规格类型出错!');
                     }
+                    
                 }
             }
             $data['goods_spec'] = '[' . $default_spec_str . ']';
@@ -159,13 +197,6 @@ class Goods extends Common
             $goods_id = Db::table('goods')->strict(false)->insertGetId($data);
             
             if ( $goods_id ) {
-                //限时购redis
-                if(isset($data['stock1'])){
-                    $redis = $this->getRedis();
-                    for($i=1;$i<=$data['stock1'];$i++){
-                        $redis->rpush("GOODS_LIMITED_{$goods_id}",1);
-                    }
-                }
 
                 //添加操作日志
                 slog($goods_id);

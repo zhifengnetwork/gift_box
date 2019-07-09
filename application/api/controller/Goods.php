@@ -23,23 +23,20 @@ class Goods extends ApiBase
     */
     public function categoryList()
     {
-        
-        $pid = I('pid');
-
-        if($pid){
-            $list = Db::name('category')->where(['is_show'=>1,'pid'=>$pid])->order('sort DESC,cat_id')->select();
-        }else{
-            $list = Db::name('category')->where(['is_show'=>1,'level'=>1])->order('sort DESC,cat_id')->select();
+        $list = Db::name('goods_brand')->field('id,name,priture')->where('status',0)->select();
+        $new_list = array();
+        foreach($list as $key=>$val){
+            $val['english'] = getfirstchar($val['name']);
+            $val['priture'] = $val['priture']?SITE_URL.$val['priture']:'';
+            $new_list[$val['english']][] = $val;
         }
-
-        foreach($list as $k=>$v){
-            $list[$k]['img'] = SITE_URL.'/public/upload/images/'.$v['img'];
-            unset($list[$k]["is_show"]);
-            unset($list[$k]["desc"]);
-        }
-        
-        $this->ajaxReturn(['status' => 1 , 'msg'=>'获取成功','data'=>$list]);
+        dump($new_list);
+        // $this->ajaxReturn(['status' => 1 , 'msg'=>'获取成功','data'=>$list]);
     }
+
+    
+     
+  
 
 
     public function brand(){
