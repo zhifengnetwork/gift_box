@@ -51,7 +51,7 @@ class Index extends ApiBase
         $data['jializhixuan'] = ['name'=>'佳礼之选','english'=>'Selection goods','id'=>1];
         $data['jializhixuan']['goods_list'] = $goods_list;
         $data['xingxuanyoupin'] = ['name'=>'星选优品','english'=>'Selection goods','id'=>2];
-        $data['xingxuanyoupin']['goods_list'] = $goods_list;
+        $data['xingxuanyoupin']['goods_info'] = ['goods_name'=>'Rolex','price'=>'1999','goods_id'=>1,'picture'=>'http://articleimg.xbiao.com/2019/0705/201907051562323156794.jpg'];
         $data['shishangdapai'] = ['name'=>'时尚大牌','english'=>'Selection goods','id'=>3];
         $data['shishangdapai']['goods_list'][0] = $goods_list[0];
         $data['shishangdapai']['goods_list'][1] = $goods_list[1];
@@ -60,8 +60,9 @@ class Index extends ApiBase
         $data['shishangzhinan']['goods_list'] = $goods_list;
         $data['xinpinshangshi'] = ['name'=>'新品上市','english'=>'Selection goods','id'=>5];
         $data['xinpinshangshi']['goods_list'] = $goods_list;
+        $data['xinpinshangshi']['goods_list'][8] = ['goods_name'=>'Rolex','price'=>'1999','goods_id'=>1,'picture'=>'http://articleimg.xbiao.com/2019/0705/201907051562323156794.jpg'];
         $data['chaoliudaogou'] = ['name'=>'潮流导购','english'=>'Selection goods','id'=>6];
-        $data['chaoliudaogou']['goods_list'] = $goods_list;
+        $data['chaoliudaogou']['goods_info'] = ['goods_name'=>'Rolex','price'=>'1999','goods_id'=>1,'picture'=>'http://articleimg.xbiao.com/2019/0705/201907051562323156794.jpg'];
         $data['cainixihuan'] = ['name'=>'猜你喜欢','english'=>'You May Also Like','id'=>7];
         $data['cainixihuan']['goods_list'] = $goods_list;
 
