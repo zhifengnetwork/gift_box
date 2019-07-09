@@ -1497,6 +1497,7 @@ class Goods extends Common
         }else{
             $info = getTableField('goods_attr');
         }
+        $info['pid'] = $info['pid']?$info['pid']:input('pid',0);
         $cate_list = Db::name('goods_attr')->field('name,id')->where('pid',0)->select();
         $this->assign('cate_list',$cate_list);
         $this->assign('info',$info);
@@ -1507,9 +1508,15 @@ class Goods extends Common
     public function del_goods_attr()
     {
         $id = input('id');
-        if($id){
+        if(!$id){
             $result['status'] = 1;
             $result['msg'] = '删除成功';
+            return json($result);
+        }
+        $count = Db::table('goods_attr')->where('pid',$id)->count();
+        if($count){
+            $result['status'] = 0;
+            $result['msg'] = '该栏目下含有下级，请先删除下级';
             return json($result);
         }
         Db::table('goods_attr')->where('id',$id)->delete();

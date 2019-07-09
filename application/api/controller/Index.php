@@ -53,7 +53,9 @@ class Index extends ApiBase
         $data['xingxuanyoupin'] = ['name'=>'星选优品','english'=>'Selection goods','id'=>2];
         $data['xingxuanyoupin']['goods_list'] = $goods_list;
         $data['shishangdapai'] = ['name'=>'时尚大牌','english'=>'Selection goods','id'=>3];
-        $data['shishangdapai']['goods_list'] = $goods_list;
+        $data['shishangdapai']['goods_list'][0] = $goods_list[0];
+        $data['shishangdapai']['goods_list'][1] = $goods_list[1];
+        $data['shishangdapai']['goods_list'][2] = $goods_list[2];
         $data['shishangzhinan'] = ['name'=>'时尚指南','english'=>'Selection goods','id'=>4];
         $data['shishangzhinan']['goods_list'] = $goods_list;
         $data['xinpinshangshi'] = ['name'=>'新品上市','english'=>'Selection goods','id'=>5];
