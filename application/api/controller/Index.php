@@ -14,18 +14,6 @@ class Index extends ApiBase
      */
     public function index()
     {
-        // 定义假数据8条
-        $goods_list = [
-            ['goods_name'=>'Rolex','price'=>'1999','goods_id'=>1,'picture'=>'http://articleimg.xbiao.com/2019/0705/201907051562323156794.jpg'],
-            ['goods_name'=>'Rolex','price'=>'1999','goods_id'=>2,'picture'=>'http://articleimg.xbiao.com/2019/0705/201907051562323156794.jpg'],
-            ['goods_name'=>'Rolex','price'=>'1999','goods_id'=>3,'picture'=>'http://articleimg.xbiao.com/2019/0705/201907051562323156794.jpg'],
-            ['goods_name'=>'Rolex','price'=>'1999','goods_id'=>4,'picture'=>'http://articleimg.xbiao.com/2019/0705/201907051562323156794.jpg'],
-            ['goods_name'=>'Rolex','price'=>'1999','goods_id'=>5,'picture'=>'http://articleimg.xbiao.com/2019/0705/201907051562323156794.jpg'],
-            ['goods_name'=>'Rolex','price'=>'1999','goods_id'=>6,'picture'=>'http://articleimg.xbiao.com/2019/0705/201907051562323156794.jpg'],
-            ['goods_name'=>'Rolex','price'=>'1999','goods_id'=>7,'picture'=>'http://articleimg.xbiao.com/2019/0705/201907051562323156794.jpg'],
-            ['goods_name'=>'Rolex','price'=>'1999','goods_id'=>8,'picture'=>'http://articleimg.xbiao.com/2019/0705/201907051562323156794.jpg'],
-        ];
-
         
         //首页轮播图
         $banner = Db::table('advertisement')->field('id,picture,url')->where(['page_id'=>1,'state'=>1])->order('sort')->select();
@@ -37,34 +25,50 @@ class Index extends ApiBase
         }
     
         //热门推荐8大分类
-        $hot_category = [
-            ['name'=>'澳门星选','english'=>'Nine Point','id'=>1],
-            ['name'=>'女士礼品','english'=>'Nine Point','id'=>2],
-            ['name'=>'男士礼品','english'=>'Nine Point','id'=>3],
-            ['name'=>'Boss直选','english'=>'Nine Point','id'=>4],
-            ['name'=>'日本本土','english'=>'Nine Point','id'=>5],
-            ['name'=>'澳新源产','english'=>'Nine Point','id'=>6],
-            ['name'=>'朝   韩','english'=>'Nine Point','id'=>7],
-            ['name'=>'欧洲北部','english'=>'Nine Point','id'=>8],
-        ];
-        //获取首页分类
-        $data['jializhixuan'] = ['name'=>'佳礼之选','english'=>'Selection goods','id'=>1];
-        $data['jializhixuan']['goods_list'] = $goods_list;
-        $data['xingxuanyoupin'] = ['name'=>'星选优品','english'=>'Selection goods','id'=>2];
-        $data['xingxuanyoupin']['goods_info'] = ['goods_name'=>'Rolex','price'=>'1999','goods_id'=>1,'picture'=>'http://articleimg.xbiao.com/2019/0705/201907051562323156794.jpg'];
-        $data['shishangdapai'] = ['name'=>'时尚大牌','english'=>'Selection goods','id'=>3];
-        $data['shishangdapai']['goods_list'][0] = $goods_list[0];
-        $data['shishangdapai']['goods_list'][1] = $goods_list[1];
-        $data['shishangdapai']['goods_list'][2] = $goods_list[2];
-        $data['shishangzhinan'] = ['name'=>'时尚指南','english'=>'Selection goods','id'=>4];
-        $data['shishangzhinan']['goods_list'] = $goods_list;
-        $data['xinpinshangshi'] = ['name'=>'新品上市','english'=>'Selection goods','id'=>5];
-        $data['xinpinshangshi']['goods_list'] = $goods_list;
-        $data['xinpinshangshi']['goods_list'][8] = ['goods_name'=>'Rolex','price'=>'1999','goods_id'=>1,'picture'=>'http://articleimg.xbiao.com/2019/0705/201907051562323156794.jpg'];
-        $data['chaoliudaogou'] = ['name'=>'潮流导购','english'=>'Selection goods','id'=>6];
-        $data['chaoliudaogou']['goods_info'] = ['goods_name'=>'Rolex','price'=>'1999','goods_id'=>1,'picture'=>'http://articleimg.xbiao.com/2019/0705/201907051562323156794.jpg'];
-        $data['cainixihuan'] = ['name'=>'猜你喜欢','english'=>'You May Also Like','id'=>7];
-        $data['cainixihuan']['goods_list'] = $goods_list;
+        $hot_category = Db::table('goods_attr')->field('id,name,english')->where('id','>',7)->where('pid',0)->order('sort')->limit(8)->select();
+        //获取首页栏目
+        $goods_attr = Db::table('goods_attr')->field('id,name,english')->where('id','<',8)->order('id')->where('pid',0)->select();
+        
+        //佳礼只选-猜你喜欢的商品
+        $goods_list1 = Db::table('goods')->alias('g')->join('goods_img i','g.goods_id=i.goods_id','LEFT')->field('g.goods_id,g.goods_name,g.price,i.picture')->where(['goods_attr1'=>1,'g.is_recommend'=>1,'is_del'=>0,'is_show'=>1,'i.main'=>1])->order('add_time desc')->limit(8)->select();
+        $goods_info2 = Db::table('goods')->alias('g')->join('goods_img i','g.goods_id=i.goods_id','LEFT')->field('g.goods_id,g.goods_name,g.price,i.picture')->where(['goods_attr1'=>2,'g.is_recommend'=>1,'is_del'=>0,'is_show'=>1,'i.main'=>1])->order('add_time desc')->find();
+        if($goods_info2){
+            $goods_info2['picture'] = $goods_info2['picture']?SITE_URL.$goods_info2['picture']:'';
+        }else{
+            $goods_info2 = array();
+        }
+
+        $goods_list3 = Db::table('goods')->alias('g')->join('goods_img i','g.goods_id=i.goods_id','LEFT')->field('g.goods_id,g.goods_name,g.price,i.picture')->where(['goods_attr1'=>3,'g.is_recommend'=>1,'is_del'=>0,'is_show'=>1,'i.main'=>1])->order('add_time desc')->limit(3)->select();
+
+        $goods_list4 = Db::table('goods')->alias('g')->join('goods_img i','g.goods_id=i.goods_id','LEFT')->field('g.goods_id,g.goods_name,g.price,i.picture')->where(['goods_attr1'=>4,'g.is_recommend'=>1,'is_del'=>0,'is_show'=>1,'i.main'=>1])->order('add_time desc')->limit(8)->select();
+
+        $goods_list5 = Db::table('goods')->alias('g')->join('goods_img i','g.goods_id=i.goods_id','LEFT')->field('g.goods_id,g.goods_name,g.price,i.picture')->where(['goods_attr1'=>5,'g.is_recommend'=>1,'is_del'=>0,'is_show'=>1,'i.main'=>1])->order('add_time desc')->limit(9)->select();
+
+        $goods_info6 = Db::table('goods')->alias('g')->join('goods_img i','g.goods_id=i.goods_id','LEFT')->field('g.goods_id,g.goods_name,g.price,i.picture')->where(['goods_attr1'=>6,'g.is_recommend'=>1,'is_del'=>0,'is_show'=>1,'i.main'=>1])->order('add_time desc')->find();
+        if($goods_info6){
+            $goods_info6['picture'] = $goods_info2['picture']?SITE_URL.$goods_info2['picture']:'';
+        }else{
+            $goods_info6 = array();
+        }
+
+        $goods_list7 = Db::table('goods')->alias('g')->join('goods_img i','g.goods_id=i.goods_id','LEFT')->field('g.goods_id,g.goods_name,g.price,i.picture')->where(['goods_attr1'=>7,'g.is_recommend'=>1,'is_del'=>0,'is_show'=>1,'i.main'=>1])->order('add_time desc')->limit(8)->select();
+        //佳礼只选-猜你喜欢的商品
+
+        //组装返回的数据
+        $data['jializhixuan'] = $goods_attr[0];
+        $data['jializhixuan']['goods_list'] = $this->setGoodsList($goods_list1);
+        $data['xingxuanyoupin'] = $goods_attr[1];
+        $data['xingxuanyoupin']['goods_info'] = $goods_info2;
+        $data['shishangdapai'] =  $goods_attr[2];
+        $data['shishangdapai']['goods_list'] = $this->setGoodsList($goods_list3);
+        $data['shishangzhinan'] = $goods_attr[3];
+        $data['shishangzhinan']['goods_list'] = $this->setGoodsList($goods_list4);
+        $data['xinpinshangshi'] = $goods_attr[4];
+        $data['xinpinshangshi']['goods_list'] = $this->setGoodsList($goods_list5);
+        $data['chaoliudaogou'] = $goods_attr[5];
+        $data['chaoliudaogou']['goods_info'] = $goods_info6;
+        $data['cainixihuan'] = $goods_attr[6];
+        $data['cainixihuan']['goods_list'] = $this->setGoodsList($goods_list7);
 
         $data['banner'] = $banner;
         $data['hot_category'] = $hot_category;

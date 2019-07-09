@@ -65,6 +65,7 @@
 
                                 <th><input class="ch_all" type="checkbox">ID</th>
                                 <th>一级分类 </th>
+                                <th>一级栏目 </th>
                                 <th>商品 </th>
                                 <th>商品状态 </th>
                                 <th>商品价格（元）</th>
@@ -80,12 +81,24 @@
                             <tr>
                                 <td><input type="checkbox" class="i-checks ch_item" name="goods_id[]"   value="{$vo.goods_id}">{$vo.goods_id}</td>
                                 <td>{$vo.c1_name}</td>
+                                <td>{$vo.t1_name}</td>
                                 <td>{$vo.goods_name}</td>
                                 <td>{if condition="$vo.is_show"}已上架{else /}未上架{/if}</td>
                                 <td>{$vo.price}</td>
                                 <td>{$vo.stock}</td>
                                 <td>{$vo.number_sales}</td>
                                 <td>{$vo.add_time|date="Y-m-d",###}</td>
+                                <td align="left" axis="col0">
+                                        <div style="text-align: left; width: 30px;">
+                                            {if condition='$vo.is_recommend eq 1'}
+                                            <span onClick="changeTableVal('goods','goods_id','{$vo.goods_id}','is_recommend',this)">
+                                                        <i class="fa fa-check-circle"></i>是</span>
+                                            {else/}
+                                            <span onClick="changeTableVal('goods','goods_id','{$vo.goods_id}','is_recommend',this)">
+                                                        <i class="fa fa-ban"></i>否</span>
+                                            {/if}
+                                        </div>
+                                    </td>
                                 <td>
                                     <a class="btn btn-default delete" href="{:url('Goods/comment_list',['goods_id'=>$vo.goods_id],false)}" >评论 </i></a>
                                     <a class="btn btn-default delete" href="{:url('Goods/edit',['goods_id'=>$vo.goods_id],false)}" >编辑 </i></a>

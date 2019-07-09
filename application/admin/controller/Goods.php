@@ -54,8 +54,9 @@ class Goods extends Common
         $list  = Db::table('goods')->alias('g')
                 ->join('category c1','c1.cat_id=g.cat_id1','LEFT')
                 ->join('category c2','c2.cat_id=g.cat_id2','LEFT')
+                ->join('goods_attr t1','t1.id=g.goods_attr1','LEFT')
                 ->order('goods_id DESC')
-                ->field('g.*,c1.cat_name c1_name,c2.cat_name c2_name')
+                ->field('g.*,c1.cat_name c1_name,c2.cat_name c2_name,t1.name t1_name')
                 ->where($where)
                 ->paginate(10,false,$pageParam);
 

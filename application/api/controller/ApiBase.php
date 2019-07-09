@@ -150,4 +150,15 @@ class ApiBase extends Controller
     {
         $this->ajaxReturn(['status' => -1, 'msg' => '接口不存在', 'data' => null]);
     }
+
+    /**
+     * 如果商品图片是本地的加上链接
+     */
+    public function setGoodsList($goods_list = array())
+    {
+        foreach($goods_list as $key=>$val){
+            $goods_list[$key]['picture'] = $val['picture']?SITE_URL.$val['picture']:'';
+        }
+        return $goods_list;
+    }
 }
