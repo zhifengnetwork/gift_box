@@ -3,12 +3,29 @@ namespace app\admin\controller;
 
 use app\common\model\Config as ConfigModel;
 use think\Request;
+use think\Db;
 
 /**
  * 基本配置管理控制器
  */
 class Config extends Common
 {
+    /**
+     * 基本配置
+     */
+    public function base()
+    {
+        if( request()->isPost() ){
+            $post = input('post.');
+            foreach($post as $key=>$val){
+                Db::name('config')->where(['status'=>1,'module'=>1,'name'=>$key])->update(['value'=>$val]);
+            }
+            $this->success('保存成功');
+        }
+        $info = Db::name('config')->where('status',1)->where('module',1)->column('name,value');
+        $this->assign('info',$info);
+        return $this->fetch();
+    }
     /**
      * 基本配置
      */

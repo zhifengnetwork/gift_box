@@ -241,20 +241,6 @@
                                     <span style="float:left;margin: 0 7px;">元</span>
                                 </div>
 
-                                <!-- <div style="line-height:34px;">
-                                    <span style="float:left;margin: 0 7px;">原价 </span>
-                                    <span style="float:left;width:10%;"><input type="text" name="original_price" value="{$info.original_price}" class="form-control"></span>
-                                    <span style="float:left;margin: 0 7px;">元</span>
-                                </div>
-
-                                <div style="line-height:34px;">
-                                    <span style="float:left;margin: 0 7px;">成本 </span>
-                                    <span style="float:left;width:10%;"><input type="text" name="cost_price" value="{$info.cost_price}" class="form-control"></span>
-                                    <span style="float:left;margin: 0 7px;">元</span>
-                                </div> -->
-
-
-
                             </div>
                         </div>
                         <div class="form-group">
@@ -275,9 +261,6 @@
                                         {/volist}
                                     </select>
                                 </div>
-
-
-
                             </div>
                         </div>
 
@@ -292,21 +275,6 @@
                                 </span>
                             </div>
                         </div>
-
-                        <!-- <div class="form-group">
-                            <label class="col-sm-2 control-label">减库存方式</label>
-                            <div class="col-sm-9">
-                                <label style="margin-top:4px; margin-right:20px;">
-                                    <input type="radio" value="1" name="less_stock_type" {if condition="$info.less_stock_type eq 1"} checked {/if} /> 拍下减库存
-                                </label>
-                                <label>
-                                    <input type="radio" value="2" name="less_stock_type" {if condition="$info.less_stock_type eq 2"} checked {/if} /> 付款减库存
-                                </label>
-                                <label>
-                                    <input type="radio" value="3" name="less_stock_type" {if condition="$info.less_stock_type eq 3"} checked {/if} /> 永不减库存
-                                </label>
-                            </div>
-                        </div> -->
 
                         <div class="form-group">
                             <label class="col-sm-2 control-label">运费设置</label>
@@ -346,24 +314,7 @@
                             </div>
                         </div> -->
 
-
-    
-                        <div class="form-group">
-                            <label class="col-sm-2 control-label">用户最多购买量</label>
-                            <div class="col-sm-9">
-                                <span style="width:80%;float:left;">
-                                    <input type="text" name="most_buy_number" value="{$info.most_buy_number}" class="form-control">
-                                </span>
-                                <span style="line-height:34px;">
-                                    件
-                                </span>
-                                <div>用户购买过的此商品数量限制</div>
-                            </div>
-                        </div>
-
-
-
-                        <div class="form-group">
+                        <!-- <div class="form-group">
                             <label class="col-sm-2 control-label">已售数量</label>
                             <div class="col-sm-9">
                                 <span style="width:80%;float:left;">
@@ -374,20 +325,7 @@
                                 </span>
                                 <div>物品虚拟出售数，会员下单此数据就会增加，无论是否支付</div>
                             </div>
-                        </div>
-
-                        <div class="form-group">
-                            <label class="col-sm-2 control-label">单次最多购买量</label>
-                            <div class="col-sm-9">
-                                <span style="width:80%;float:left;">
-                                    <input type="text" name="single_number" value="{$info.single_number}" class="form-control">
-                                </span>
-                                <span style="line-height:34px;">
-                                    件
-                                </span>
-                                <div>用户单次购买此商品数量限制</div>
-                            </div>
-                        </div>
+                        </div> -->
 
                         <div class="form-group">
                             <label class="col-sm-2 control-label">是否上架</label>
@@ -400,17 +338,6 @@
                                 </label>
                             </div>
                         </div>
-                        <!-- <div class="form-group">
-                            <label class="col-sm-2 control-label">是否升级PULS会员</label>
-                            <div class="col-sm-9">
-                                <label style="margin-top:4px; margin-right:20px;">
-                                    <input type="radio" value="1" name="is_puls" {if condition="$info.is_puls"} checked {/if} /> 是
-                                </label>
-                                <label>
-                                    <input type="radio" value="0" name="is_puls" {if condition="!$info.is_puls"} checked {/if} /> 否
-                                </label>
-                            </div>
-                        </div> -->
                         <div class="form-group">
                             <div class="col-sm-4 col-sm-offset-2">
                                 <input type="hidden" name="goods_id" value="{$info.goods_id}" />

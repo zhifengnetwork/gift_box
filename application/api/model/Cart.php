@@ -54,33 +54,18 @@ class Cart extends Model
         return $arr;
     }
 
+    //购物车列表s
     public function cartList1($where = array())
     {   
 
-        $cart_list = $this->field('id,selected,user_id,groupon_id,goods_id,goods_sn,goods_name,market_price,goods_price,member_goods_price,subtotal_price,sku_id,goods_num,spec_key_name')->where($where)->order('id DESC')->select();
+        $cart_list = $this->field('id,selected,user_id,goods_id,goods_sn,goods_name,market_price,goods_price,member_goods_price,subtotal_price,sku_id,goods_num,spec_key_name')->where($where)->order('id DESC')->select();
 
         $arr = [];
         if($cart_list){
             $flag = false;
             foreach($cart_list as $key=>$value){
-
-                if($value['groupon_id'] == 0){
-                    if($flag === 1){
-                        $this->where('groupon_id','>',0)->where('user_id',$where['user_id'])->delete();
-                        unset($cart_list[$k]);
-                        continue;
-                    }
-                    $flag = true;
-                }else if($flag === true && $value['groupon_id']){
-                    $this->where('groupon_id','>',0)->where('user_id',$where['user_id'])->delete();
-                    unset($cart_list[$key]);
-                    continue;
-                }else if($value['groupon_id']){
-                    $flag = 1;
-                    $k = $key;
-                }
-
                 $cart_list[$key]['img'] = Db::table('goods_img')->where('goods_id',$value['goods_id'])->where('main',1)->value('picture');
+                $cart_list[$key]['img'] = $cart_list[$key]['img']?SITE_URL.$cart_list[$key]['img']:'';
                 // $cart_list[$key]['single_number'] = Db::table('goods')->where('goods_id',$value['goods_id'])->value('single_number');
                 // $cart_list[$key]['spec'] = action('goods/getGoodsSpec',['goods_id'=>$value['goods_id']]);
             }

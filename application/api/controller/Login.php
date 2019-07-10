@@ -28,6 +28,112 @@ class Login extends \think\Controller
     }
 
     /**
+     * 获取code 的 url
+     */
+    public function get_code_url() {
+        
+        $baseUrl = I('baseUrl');
+        if(!$baseUrl){
+            $this->ajaxReturn(['status' => -1 , 'msg'=>'当前地址参数baseUrl为空','data'=>'']);
+        }
+
+        $appid = M('config')->where(['name'=>'appid'])->value('value');
+        $appsecret = M('config')->where(['name'=>'appsecret'])->value('value');
+        if(!$appid || !$appsecret){
+            $this->ajaxReturn(['status' => -1 , 'msg'=>'后台参数appid或appsecret配置为空','data'=>'']);
+        }
+    
+        $baseUrl = urlencode($baseUrl);
+
+        $url = $this->__CreateOauthUrlForCode($baseUrl,$appid,$appsecret); // 获取 code地址
+
+        $this->ajaxReturn(['status' => 1 , 'msg'=>'获取成功','data'=>$url]);
+    }
+
+     /**
+     * 凭 code 登录
+     */
+    public function login_by_code() {
+        
+        $code = I('code');
+        if(!$code){
+            $this->ajaxReturn(['status' => -1 , 'msg'=>'参数code为空','data'=>'']);
+        }
+
+        $appid = M('config')->where(['name'=>'appid'])->value('value');
+        $appsecret = M('config')->where(['name'=>'appsecret'])->value('value');
+        if(!$appid || !$appsecret){
+            $this->ajaxReturn(['status' => -1 , 'msg'=>'后台参数appid或appsecret配置为空','data'=>'']);
+        }
+    
+        $data = $this->getOpenidFromMp($code,$appid,$appsecret);//获取网页授权access_token和用户openid
+        if(isset($data['errcode'])){
+            $this->ajaxReturn(['status' => -1 , 'msg'=>$data['errmsg'],'data'=>'']);
+        }
+
+        write_log("openid:".$data['openid']);
+
+        $data2 = $this->GetUserInfo($data['access_token'],$data['openid']);//获取微信用户信息
+        $data['nickname'] = empty($data2['nickname']) ? '微信用户' : trim($data2['nickname']);
+        $data['sex'] = $data2['sex'];
+        $data['head_pic'] = $data2['headimgurl']; 
+        $data['oauth_child'] = 'mp';
+        $data['oauth'] = 'weixin';
+        if(isset($data2['unionid'])){
+            $data['unionid'] = $data2['unionid'];
+        }
+       
+        //判断是否注册
+      
+        $field = 'id,openid,avatar';//avatar头像
+        $userinfo = M('member')->where(['openid'=>$data['openid']])->field($field)->find();
+        if(!$userinfo){
+            $newdata = array(
+                'openid' => $data['openid'],
+                'nickname' => $data['nickname'],
+                'createtime' => time(),
+                'avatar' => $data['head_pic']
+            );
+            M('member')->insert($newdata);
+
+            //再次查找
+            $userinfo = M('member')->where(['openid'=>$data['openid']])->field($field)->find();
+        }
+
+        //创建token
+        if(!$userinfo['id']){
+            $this->ajaxReturn(['status' => -1 , 'msg'=> '注册或登录出错' ,'data'=>'']);
+        }
+
+        $userinfo['token'] = $this->create_token($userinfo['id']);
+
+        $this->ajaxReturn(['status' => 1 , 'msg'=>'登录成功，你很棒棒','data'=>$userinfo]);
+    }
+
+    /**
+     *
+     * 通过access_token openid 从工作平台获取UserInfo      
+     * @return openid
+     */
+    public function GetUserInfo($access_token,$openid)
+    {         
+        // 获取用户 信息
+        $url = $this->__CreateOauthUrlForUserinfo($access_token,$openid);
+        $ch = curl_init();//初始化curl        
+        curl_setopt($ch, CURLOPT_TIMEOUT, 300);//设置超时
+        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER,FALSE);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST,FALSE);
+        curl_setopt($ch, CURLOPT_HEADER, FALSE);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);         
+        $res = curl_exec($ch);//运行curl，结果以jason形式返回            
+        $data = json_decode($res,true);            
+        curl_close($ch);
+      
+        return $data;
+    }
+
+    /**
      * 微信登录
      */
     public function index () {

@@ -675,5 +675,19 @@ function delDirAndFile($path, $delDir = false)
     }
 }
 
+//获取某个表的所有字段
+function getTableField($table_name='')
+{
+
+    $sql = "select COLUMN_NAME from information_schema.COLUMNS where table_name = '$table_name' and table_schema = 'giftbox'";
+    $list = Db::query($sql);
+    $data = array();
+    foreach($list as $val){
+        $data[$val['COLUMN_NAME']] = '';
+    }
+    return $data;
+}
+
+
 
 
