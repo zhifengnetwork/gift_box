@@ -128,4 +128,21 @@ class Index extends ApiBase
 
     }
 
+    //获取常见问题
+    public function getProblem()
+    {
+        $list = Db::name('problem_cate')->field('id,name')->order('sort')->select();
+        foreach($list as $key=>$val){
+            $list[$key]['list'] = Db::name('problem')->field('id,title,content')->where('cate_id',$val['id'])->order('sort')->select();
+        }
+        $this->ajaxReturn(['status' => 1, 'msg' => '获取数据成功','data'=>$list]);
+    }
+
+    //获取客服电话
+    public function getPhone()
+    {
+        $phone = Db::name('config')->where(['name'=>'phone','status'=>1])->value('value');
+        $this->ajaxReturn(['status' => 1, 'msg' => '获取数据成功','data'=>$phone]);
+    }
+
 }

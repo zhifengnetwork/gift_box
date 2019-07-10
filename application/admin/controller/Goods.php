@@ -1531,7 +1531,7 @@ class Goods extends Common
     public function add_goods_attr()
     {
         if(Request::instance()->isPost()){
-            $id = input('post.id');
+            $id = input('post.id'); 
             $post = input('post.');
             if(!$post['name']){
                 $this->error('请输入栏目名称');

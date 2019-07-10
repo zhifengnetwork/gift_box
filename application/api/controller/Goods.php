@@ -26,7 +26,7 @@ class Goods extends ApiBase
         $list = Db::name('goods_brand')->field('id,name,priture')->where('status',0)->select();
         $new_list = array();
         foreach($list as $key=>$val){
-            $val['english'] = getfirstchar($val['name']);
+            $val['english'] = getFirstChar($val['name']);
             $val['priture'] = $val['priture']?SITE_URL.$val['priture']:'';
             $new_list[$val['english']][] = $val;
         }
@@ -58,7 +58,7 @@ class Goods extends ApiBase
 
     protected function chartSort($list){
         foreach ($list as $k => &$v) {
-            $v['key'] = getFirstChart( $v['name'] );
+            $v['key'] = getFirstChar( $v['name'] );
             $list[$k]['img'] = SITE_URL.'/public/upload/images/'.$v['img'];
         }
 

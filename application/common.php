@@ -714,7 +714,7 @@ function towArraySort ($data,$key,$order = SORT_ASC) {
 * @return [type]      [strind]
 */
 //获取汉字首字母
-function getfirstchar($s0){   
+function getFirstChar($s0){   
     $fchar = ord($s0{0});
     if($fchar >= ord("A") and $fchar <= ord("z") )return strtoupper($s0{0});
     $s1 = @iconv("UTF-8","gb2312", $s0);

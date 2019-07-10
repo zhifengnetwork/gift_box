@@ -948,7 +948,67 @@ class User extends ApiBase
     }
 
 
-    
+    //获取个人信息
+    public function get_user_info()
+    {
+        $user_id = $this->get_user_id();
+        if(!$user_id){
+            $this->ajaxReturn(['status' => -1 , 'msg'=>'获取用户id错误','data'=>'']);
+        }
+        $info = Db::name('member')->field('id,nickname,sex,birthday,introduce,avatar')->where('id',$user_id)->find();
+        if($info['avatar'] && substr($info['avatar'],0,1) != 'h'){
+            $info['avatar'] = SITE_URL.$info['avatar'];
+        }
+        $this->ajaxReturn(['status' => 1 , 'msg'=>'获取数据成功','data'=>$info]);
+    }
+
+    //修改用户个人信息
+    public function edit_user()
+    {
+        $user_id = $this->get_user_id();
+        $data['nickname'] = input('nickname');
+        $data['sex'] = input('sex');
+        $data['birthday'] = input('birthday');
+        $data['introduce'] = input('introduce');
+        $data['avatar'] = input('avatar');
+        $res = Db::name('member')->where('id',$user_id)->update($data);
+        if($res){
+            $this->ajaxReturn(['status' => 1 , 'msg'=>'修改成功','data'=>[]]);
+        }else{
+            $this->ajaxReturn(['status' => -1 , 'msg'=>'数据未改变','data'=>[]]);
+        }
+    }
+
+    /**
+     * 文件上传
+     */
+    public function upload_file()
+    {
+    	// 获取表单上传文件 例如上传了001.jpg
+        $file = request()->file('file');
+	    // 移动到框架应用根目录/public/uploads/ 目录下
+	    if($file){
+	        $info = $file->validate(['size'=>1024*1024*10])->move(ROOT_PATH . 'public' . DS . 'uploads' . DS . 'user' . DS);
+	        if($info){
+	            // 成功上传后 获取上传信息
+	            $result['data'] = SITE_URL.'/public/uploads/user/'.$info->getSaveName();
+	            $result['status'] = 1;
+	            $result['msg'] = '上传成功';
+	            $this->ajaxReturn($result);
+	        }else{
+	            // 上传失败获取错误信息
+	            $result['msg'] = $file->getError();
+	            $result['status'] = -1;
+	            $result['data'] = '';
+	            $this->ajaxReturn($result);
+	        }
+        }
+        // 上传失败获取错误信息
+        $result['msg'] = '上传文件不存在';
+        $result['status'] = -1;
+        $result['data'] = '';
+        $this->ajaxReturn($result);
+    }
 
 
 

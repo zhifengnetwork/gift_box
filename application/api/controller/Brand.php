@@ -69,7 +69,7 @@ class Brand extends ApiBase
         $list = Db::name('goods_brand')->field('id,name,priture')->where('status',0)->select();
         $new_list = array();
         foreach($list as $key=>$val){
-            $val['key'] = getfirstchar($val['name']);
+            $val['key'] = getFirstChar($val['name']);
             $val['priture'] = $val['priture']?SITE_URL.$val['priture']:'';
             $new_list[$val['key']][] = $val;
         }
