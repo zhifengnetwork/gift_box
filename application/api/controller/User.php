@@ -639,7 +639,7 @@ class User extends ApiBase
      * +---------------------------------
     */
     public function address_list(){
-        $user_id = 50;//$this->get_user_id();
+        $user_id = $this->get_user_id();
         if(!$user_id){
             $this->ajaxReturn(['status' => -1, 'msg'=>'用户不存在','data'=>'']);
         }
@@ -808,7 +808,7 @@ class User extends ApiBase
     public function del_address()
     {
         $user_id = $this->get_user_id();
-        $id      = input('address_id/d',86);
+        $id      = input('address_id/d',0);
         $address = Db::name('user_address')->where(["address_id" => $id])->find();
         if(!$address){
             $this->ajaxReturn(['status' => -2 , 'msg'=>'地址id不存在！','data'=>'']);
