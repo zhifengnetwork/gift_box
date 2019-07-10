@@ -598,7 +598,8 @@ class User extends ApiBase
      * +---------------------------------
     */
     public function get_address(){
-        $user_id = $this->get_user_id();
+        $user_id = 50;//$this->get_user_id();
+        $parent_id = I('post.parent_id/d',0);
         if(!$user_id){
             $this->ajaxReturn(['status' => -2 , 'msg'=>'用户不存在','data'=>'']);
         }
@@ -612,7 +613,9 @@ class User extends ApiBase
         //     'county_list'   => $county_list,
         // ];
         //第二种方法
-        $list  = Db::name('region')->field('*')->select();
+        $where = $parent_id ? ['parent_id'=>$parent_id] : ['area_type'=>1];
+        $list  = Db::name('region')->field('area_id,parent_id,area_name')->where($where)->select();
+        /*
         foreach($list as $v){
            if($v['area_type'] == 1){
               $address_list['province_list'][$v['code'] * 10000]=  $v['area_name'];
@@ -623,8 +626,8 @@ class User extends ApiBase
            if($v['area_type'] == 3){
               $address_list['county_list'][$v['code']]=  $v['area_name'];
            }
-        }
-        $this->ajaxReturn(['status'=>1,'msg'=>'获取地址成功','data'=>$address_list]);
+        }*/
+        $this->ajaxReturn(['status'=>1,'msg'=>'获取地址成功','data'=>$list]);
     }
 
 
@@ -636,7 +639,7 @@ class User extends ApiBase
      * +---------------------------------
     */
     public function address_list(){
-        $user_id = 50;//$this->get_user_id();
+        $user_id = $this->get_user_id();
         if(!$user_id){
             $this->ajaxReturn(['status' => -2, 'msg'=>'用户不存在','data'=>'']);
         }
