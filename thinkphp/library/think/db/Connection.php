@@ -842,6 +842,16 @@ abstract class Connection
         return $this->getRealSql($this->queryStr, $this->bind);
     }
 
+     /**
+     * 快捷获取最近一次查询的sql语句
+     * @access public
+     * @return string
+     */
+    public function _sql()
+    {
+        return $this->getLastSql();
+    }   
+
     /**
      * 获取最近插入的ID
      * @access public

@@ -60,14 +60,13 @@ class UserAddr extends Model
             return array('status'=>-2,'msg'=>'收货人不能为空','data'=>'');
         if (!($post['district']>0))
             return array('status'=> -2,'msg'=>'所在地区不能为空','data'=>'');
-
-        $district = Db::name('region')->where(['code' => $post['district']])->find();
+        
+        /* $district = Db::name('region')->where(['area_id' => $post['district']])->find();
         $post['district'] = $district['area_id'];
-        $city     = Db::name('region')->where(['code' => $district['parent_id']])->find();
+        $city     = Db::name('region')->where(['area_id' => $district['parent_id']])->find();
         $post['city']     = $city['area_id'];
-        $province         = Db::name('region')->where(['code' => $city['parent_id']])->find();
-        $post['province'] = $province['area_id'];
-
+        $province         = Db::name('region')->where(['area_id' => $city['parent_id']])->find();
+        $post['province'] = $province['area_id']; */
 
         if(empty($post['address']))
             return array('status'=>-2,'msg'=>'地址不能为空','data'=>'');
@@ -93,7 +92,7 @@ class UserAddr extends Model
         // 如果目前只有一个收货地址则改为默认收货地址
         $c = $this->where(['user_id' => $user_id])->count();
         if($c == 0)  $post['is_default'] = 1;
-        
+
         $insert_id = $this->insertGetId($post);
         if(!$insert_id)return array('status'=>-2,'msg'=>'添加失败','data'=>'');
         //如果设为默认地址

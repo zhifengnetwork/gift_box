@@ -809,3 +809,14 @@ function httpRequest($url, $method="GET", $postfields = null, $headers = array()
     return $response;
     //return array($http_code, $response,$requestinfo);
 }
+
+function dd($str,$type=1){
+    if($type == 1){
+        dump($str); exit;
+    }else if($type == 2){
+        print_r($str); exit;
+    }else if($type == 3){
+        echo $str; exit;
+    }else
+        die('ERROE!!!');
+}
