@@ -97,4 +97,35 @@ class Index extends ApiBase
         // 根据条件保存修改的数据
     }
 
+    //获取一级栏目下的二级栏目
+    public function get_attr()
+    {
+        $id = input('id');
+        if(!$id){
+            $this->ajaxReturn(['status' => -1, 'msg' => '请提供栏目id']);
+        }
+        //二级
+        $list = Db::name('goods_attr')->field('addtime,sort,pid,english,priture',true)->where('pid',$id)->order('sort')->select();
+        $info = Db::name('goods_attr')->field('id,name,priture')->where('id',$id)->find();
+        $info['priture'] = $info['priture']?SITE_URL.$info['priture']:'';
+        $data['list'] = $list;
+        $data['info'] = $info;
+        $this->ajaxReturn(['status' => 1, 'msg' => '获取数据成功','data'=>$data]);
+    }
+
+    //根据二级栏目获取商品
+    public function getGoodsList()
+    {
+        $goods_attr2 = input('id');
+        $page = input('page',1);
+        $num = input('num',10);
+        if(!$goods_attr2){
+            $this->ajaxReturn(['status' => -1, 'msg' => '请提供二级栏目id','data'=>[]]);
+        }
+        $list = Db::table('goods')->alias('g')->join('goods_img i','g.goods_id=i.goods_id','LEFT')->field('g.goods_id,g.goods_name,g.price,i.picture')->where(['goods_attr2'=>$goods_attr2,'is_del'=>0,'is_show'=>1,'i.main'=>1])->order('add_time desc')->page($page,$num)->select();
+        $list  = $this->setGoodsList($list);
+        $this->ajaxReturn(['status' => 1, 'msg' => '获取数据成功','data'=>$list]);
+
+    }
+
 }

@@ -8,26 +8,6 @@ use think\Db;
 
 class Category extends ApiBase
 {
-    
-    /**
-    * 获取品牌列表
-    */
-    public function getGoodsBrand()
-    {
-        $list = Db::name('goods_brand')->field('id,name,priture')->where('status',0)->select();
-        $new_list = array();
-        foreach($list as $key=>$val){
-            $val['key'] = getfirstchar($val['name']);
-            $val['priture'] = $val['priture']?SITE_URL.$val['priture']:'';
-            $new_list[$val['key']][] = $val;
-        }
-        ksort($new_list);
-        $category = Db::table('category')->field('cat_id,cat_name')->where('pid',0)->where('is_show',1)->order('sort')->select();
-        $data['category_list'] = $category;
-        $data['brand_list'] = $new_list;
-        $this->ajaxReturn(['status' => 1 , 'msg'=>'获取成功','data'=>$data]);
-    }
-
     /**
     * 获取分类
     */
