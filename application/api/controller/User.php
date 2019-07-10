@@ -584,7 +584,7 @@ class User extends ApiBase
             //保存图片到本地
             $r   = file_put_contents(ROOT_PATH .Config('c_pub.img').$name.$saveName,$imgs);
             if(!$r){
-                $this->ajaxReturn(['status'=>-2,'msg'=>'上传出错','data' =>'']);
+                $this->ajaxReturn(['status'=>-1,'msg'=>'上传出错','data' =>'']);
             }
             Db::name('member')->where(['id' => $user_id])->update(['avatar' => SITE_URL.'/upload/images/'.$name.$saveName]);
 
@@ -639,23 +639,23 @@ class User extends ApiBase
      * +---------------------------------
     */
     public function address_list(){
-        $user_id = $this->get_user_id();
+        $user_id = 50;//$this->get_user_id();
         if(!$user_id){
             $this->ajaxReturn(['status' => -1, 'msg'=>'用户不存在','data'=>'']);
         }
         $data        =  Db::name('user_address')->where('user_id', $user_id)->select();
         $region_list =  Db::name('region')->field('*')->column('area_id,area_name');
         foreach ($data as &$v) {
-            $v['province'] = $region_list[$v['province']];
-            $v['city']     = $region_list[$v['city']];
+            $v['province_name'] = $region_list[$v['province']];
+            $v['city_name']     = $region_list[$v['city']];
             $district      = Db::name('region')->where(['area_id' => $v['district']])->value('code');
             $v['code']     = $district;
-            $v['district'] = $region_list[$v['district']];
+            $v['district_name'] = $region_list[$v['district']];
         
             if($v['twon'] == 0){
-                $v['twon']     = '';
+                $v['twon_name']     = '';
             }else{
-                $v['twon'] = $region_list[$v['twon']];
+                $v['twon_name'] = $region_list[$v['twon']];
             }
             
         }
@@ -678,7 +678,7 @@ class User extends ApiBase
             $consignee = input('consignee/s','');
             $longitude = input('lng/s',0);
             $latitude = input('lat/s',0);
-            $address_district = input('address_district');
+            //$address_district = input('address_district');
             $address_twon = input('address_twon/s','');
             $address = input('address/s','');
             $mobile = input('mobile/s','');
@@ -744,15 +744,17 @@ class User extends ApiBase
             $this->ajaxReturn(['status' => -2 , 'msg'=>'地址id不存在！','data'=>'']);
         }
         
-        $consignee = input('consignee');
-        $longitude = input('lng');
-        $latitude = input('lat');
-        $address_district = input('address_district');
-        $address_twon = input('address_twon');
-        $address = input('address');
-        $mobile = input('mobile');
-        $is_default = input('is_default');
-
+        $consignee = input('consignee/s','');
+        $longitude = input('lng/s',0);
+        $latitude = input('lat/s',0);
+        //$address_district = input('address_district');
+        $address_twon = input('address_twon/s','');
+        $address = input('address/s','');
+        $mobile = input('mobile/s','');
+        $is_default = input('is_default/d',0);
+        $province = input('province/d',0);
+        $city = input('city/d',0);
+        $district = input('district/d',0);
         $address = $address_twon . $address;
 
         $post_data['consignee'] = $consignee;
@@ -760,6 +762,13 @@ class User extends ApiBase
         $post_data['latitude'] = $latitude;
         $post_data['mobile'] = $mobile;
         $post_data['is_default'] = $is_default;
+        $post_data['province'] = $province;
+        $post_data['city'] = $city;
+        $post_data['district'] = $district;
+        $post_data['address'] = $address;
+
+        if(!$address)$this->ajaxReturn(['status' => -1, 'msg'=>'请填写详细地址信息！','data'=>'']);
+        if(!checkMobile($mobile))$this->ajaxReturn(['status' => -1, 'msg'=>'请填写正确的手机号码！','data'=>'']);
         
         if($latitude && $longitude){
             $url = "http://api.map.baidu.com/geocoder/v2/?ak=gOuAqF169G6cDdxGnMmB7kBgYGLj3G1j&callback=renderReverse&location={$latitude},{$longitude}&output=json";
@@ -776,11 +785,13 @@ class User extends ApiBase
                     $post_data['town'] = Db::table('region')->where('area_name',$res['town'])->value('area_id');
                 }
             }
+        }else{
+            if(!$province)$this->ajaxReturn(['status' => -1, 'msg'=>'请选择省份！','data'=>'']);   
+            if(!$city)$this->ajaxReturn(['status' => -1, 'msg'=>'请选择城市！','data'=>'']);
+            if(!$district)$this->ajaxReturn(['status' => -1, 'msg'=>'请选择地区！','data'=>'']); 
         }
 
         $post_data['address'] = $address;
-
-
 
         $addressM  = Model('UserAddr');
         $return    = $addressM->add_address($user_id, $id, $post_data);
