@@ -252,7 +252,23 @@ class Goods extends ApiBase
         $sku = I('post.sku/s','');
         if(!$goods_id)$this->ajaxReturn(['status' => -1 , 'msg'=>'参数错误！','data'=>[]]);
         if($sku){
-            $data = M('goods_sku')->where(['goods_id'=>$goods_id,'sku_attr'=>$sku])->find();
+            $data0 = M('goods_sku')->where(['goods_id'=>$goods_id,'sku_attr'=>['like',"%$sku%"]])->select();
+            $GoodsSpecAttr = M('Goods_spec_attr');
+            $data = [];
+            foreach($data0 as $k=>$v){
+                $attrs = explode(',',trim(trim($v['sku_attr'],'{'),'}'));
+                $str = '';
+                $attributes = [];
+                foreach($attrs as $v1){
+                    $v1 = explode(':',$v1);
+                    $attr_name = $GoodsSpecAttr->where(['attr_id'=>$v1[1]])->value('attr_name');
+                    $attr_name && $str .= '_' . $attr_name;
+                    $v['attr_name'] = $str;
+                    $attributes[] = ['spec_id'=>$v1[0],'attr_id'=>$v1[1]];
+                }
+                $v['attributes'] = $attributes;
+                $data[] = $v;
+            }
         }else
             $data = $this->getGoodsSpec($goods_id);
 
@@ -285,7 +301,11 @@ class Goods extends ApiBase
         foreach ($specRes as $key=>$value) {
             //商品规格下的属性
             $data['spec_id'] = $value['spec_id'];
-            $specRes[$key]['res'] = Db::name('goods_spec_attr')->field('attr_id,attr_name')->where($data)->select();
+            $res = Db::name('goods_spec_attr')->field('attr_id,attr_name,false as enable,false as `select`')->where($data)->select();;
+            //$specRes[$key]['res'] = Db::name('goods_spec_attr')->field('attr_id,attr_name')->where($data)->select();
+            //$res && $res['enable'] = false;
+            //$res && $res['select'] = false;
+            $specRes[$key]['res'] = $res;
         }
 
         //sku信息
