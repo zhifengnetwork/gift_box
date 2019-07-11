@@ -1111,7 +1111,7 @@ class Order extends ApiBase
         }
 
 
-        $dsh_point = bcadd($amount, $member['dsh_point'], 2);
+        /* $dsh_point = bcadd($amount, $member['dsh_point'], 2);
         $result = Db::table('member')->update(['id' => $user_id, 'dsh_point' => $dsh_point]);
         $result && $result = Db::name('point_log')->insert([
             'type' => 11,
@@ -1122,7 +1122,7 @@ class Order extends ApiBase
             'before' => $member['dsh_point'],
             'after' => $dsh_point,
             'create_time' => time()
-        ]);
+        ]); */
 
 
 
