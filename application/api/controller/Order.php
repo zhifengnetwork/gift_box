@@ -3,7 +3,10 @@
  * 订单API
  */
 namespace app\api\controller;
+use app\common\logic\PointLogic;
 use think\Db;
+use app\api\controller\Goods;
+use think\Request;
 
 class Order extends ApiBase
 {
@@ -215,17 +218,26 @@ class Order extends ApiBase
      * 提交订单
      */
     public function submitOrder()
-    {   
+    {
         $user_id = $this->get_user_id();
         if(!$user_id){
             $this->ajaxReturn(['status' => -2 , 'msg'=>'用户不存在','data'=>'']);
         }
         $cart_str = input("cart_id");
-        $addr_id = input("address_id");
-        $coupon_id = input("coupon_id");
-        $pay_type = input("pay_type");
+        $addr_id = input("address_id/d",0);
+        $pay_type = input("pay_type/d",0);
         $user_note = input("user_note", '', 'htmlspecialchars');
-
+        if($pay_type==1||$pay_type==4){
+            $pwd        = input('pwd/s','');
+            $member     = Db::name('member')->where(["id" => $user_id])->find();
+            if(!$member){
+                $this->ajaxReturn(['status' => -2 , 'msg'=>'用户不存在！','data'=>'']);
+            }
+            $password = md5($member['salt'] . $pwd);
+            if($member['pwd'] !== $password){
+                $this->ajaxReturn(['status' => -2 , 'msg'=>'支付密码错误！','data'=>'']);
+            }
+        }
         // 查询地址是否存在
         $AddressM = model('UserAddr');
 
@@ -233,63 +245,41 @@ class Order extends ApiBase
         $addrWhere['address_id'] = $addr_id;
         $addrWhere['user_id'] = $user_id;
         $addr_res = $AddressM->getAddressFind($addrWhere);
-        
+
         if (empty($addr_res)) {
             $this->ajaxReturn(['status' => -2 , 'msg'=>'该地址不存在！','data'=>'']);
         }
-        
+
         //购物车商品
-        $cart_where['id'] = array('in',$cart_str);
+        //$cart_where['id'] = array('in',$cart_str);
+        $cart_where['selected']=1;
         $cart_where['user_id'] = $user_id;
         $cartM = model('Cart');
-        $cart_res = $cartM->cartList($cart_where);
+        $cart_res = $cartM->cartList2($cart_where);
         if(!$cart_res){
             $this->ajaxReturn(['status' => -2 , 'msg'=>'购物车商品不存在！','data'=>'']);
         }
-        
+
         $order_amount = '0'; //订单价格
         $order_goods = [];  //订单商品
         $sku_goods = [];  //去库存
         $shipping_price = '0'; //订单运费
         $i = 0;
         $cart_ids = ''; //提交成功后删掉购物车
-        $goods_ids = '';//商品IDS
+        //$goods_ids = '';//商品IDS
         $goods_coupon = [];
-        $groupon_id = 0;
         foreach($cart_res as $key=>$value){
 
-            if($value['groupon_id']){
-                $groupon = Db::table('goods_groupon')->where('groupon_id',$value['groupon_id'])->where('goods_id',$value['goods_id'])->where('is_show',1)->where('is_delete',0)->where('status',2)->find();
-                if(!$groupon){
-                    Db::table('cart')->where('id',$value['id'])->delete();
-                    $this->ajaxReturn(['status' => -2 , 'msg'=>'该期拼团已结束，请前往最新一期拼团！','data'=>$value['goods_id']]);
-                    unset($data['goods_res'][$key]);
-                }
-                if($groupon['end_time'] < time()){
-                    Db::table('cart')->where('id',$value['id'])->delete();
-                    $this->ajaxReturn(['status' => -2 , 'msg'=>'该期拼团已结束，请前往最新一期拼团！','data'=>$value['goods_id']]);
-                    unset($data['goods_res'][$key]);
-                }
-                $count = count($cart_res);
-                if($count > 1){
-                    $this->ajaxReturn(['status' => -2 , 'msg'=>'不能和其他拼团一起下单！','data'=>'']);
-                }
-                $groupon_id = $value['groupon_id'];
-                //redis团购队列
-                $redis = $this->getRedis();
-                if( !$redis->lpop("GROUP_GOODS_{$groupon_id}") ){
-                    Db::table('cart')->where('id',$value['id'])->delete();
-                    Db::table('goods_groupon')->where('groupon_id',$groupon_id)->update(['is_show'=>0,'status'=>1]);
-                    $this->ajaxReturn(['status' => -2 , 'msg'=>'该期拼团已结束，请前往最新一期拼团！','data'=>$value['goods_id']]);
-                }
 
-            }
-            
-            $goods_ids .= $value['goods_id'] . ',';
+        //$goods_ids .= $value['goods_id'] . ',';
             $goods_coupon[$value['goods_id']]['subtotal_price'] =  $value['subtotal_price'];
 
             //处理运费
-            $goods_res = Db::table('goods')->field('shipping_setting,shipping_price,delivery_id,less_stock_type,goods_attr')->where('goods_id',$value['goods_id'])->find();
+            $goods_res = Db::table('goods')->field('shipping_setting,shipping_price,delivery_id,less_stock_type,goods_attr,goods_name')->where('goods_id',$value['goods_id'])->where('is_show',1)->find();
+            if(!$goods_res){
+                $this->ajaxReturn(['status' => -2 , 'msg'=>"商品：{$goods_res['goods_name']}已下架，请重新选择",'data'=>'']);
+                continue;
+            }
             if($goods_res['goods_attr']){
                 $goods_attr = explode(',',$goods_res['goods_attr']);
                 if( in_array(6,$goods_attr) ){
@@ -325,7 +315,7 @@ class Order extends ApiBase
 
             }
 
-            $cart_ids .= ',' . $value['cart_id'];
+            //$cart_ids .= ',' . $value['cart_id'];
             $order_amount = sprintf("%.2f",$order_amount + $value['subtotal_price']);   //计算该订单的总价
             $cat_id = Db::table('goods')->where('goods_id',$value['goods_id'])->value('cat_id1');
             foreach($value['spec'] as $k=>$v){
@@ -368,33 +358,8 @@ class Order extends ApiBase
             }
         }
         $coupon_price = 0;
-        $goods_ids = $goods_ids . 0;
-        if($coupon_id){
-            $couponRes = Db::table('coupon_get')->alias('cg')
-                    ->join('coupon c','c.coupon_id=cg.coupon_id','LEFT')
-                    ->field('c.coupon_id,c.title,c.threshold,c.price,c.start_time,c.end_time,c.goods_id')
-                    ->where('c.goods_id','in',$goods_ids)
-                    ->where('cg.user_id',$user_id)
-                    ->where('cg.is_use',0)
-                    ->where('c.start_time','<',time())
-                    ->where('c.end_time','>',time())
-                    ->where('c.coupon_id','=',$coupon_id)
-                    ->find();
-            if($couponRes){
-                if(isset($goods_coupon[$couponRes['goods_id']])){
-                    if( $goods_coupon[$couponRes['goods_id']]['subtotal_price'] >= $couponRes['threshold'] ){
-                        $coupon_price = $couponRes['price'];
-                    }
-                }
-                if($couponRes['goods_id']==0){
-                    if( $order_amount >= $couponRes['threshold'] ){
-                        $coupon_price = $couponRes['price'];
-                    }
-                }
-            }
-        }
-        
-        $cart_ids = ltrim($cart_ids,',');
+
+        //$cart_ids = ltrim($cart_ids,',');
         
         Db::startTrans();
         $goods_price = $order_amount;
@@ -402,7 +367,7 @@ class Order extends ApiBase
 
         $orderInfoData['order_sn'] = date('YmdHis',time()) . mt_rand(10000000,99999999);
         $orderInfoData['user_id'] = $user_id;
-        $orderInfoData['groupon_id'] = $groupon_id;
+        //$orderInfoData['groupon_id'] = $groupon_id;
         $orderInfoData['order_status'] = 1;         //订单状态 0:待确认,1:已确认,2:已收货,3:已取消,4:已完成,5:已作废,6:申请退款,7:已退款,8:拒绝退款
         $orderInfoData['pay_status'] = 0;       //支付状态 0:未支付,1:已支付,2:部分支付
         $orderInfoData['shipping_status'] = 0;       //商品配送情况;0:未发货,1:已发货,2:部分发货,3:已收货
@@ -420,16 +385,26 @@ class Order extends ApiBase
         $orderInfoData['shipping_price'] = $shipping_price;     //物流费(待完善)
         $orderInfoData['goods_price'] = $goods_price;     //商品价格
         $orderInfoData['total_amount'] = $order_amount;     //订单金额
-        
+        if($pay_type==1){
+            $balance_info  = get_balance($user_id,0);
+            if($balance_info['balance'] < $order_amount){
+                $this->ajaxReturn(['status' => -2 , 'msg'=>'余额不足','data'=>'']);
+            }
+        }elseif($pay_type==4){
+            $balance_info  = get_balance($user_id,0);
+            if($balance_info['ky_point'] < $order_amount){
+                $this->ajaxReturn(['status' => -2 , 'msg'=>'积分不足','data'=>'']);
+            }
+        }
         if($coupon_price){
             $orderInfoData['coupon_id'] = $coupon_id;
             $orderInfoData['order_amount'] = sprintf("%.2f",$order_amount - $coupon_price);       //总金额(实付金额)
         }else{
             $orderInfoData['order_amount'] = $order_amount;       //总金额(实付金额)
         }
-
-        $order_id = Db::table('order')->insertGetId($orderInfoData);
         
+        $order_id = Db::table('order')->insertGetId($orderInfoData);
+
         // 添加订单商品
         foreach($order_goods as $key=>$value){
 
@@ -449,13 +424,21 @@ class Order extends ApiBase
         if($coupon_price){
             Db::table('coupon_get')->where('user_id',$user_id)->where('coupon_id',$coupon_id)->update(['is_use'=>1,'use_time'=>time()]);
         }
-        
+
         $res = Db::table('order_goods')->insertAll($order_goods);
         if (!empty($res)) {
             //将商品从购物车删除
-            Db::table('cart')->where('id','in',$cart_str)->delete();
-            
+            Db::table('cart')->where($cart_where)->delete();
+
             Db::commit();
+            if($pay_type==1){//余额支付
+                $this->yue_order($order_id);
+            }elseif($pay_type==2){ //微信支付
+                $pay=new Pay();
+                $pay->order_wx_pay($order_id);
+            }elseif($pay_type==4){//积分支付
+                $this->jifen_order($order_id);
+            }
             $this->ajaxReturn(['status' => 1 ,'msg'=>'提交成功！','data'=>$order_id]);
         } else {
             Db::rollback();
@@ -967,4 +950,228 @@ class Order extends ApiBase
             $this->ajaxReturn(['status' => -2 , 'msg'=>'取消申请退款失败！','data'=>'']);
         }
     }
+
+    /**
+     * 积分支付
+     *
+     */
+    public function jifen_order($order_id){
+        $order_info   = Db::name('order')->where(['order_id' => $order_id])->field('order_id,groupon_id,order_sn,order_amount,pay_type,pay_status,user_id')->find();//订单信息
+        $user_id=$order_info['user_id'];
+        $amount=$order_info['order_amount'];
+        $member = Db::table('member')->field('ky_point,dsh_point')->where(['id' => $user_id])->find();
+        $ky_point = bcsub($member['ky_point'], $amount, 2);
+        $dsh_point = bcadd($amount, $member['dsh_point'], 2);
+        if($ky_point<0){
+            $this->ajaxReturn(['status' => -2 , 'msg'=>'积分不足','data'=>'']);
+        }
+
+        Db::startTrans();
+
+        // 扣除用户积分
+        $result = Db::table('member')->update(['id' => $user_id]);
+        $result && $result = Db::name('point_log')->insert([
+            'type' => 11,
+            'user_id' => $user_id,
+            'point' => $amount,
+            'operate_id' => $order_info['order_sn'],
+            'calculate' => 1,
+            'before' => $member['dsh_point'],
+            'after' => $dsh_point,
+            'create_time' => time()
+        ]);
+
+        $res = Db::table('member')->update(['id' => $user_id, 'ky_point' => $ky_point, 'dsh_point' => $dsh_point]);
+        if (!$res) {
+            Db::rollback();
+            $this->ajaxReturn(['status' => -2, 'msg' => '支付失败', 'data' => '']);
+        }
+
+        // 积分记录
+        $res = Db::name('point_log')->insert([
+            'type' => 2,
+            'user_id' => $user_id,
+            'point' => $amount,
+            'operate_id' => $order_info['order_sn'],
+            'calculate' => 0,
+            'before' => $member['ky_point'],
+            'after' => $ky_point,
+            'create_time' => time()
+        ]);
+        $res && $res = Db::name('point_log')->insert([
+            'type' => 11,
+            'user_id' => $user_id,
+            'point' => $amount,
+            'operate_id' => $order_info['order_sn'],
+            'calculate' => 1,
+            'before' => $member['dsh_point'],
+            'after' => $dsh_point,
+            'create_time' => time()
+        ]);
+        if (!$res) {
+            Db::rollback();
+            $this->ajaxReturn(['status' => -2, 'msg' => '支付失败', 'data' => '']);
+        }
+
+        // 修改订单状态
+        $update = [
+            'order_status' => 1,
+            'pay_status'   => 1,
+            'pay_type'     => 4,
+            'integral'     => $amount,
+            'pay_time'     => time(),
+        ];
+        $reult = Db::table('order')->where(['order_id' => $order_id])->update($update);
+
+        $goods_res = Db::table('order_goods')->field('goods_id,goods_name,goods_num,spec_key_name,goods_price,sku_id')->where('order_id',$order_id)->select();
+        foreach($goods_res as $key=>$value){
+
+            $goods = Db::table('goods')->where('goods_id',$value['goods_id'])->field('less_stock_type,gift_points')->find();
+            //付款减库存
+            if($goods['less_stock_type']==2){
+                Db::table('goods_sku')->where('sku_id',$value['sku_id'])->setDec('inventory',$value['goods_num']);
+                Db::table('goods_sku')->where('sku_id',$value['sku_id'])->setDec('frozen_stock',$value['goods_num']);
+                Db::table('goods')->where('goods_id',$value['goods_id'])->setDec('stock',$value['goods_num']);
+            }
+        }
+
+        if($reult){
+            // 提交事务
+            Db::commit();
+            $this->ajaxReturn(['status' => 1 , 'msg'=>'支付成功!','data'=>['order_id' =>$order_info['order_id'],'order_amount' =>$order_info['order_amount'],'goods_name' => getPayBody($order_info['order_id']),'order_sn' => $order_info['order_sn'] ]]);
+        }else{
+            Db::rollback();
+            $this->ajaxReturn(['status' => -2 , 'msg'=>'支付失败','data'=>'']);
+        }
+    }    
+
+    /**
+     * 余额
+     *
+     */
+    public function yue_order($order_id){
+        $order_info   = Db::name('order')->where(['order_id' => $order_id])->field('order_id,groupon_id,order_sn,order_amount,pay_type,pay_status,user_id')->find();//订单信息
+        $user_id=$order_info['user_id'];
+        $amount=$order_info['order_amount'];
+        $member     = Db::name('member')->where(["id" => $user_id])->find();
+        $balance_info  = get_balance($user_id,0);
+        if($balance_info['balance'] < $order_info['order_amount']){
+            $this->ajaxReturn(['status' => -2 , 'msg'=>'余额不足','data'=>'']);
+        }
+        // 启动事务
+        Db::startTrans();
+
+        //扣除用户余额
+        $balance = [
+            'balance'            =>  Db::raw('balance-'.$amount.''),
+        ];
+        $res =  Db::table('member')->where(['id' => $user_id])->update($balance);
+        if(!$res){
+            Db::rollback();
+        }
+        //
+        //余额记录
+        $balance_log = [
+            'user_id'      => $user_id,
+            'money'        => $order_info['order_amount'],
+            'balance'      => bcsub($balance_info['balance'], $order_info['order_amount'], 2),
+            'balance_type' => 0,
+            'source_type'  => 1,
+            'log_type'     => 0,
+            'source_id'    => $order_info['order_sn'],
+            'note'         => '商品订单消费',
+            'create_time'  => time(),
+            'old_balance'  => $balance_info['balance']
+        ];
+        $res2 = Db::table('menber_balance_log')->insert($balance_log);
+        if(!$res2){
+            Db::rollback();
+        }
+        //修改订单状态
+        $update = [
+            'order_status' => 1,
+            'pay_status'   => 1,
+            'pay_type'     => 1,
+            'user_money'      =>$amount,
+            'pay_time'     => time(),
+        ];
+        $reult = Db::table('order')->where(['order_id' => $order_id])->update($update);
+
+        $goods_res = Db::table('order_goods')->field('goods_id,goods_name,goods_num,spec_key_name,goods_price,sku_id')->where('order_id',$order_id)->select();
+        foreach($goods_res as $key=>$value){
+
+            $goods = Db::table('goods')->where('goods_id',$value['goods_id'])->field('less_stock_type,gift_points')->find();
+            //付款减库存
+            if($goods['less_stock_type']==2){
+                Db::table('goods_sku')->where('sku_id',$value['sku_id'])->setDec('inventory',$value['goods_num']);
+                Db::table('goods_sku')->where('sku_id',$value['sku_id'])->setDec('frozen_stock',$value['goods_num']);
+                Db::table('goods')->where('goods_id',$value['goods_id'])->setDec('stock',$value['goods_num']);
+            }
+
+        }
+
+
+        $dsh_point = bcadd($amount, $member['dsh_point'], 2);
+        $result = Db::table('member')->update(['id' => $user_id, 'dsh_point' => $dsh_point]);
+        $result && $result = Db::name('point_log')->insert([
+            'type' => 11,
+            'user_id' => $user_id,
+            'point' => $amount,
+            'operate_id' => $order_info['order_sn'],
+            'calculate' => 1,
+            'before' => $member['dsh_point'],
+            'after' => $dsh_point,
+            'create_time' => time()
+        ]);
+
+
+
+        if($reult){
+            // 提交事务
+            Db::commit();
+            $this->ajaxReturn(['status' => 1 , 'msg'=>'余额支付成功!','data'=>['order_id' =>$order_info['order_id'],'order_amount' =>$order_info['order_amount'],'goods_name' => getPayBody($order_info['order_id']),'order_sn' => $order_info['order_sn'] ]]);
+        }else{
+            Db::rollback();
+            $this->ajaxReturn(['status' => -2 , 'msg'=>'余额支付失败','data'=>'']);
+        }
+    }    
+
+    /*
+     * 余额支付
+     */
+    public function order_pay(){
+        $user_id    = $this->get_user_id();
+        $pwd        = input('pwd/d');
+        $member     = Db::name('member')->where(["id" => $user_id])->find();
+        if(!$member){
+            $this->ajaxReturn(['status' => -2 , 'msg'=>'用户不存在！','data'=>'']);
+        }
+        $pay_type=input('pay_type');
+        $order_id=input('order_id');
+        $order_info   = Db::name('order')->where(['order_id' => $order_id])->field('order_id,groupon_id,order_sn,order_amount,pay_type,pay_status,user_id')->find();//订单信息
+        if(!$order_info){
+            $this->ajaxReturn(['status' => -2 , 'msg'=>'订单不存在！','data'=>'']);
+        }
+        if($pay_type==1||$pay_type==4){
+            $pwd        = input('pwd/d');
+            $member     = Db::name('member')->where(["id" => $user_id])->find();
+            if(!$member){
+                $this->ajaxReturn(['status' => -2 , 'msg'=>'用户不存在！','data'=>'']);
+            }
+            $password = md5($member['salt'] . $pwd);
+            if($member['pwd'] !== $password){
+                $this->ajaxReturn(['status' => -2 , 'msg'=>'支付密码错误！','data'=>'']);
+            }
+        }
+        if($pay_type==1){//余额支付
+            $this->yue_order($order_id);
+        }elseif($pay_type==2){//微信支付
+                $pay=new Pay();
+                $pay->order_wx_pay($order_id);
+        }elseif($pay_type==4){//积分支付
+            $this->jifen_order($order_id);
+        }
+        //$user_id=$order_info['user_id'];
+        $this->ajaxReturn(['status' => -2 , 'msg'=>'未知错误，请联系管理员！','data'=>'']);
+    }    
 }
