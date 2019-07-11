@@ -461,7 +461,7 @@ class Order extends ApiBase
 
     //获取用户最近的发票信息
     public function getUserInvoice(){
-        $user_id = 50;//$this->get_user_id();
+        $user_id = $this->get_user_id();
         if(!$user_id){
             $this->ajaxReturn(['status' => -1 , 'msg'=>'用户不存在','data'=>'']);
         }
