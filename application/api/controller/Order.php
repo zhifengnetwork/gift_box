@@ -226,8 +226,8 @@ class Order extends ApiBase
         $cart_str = input("cart_id");
         $addr_id = input("address_id/d",0);
         $pay_type = input("pay_type/d",0);
-        $user_note = input("user_note", '', 'htmlspecialchars');
-        if($pay_type==1||$pay_type==4){
+        $user_note = input("user_note", '', '');
+        /* if($pay_type==1||$pay_type==4){ //没有余额支付，不需要支付密码
             $pwd        = input('pwd/s','');
             $member     = Db::name('member')->where(["id" => $user_id])->find();
             if(!$member){
@@ -237,7 +237,7 @@ class Order extends ApiBase
             if($member['pwd'] !== $password){
                 $this->ajaxReturn(['status' => -2 , 'msg'=>'支付密码错误！','data'=>'']);
             }
-        }
+        } */
         // 查询地址是否存在
         $AddressM = model('UserAddr');
         $invoice_title = I('post.invoice_title/s',''); //发票抬头
