@@ -194,11 +194,11 @@ class Order extends ApiBase
             $cartData['goods_price'] = $sku_res['price'];
             $cartData['member_goods_price'] = $sku_res['price'];
             $cartData['subtotal_price'] = $cart_number * $sku_res['price'] - $cart_number * $goods['discount'];
-            $cart_data['subtotal_price'] += (floor(($sku_res['price']-$goods['discount']) * $goods['taxes'] * $cart_number)/100);
+            $cartData['subtotal_price'] += (floor(($sku_res['price']-$goods['discount']) * $goods['taxes'] * $cart_number)/100);
             $cartData['goods_num'] = $cart_number;
             $cartData['add_time'] = time();
-            $cart_data['taxes'] = $goods['taxes'];
-            $cart_data['discount'] = $goods['discount'];
+            $cartData['taxes'] = $goods['taxes'];
+            $cartData['discount'] = $goods['discount'];
             $sku_attr = action('Goods/get_sku_str', $sku_id);
             $cartData['spec_key_name'] = $sku_attr;
             $cart_id = Db::table('cart')->insertGetId($cartData);
