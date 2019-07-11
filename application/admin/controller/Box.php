@@ -15,10 +15,10 @@ class Box extends Common
     public function index()
     {
         $list = Db::table('box')->alias('b')
-                ->join('user u','u.uid=b.user_id','LEFT')
-                ->join('user us','us.uid=b.sender_id','LEFT')
+                ->join('member u','u.id=b.user_id','LEFT')
+                ->join('member us','us.id=b.sender_id','LEFT')
                 ->join('box_cate c','c.id=b.cate_id','LEFT')
-                ->field('b.id,b.cate_id,b.user_id,b.sender_id,b.music_id,b.addtime,u.wx_nickname as u_nickname,us.wx_nickname as sender_nickname,c.name')
+                ->field('b.id,b.cate_id,b.user_id,b.sender_id,b.music_id,b.addtime,u.nickname as u_nickname,us.nickname as sender_nickname,c.name')
                 ->order('b.id desc')
                 ->paginate(10);
         $this->assign('list',$list);
