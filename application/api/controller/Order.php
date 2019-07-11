@@ -246,6 +246,11 @@ class Order extends ApiBase
         $invoice_mobile = I('post.invoice_mobile/s',''); //收票人手机
         $invoice_email = I('post.invoice_email/s','');  //收票人邮箱
 
+        if($invoice_desc && !$invoice_mobile)
+            $this->ajaxReturn(['status' => -2 , 'msg'=>'请填写收票人手机！','data'=>'']);
+        if(!$invoice_desc && invoice_mobile)
+            $this->ajaxReturn(['status' => -2 , 'msg'=>'请填写发票内容！','data'=>'']);
+
         $addrWhere = array();
         $addrWhere['address_id'] = $addr_id;
         $addrWhere['user_id'] = $user_id;
@@ -452,6 +457,17 @@ class Order extends ApiBase
             Db::rollback();
             $this->ajaxReturn(['status' => -2 , 'msg'=>'提交订单失败！','data'=>'']);
         }
+    }
+
+    //获取用户最近的发票信息
+    public function getUserInvoice(){
+        $user_id = 50;//$this->get_user_id();
+        if(!$user_id){
+            $this->ajaxReturn(['status' => -1 , 'msg'=>'用户不存在','data'=>'']);
+        }
+        
+        $info = M('Order')->field('invoice_title,taxpayer,invoice_desc,invoice_mobile,invoice_email')->where(['user_id'=>$user_id,'invoice_mobile'=>['neq',''],'invoice_desc'=>['neq','']])->order('add_time desc')->limit(1)->find();
+        $this->ajaxReturn(['status' => 1 ,'msg'=>'请求成功！','data'=>$info ? $info : '']);
     }
 
    /**
