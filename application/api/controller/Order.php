@@ -18,33 +18,39 @@ class Order extends ApiBase
         if(!$user_id){
             $this->ajaxReturn(['status' => -2 , 'msg'=>'用户不存在','data'=>'']);
         }
-
         //购物车商品
-        $idStr = input('cart_id');
-        
-        $cart_where['id'] = array('in',$idStr);
+        $address_id = input('address_id/d',0);
+
+		//$cart_where['id'] = array('in',$idStr);
+        $cart_where['selected']=1;
         $cart_where['user_id'] = $user_id;
         $cartM = model('Cart');
-        $cart_res = $cartM->cartList1($cart_where);
+        $cart_res = $cartM->cartList_no($cart_where);
         if(!$cart_res){
             $this->ajaxReturn(['status' => -2 , 'msg'=>'购物车商品不存在！','data'=>'']);
         }
-        
+
         // 查询地址
         $addr_data['ua.user_id'] = $user_id;
+        if($address_id){
+            $addr_data['ua.address_id'] = $address_id;
+        }
         $addressM = Model('UserAddr');
         $addr_res = $addressM->getAddressList($addr_data);
+        $addr_list=[];
         if($addr_res){
             foreach($addr_res as $key=>$value){
                 $addr = $value['p_cn'] . $value['c_cn'] . $value['d_cn'] . $value['s_cn'];
                 $addr_res[$key]['address'] = $addr . $addr_res[$key]['address'];
                 unset($addr_res[$key]['p_cn'],$addr_res[$key]['c_cn'],$addr_res[$key]['d_cn'],$addr_res[$key]['s_cn']);
+                if(!$addr_list||$value['is_default']){
+                    $addr_list[]=$value;
+                }
             }
         }
-        
-        $data['goods_res'] = $cart_res;
-        $data['addr_res'] = $addr_res;
-        
+        $data['goods'] = $cart_res;
+        $data['addr_res'] = $addr_list;
+
         $pay = Db::table('sysset')->value('sets');
         $pay = unserialize($pay)['pay'];
 
@@ -60,42 +66,24 @@ class Order extends ApiBase
         }
 
         $data['pay_type'] = $arr;
-        
+
         $order_amount = '0'; //订单价格
+        $taxes = 0;     //优惠额
+        $discount = 0;  //税费
         $shipping_price = 0;
-        $goods_ids = '';
-        $goods_coupon = [];
         $cart_goods_arr = [];
-        $data['groupon'] = [];
-        foreach($data['goods_res'] as $key=>$value){
+        $all_num=0;
+        foreach($data['goods'] as $key=>$value){
 
-            if($value['groupon_id']){
-                $groupon = Db::table('goods_groupon')->where('groupon_id',$value['groupon_id'])->where('goods_id',$value['goods_id'])->where('is_show',1)->where('is_delete',0)->where('status',2)->find();
-                if(!$groupon){
-                    Db::table('cart')->where('id',$value['id'])->delete();
-                    $this->ajaxReturn(['status' => -2 , 'msg'=>'该期拼团已结束，请前往最新一期拼团！','data'=>$value['goods_id']]);
-                    unset($data['goods_res'][$key]);
-                }
-                if($groupon['end_time'] < time()){
-                    Db::table('cart')->where('id',$value['id'])->delete();
-                    $this->ajaxReturn(['status' => -2 , 'msg'=>'该期拼团已结束，请前往最新一期拼团！','data'=>$value['goods_id']]);
-                    unset($data['goods_res'][$key]);
-                }
-                $count = count($cart_res);
-                if($count > 1){
-                    $this->ajaxReturn(['status' => -2 , 'msg'=>'不能和其他拼团一起下单！','data'=>'']);
-                }
-                $data['groupon'] = $groupon;
-            }
-
+			//$data['goods'][$key]['img']=SITE_URL.Config('c_pub.img').$data['goods'][$key]['img'];
             if( !in_array($value['goods_id'],$cart_goods_arr) ){
                 $cart_goods_arr[] = $value['goods_id'];
-            
+
                 //处理运费
                 $goods_res = Db::table('goods')->field('shipping_setting,shipping_price,delivery_id,less_stock_type')->where('goods_id',$value['goods_id'])->find();
                 if($goods_res['shipping_setting'] == 1){
                     $shipping_price = sprintf("%.2f",$shipping_price + $goods_res['shipping_price']);   //计算该订单的物流费用
-                }else if($goods_res['shipping_setting'] == 2){
+                }else if($goods_res['shipping_setting'] == 2){ 
                     if( !$goods_res['delivery_id'] ){
                         $deliveryWhere['is_default'] = 1;
                     }else{
@@ -114,50 +102,114 @@ class Order extends ApiBase
                         }
                     }
                 }
-
+                $discount += ($value['discount'] * $value['goods_num']);
+                $taxes += floor(($value['goods_price'] - $value['discount']) * $value['taxes'] * $value['goods_num'])/100;
                 $order_amount = sprintf("%.2f",$order_amount + $value['subtotal_price']);   //计算该订单的总价
 
-                $goods_coupon[$value['goods_id']]['subtotal_price'] =  $value['subtotal_price'];
-
-                $goods_ids .= $value['goods_id'] . ',';
             }
+            $all_num=$all_num+$value['goods_num'];
         }
-        $goods_ids = $goods_ids . 0;
-
-        $data['goods_res'] = array_values($data['goods_res']);
-
+        $balance = Db::name('member')->where(['id' => $user_id])->value('balance');
+        $data['balance']=$balance;
+        $data['order_amount']=$order_amount;
+        $data['discount_amount'] = $discount;
+        $data['taxes_amount'] = $taxes;
+        $data['order_num']=$all_num;
+        $data['goods'] = array_values($data['goods']);
         $data['shipping_price'] = $shipping_price;  //该订单的物流费用
+        $data['ky_point'] = Db::name('member')->where(['id' => $user_id])->value('ky_point');
 
-        $coupon = Db::table('coupon_get')->alias('cg')
-                    ->join('coupon c','c.coupon_id=cg.coupon_id','LEFT')
-                    ->field('c.coupon_id,c.title,c.threshold,c.price,c.start_time,c.end_time,c.goods_id')
-                    ->where('c.goods_id','in',$goods_ids)
-                    ->where('cg.user_id',$user_id)
-                    ->where('cg.is_use',0)
-                    ->where('c.start_time','<',time())
-                    ->where('c.end_time','>',time())
-                    ->select();
 
-        $coupon_arr = [];
-        foreach($coupon as $key=>$value){
-            if(isset($goods_coupon[$value['goods_id']])){
-                if( $goods_coupon[$value['goods_id']]['subtotal_price'] >= $value['threshold'] ){
-                    $coupon_arr[] = $value;
-                }
-            }
-
-            if($value['goods_id']==0){
-                if( $order_amount >= $value['threshold'] ){
-                    $coupon_arr[] = $value;
-                }
-            }
-        }
-
-        $data['coupon'] = $coupon_arr;
-        
         $this->ajaxReturn(['status' => 1 , 'msg'=>'成功','data'=>$data]);
     }
 
+    /**
+     * 立即购买
+     */
+    public function immediatelyOrder()
+    {
+        $user_id = $this->get_user_id();
+        if(!$user_id){
+            $this->ajaxReturn(['status' => -1 , 'msg'=>'用户不存在','data'=>'']);
+        }
+
+        $sku_id       = input('sku_id/d', 0);
+        $cart_number  = input('cart_number/d', 0);
+        $act = input('act', '');
+
+        if( !$sku_id || !$cart_number ){
+            $this->ajaxReturn(['status' => -2 , 'msg'=>'该商品不存在！','data'=>'']);
+        }
+
+        $sku_res = Db::name('goods_sku')->where('sku_id', $sku_id)->field('price,groupon_price,inventory,frozen_stock,goods_id')->find();
+
+        if (empty($sku_res)) {
+            $this->ajaxReturn(['status' => -2 , 'msg'=>'该商品不存在！','data'=>'']);
+        }
+
+        $goods = Db::table('goods')->where('goods_id',$sku_res['goods_id'])->field('single_number,most_buy_number,taxes,discount')->find();
+
+        $order_goods_num = Db::table('order_goods')->alias('og')
+            ->join('order o','o.order_id=og.order_id')
+            ->where('o.order_status','neq',3)
+            ->where('og.goods_id',$sku_res['goods_id'])
+            ->where('og.user_id',$user_id)
+            ->sum('og.goods_num');
+
+        $num =  $cart_number + $order_goods_num;
+
+        $cart_where = array();
+        $cart_where['user_id'] = $user_id;
+        $cart_where['goods_id'] = $sku_res['goods_id'];
+
+        $act_where = [];
+        if($act){
+            $act_where['sku_id'] = ['not in',$sku_id];
+        }
+
+        $cart_goods_num = Db::table('cart')->where($cart_where)->where($act_where)->sum('goods_num');
+        $num = $cart_number + $cart_goods_num;
+
+        $cart_where['sku_id'] = $sku_id;
+        $cart_res = Db::table('cart')->where($cart_where)->field('id,goods_num,subtotal_price')->find();
+        Db::table('cart')->where('user_id',$user_id)->update(['selected'=>0]);
+        if ($cart_res) {
+            $cart_data['selected']=1;
+            $cart_data['goods_num']=$cart_number;
+            $cart_data['taxes'] = $goods['taxes'];
+            $cart_data['discount'] = $goods['discount'];
+            $cart_data['subtotal_price'] = ($cart_number*$sku_res['price']) - $cart_number * $goods['discount'];
+            $cart_data['subtotal_price'] += (floor(($sku_res['price']-$goods['discount']) * $goods['taxes'] * $cart_number)/100);
+            Db::table('cart')->where($cart_where)->update($cart_data);
+            $cart_id=$cart_res['id'];
+        } else {
+            $cartData = array();
+            $goods_res = Db::name('goods')->where('goods_id',$sku_res['goods_id'])->field('goods_name,price,original_price')->find();
+            $cartData['goods_id'] = $sku_res['goods_id'];
+            $cartData['selected'] = 1;
+            $cartData['goods_name'] = $goods_res['goods_name'];
+            $cartData['sku_id'] = $sku_id;
+            $cartData['user_id'] = $user_id;
+            $cartData['market_price'] = $goods_res['original_price'];
+            $cartData['goods_price'] = $sku_res['price'];
+            $cartData['member_goods_price'] = $sku_res['price'];
+            $cartData['subtotal_price'] = $cart_number * $sku_res['price'] - $cart_number * $goods['discount'];
+            $cart_data['subtotal_price'] += (floor(($sku_res['price']-$goods['discount']) * $goods['taxes'] * $cart_number)/100);
+            $cartData['goods_num'] = $cart_number;
+            $cartData['add_time'] = time();
+            $cart_data['taxes'] = $goods['taxes'];
+            $cart_data['discount'] = $goods['discount'];
+            $sku_attr = action('Goods/get_sku_str', $sku_id);
+            $cartData['spec_key_name'] = $sku_attr;
+            $cart_id = Db::table('cart')->insertGetId($cartData);
+            $cart_id = intval($cart_id);
+        }
+        if($cart_id) {
+            $this->ajaxReturn(['status' => 1 , 'msg'=>'成功！','data'=>$cart_id]);
+        } else {
+            $this->ajaxReturn(['status' => -2 , 'msg'=>'系统异常！','data'=>'']);
+        }
+    }    
 
     /**
      * 提交订单
