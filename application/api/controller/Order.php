@@ -240,6 +240,11 @@ class Order extends ApiBase
         }
         // 查询地址是否存在
         $AddressM = model('UserAddr');
+        $invoice_title = I('post.invoice_title/s',''); //发票抬头
+        $taxpayer = I('post.taxpayer/s',''); //纳税人识别号
+        $invoice_desc = I('post.invoice_desc/s',''); //发票内容
+        $invoice_mobile = I('post.invoice_mobile/s',''); //收票人手机
+        $invoice_email = I('post.invoice_email/s','');  //收票人邮箱
 
         $addrWhere = array();
         $addrWhere['address_id'] = $addr_id;
@@ -269,8 +274,6 @@ class Order extends ApiBase
         //$goods_ids = '';//商品IDS
         $goods_coupon = [];
         foreach($cart_res as $key=>$value){
-
-
         //$goods_ids .= $value['goods_id'] . ',';
             $goods_coupon[$value['goods_id']]['subtotal_price'] =  $value['subtotal_price'];
 
@@ -402,6 +405,11 @@ class Order extends ApiBase
         }else{
             $orderInfoData['order_amount'] = $order_amount;       //总金额(实付金额)
         }
+        $orderInfoData['invoice_title'] = $invoice_title;
+        $orderInfoData['taxpayer'] = $taxpayer;
+        $orderInfoData['invoice_desc'] = $invoice_desc;
+        $orderInfoData['invoice_mobile'] = $invoice_mobile;
+        $orderInfoData['invoice_email'] = $invoice_email;
         
         $order_id = Db::table('order')->insertGetId($orderInfoData);
 
