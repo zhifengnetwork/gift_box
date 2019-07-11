@@ -820,3 +820,13 @@ function dd($str,$type=1){
     }else
         die('ERROE!!!');
 }
+
+//attr_id规格，spec_id属性，属性对应多规格
+function checkAttr($attrs,$attr_id,$spec_id){
+    foreach($attrs as $v){
+        $v = explode(':',$v);
+        if(($v[0] == $spec_id) && ($v[1] == $attr_id))
+            return true;
+    }
+    return false;
+}

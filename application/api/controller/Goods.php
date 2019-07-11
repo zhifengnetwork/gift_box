@@ -247,16 +247,20 @@ class Goods extends ApiBase
         $this->ajaxReturn(['status' => 1 , 'msg'=>'获取成功','data'=>$comment]);
     }
 
+    //attr_id规格，spec_id属性，属性对应多规格
     public function getGoodsAttrSpec(){
         $goods_id = I('post.goods_id/d',0);
-        $sku = I('post.sku/s','');
+        $spec_id = I('post.spec_id/d',0);
+        $attr_id = I('post.attr_id/d',0);
         if(!$goods_id)$this->ajaxReturn(['status' => -1 , 'msg'=>'参数错误！','data'=>[]]);
-        if($sku){
-            $data0 = M('goods_sku')->where(['goods_id'=>$goods_id,'sku_attr'=>['like',"%$sku%"]])->select();
+        if($attr_id && $spec_id){
+            $data0 = M('goods_sku')->where(['goods_id'=>$goods_id])->select();
             $GoodsSpecAttr = M('Goods_spec_attr');
             $data = [];
             foreach($data0 as $k=>$v){
                 $attrs = explode(',',trim(trim($v['sku_attr'],'{'),'}'));
+                if(!checkAttr($attrs,$attr_id,$spec_id))continue;
+
                 $str = '';
                 $attributes = [];
                 foreach($attrs as $v1){
