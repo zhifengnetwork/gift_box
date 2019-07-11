@@ -8,7 +8,7 @@
                 <div class="ibox-title">
                     <h5>{$meta_title}</h5>
                     <div class="pull-right" style="margin-top:-8px;">
-                            <a class="btn btn-info" href="{:url('add')}"><i class="fa fa-plus"></i> 添加类别</a>
+                            <a class="btn btn-info" href="{:url('add_envelope')}"><i class="fa fa-plus"></i> 添加信封</a>
                     </div>
                 </div>
                 <div class="ibox-content">
@@ -16,14 +16,14 @@
                         <!-- <a class="btn btn-default delete" href="{:url('add')}" >添加礼盒 </i></a> -->
                         <!-- <a class="btn btn-default delete" onclick="del_all(0)" href="javascript:;" >批量删除 <i class="fa fa-trash-o"></i></a> -->
                     </div>
+
                     <div class="table-responsive">
                         <table class="table table-striped">
                             <thead>
                             <tr>
                                 <th>ID</th>
-                                <th>内容</th>
-                                <th>状态</th>
-                                <th>添加时间</th>
+                                <th>名称</th>
+                                <th>图片</th>
                                 <th>操作</th>
                             </tr>
                             </thead>
@@ -31,11 +31,10 @@
                             {volist name="list" id="vo"}
                             <tr>
                                 <td>{$vo.id}</td>
-                                <td>{$vo.content}</td>
-                                <td>{if condition="$vo.status eq 1"}禁用{else/}启用{/if}</td>
-                                <td>{$vo.addtime|date='Y-m-d',###}</td>
+                                <td>{$vo.name}</td>
+                                <td><img src="{$vo.picture}" width="60"></td>
                                 <td>
-                                    <a class="btn btn-default delete" href="{:url('add_joke',['id'=>$vo.id],false)}" >编辑 </i></a>
+                                    <a class="btn btn-default delete" href="{:url('add_envelope',['id'=>$vo.id],false)}" >编辑 </i></a>
                                     <a class="btn btn-default delete" onclick="del(this,{$vo.id})" href="javascript:;" >删除 </i></a>
                                 </td>
                             </tr>
@@ -45,6 +44,7 @@
                     </div>
                     
                     <ul class="pagination">
+                        {$list->render()}
                     </ul>
                 </div>
             </div>
@@ -55,7 +55,7 @@
 <script>
     function del(obj,id){
         if(window.confirm('确认删除该分类吗？')){
-            $.post("{:url('del')}",{'id':id},function(data){
+            $.post("{:url('del_envelope')}",{'id':id},function(data){
                 alert(data.msg);
                 if(data.status){
                     $(obj).parents('tr').remove();

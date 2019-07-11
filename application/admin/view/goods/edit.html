@@ -107,14 +107,15 @@
                                              <th>规格ID</th>
                                              <th class="th_1"><input type="text" readonly="readonly" style="border: 0px;" name="goods_th[1][]" value="规格"></th>
                                              {volist name='rsts.th' id='data_th'}
-                                             {if condition="($data_th neq '价格') and ($data_th neq '拼团价格') and ($data_th neq '库存') and ($data_th neq '冻结库存') and ($data_th neq '规格') and ($data_th neq '长度') and ($data_th neq '宽度') and ($data_th neq '高度') and ($data_th neq '体积') and ($data_th neq '重量') and ($data_th neq '温藏')"}
-                                                 <th class="th_{$key + 1}"><input type="text" readonly="readonly" style="border: 0px;width: 85%;" name="goods_th[{$key+1}][]" value="{$data_th}"><i class="Hui-iconfont Hui-iconfont-close th_close" style="color: #778899;display:none;"></i></th>
-                                             {/if}	
+                                                {if condition="$data_th neq '规格'"}
+                                                    <th class="th_{$key + 1}"><input type="text" readonly="readonly" style="border: 0px;width: 85%;" name="goods_th[{$key+1}][]" value="{$data_th}"><i class="Hui-iconfont Hui-iconfont-close th_close" style="color: #778899;display:none;"></i></th>
+                                                {/if}
                                              {/volist}
+                                             <th><input type="text" readonly="readonly" style="border: 0px;" name="img_th[img][]" value="{:lang(\'图片\')}"></th>
+                                             <th>图片</th>
                                              <th><input type="text" readonly="readonly" style="border: 0px;" name="pri_th[pri][]" value="本店售价(元)"></th>
                                              <!-- <th><input type="text" readonly="readonly" style="border: 0px;" name="pri_th[pri][]" value="拼团价格"></th> -->
                                              <th><input type="text" readonly="readonly" style="border: 0px;" name="goods_th[num][]" value="库存"></th>
-                                             <th>冻结库存</th>
                                              <th style="width: 25px;">操作</th>
                                          </tr>
                                          </thead>
@@ -122,14 +123,20 @@
                                              {volist name='rsts.td' id='data_td'}
                                              <tr {if condition="$key === 0"}class="tr_1"{/if}>
                                                  {volist name='data_td' id='vo'}
-                                                     {if condition="($key !== 'com_price') and ($key !== 'groupon_price') and ($key !== 'inventory') and ($key !== 'frozen_stock') and ($key !== 'l') and ($key !== 'w') and ($key !== 'h') and ($key !== 'v') and ($key !== 'wg') and ($key !== 'refrigerate') and ($key !== 'sku_id')"}
+                                                     {if condition="($key !== 'com_price') and  ($key !== 'inventory')  and ($key !== 'sku_id') and ($key !== 'img')"}
                                                      <td class="td_{$key+1}"><input class="input-text" type="text" name="goods_td[{$key+1}][]" value="{$vo}"></td>
                                                      {/if}
                                                      {if condition="($key === 'inventory')"}
                                                      <td><input class="input-text" type="text" name="goods_td[num][]" value="{$vo}"></td>
                                                      {/if}
-                                                     {if condition="($key === 'frozen_stock')"}
-                                                     <td style="width: 75px;">{$vo}</td>
+                                                     {if condition="($key === 'img')"}
+                                                    <td>
+                                                        <input type="hidden" name="sku_img[]" value="{$vo}">
+                                                        <input type="file" name="img_td[img][]" value="{$vo}" onchange="upload_file(this)"/>
+                                                    </td>
+                                                    <td>
+                                                        <img src="{$vo}" alt="" width="50">
+                                                    </td>
                                                      {/if}
                                                      {if condition="($key === 'com_price')"}
                                                      <td>
@@ -141,6 +148,7 @@
                                                          <td><input type="text" readonly class="input-text" name="sku_id[]" value="{$vo}"></td>
                                                      {/if}
                                                  {/volist}
+                                                 <!-- <td>img</td> -->
                                                  <td onclick="delTr(this)"><i class="Hui-iconfont del_td"></i></td>
                                              </tr>
                                              {/volist}
@@ -189,7 +197,7 @@
                             <label class="col-sm-2 control-label"><span style="color:red;">*</span>商品品牌</label>
                             <div class="col-sm-9">
                                 <div style="line-height:34px;float:left;margin:0 10px 0 0;">
-                                    <select class="form-control" name="brand_id" onchange="ajaxGetCategory(this)">
+                                    <select class="form-control" name="brand_id">
                                         <option value="" >请选择品牌</option>
                                         {volist name="brand" id="vo"}
                                         <option value="{$vo.id}" {if condition="$vo.id eq $info.brand_id"}selected{/if}>{$vo.name}</option>
@@ -392,7 +400,19 @@
       .mask_img img{position: relative;top: 30%;left: 50%;}
   </style>
 <script type="text/javascript">
-    //ajax获取二级栏目
+//图片预览
+function upload_file(obj){
+    var file = obj.files[0];
+    var fr = new FileReader();
+    fr.readAsDataURL(file);
+    fr.onload = function(){
+        $('#avatar-img').attr('src',fr.result)
+        $(obj).prev().val('');
+        $(obj).parent().next().children('img').attr('src',fr.result);
+    }
+}
+
+//ajax获取二级栏目
 function ajaxGetAttr(obj){
     var id = $(obj).val()
     if(!id){
@@ -431,14 +451,13 @@ function ajaxGetCategory(obj){
 }
 
     var rowCount = $("#goods_table tbody").find("tr").length - 1; //行数
-    var colCount = $("#goods_table thead").find("tr").find("th").length - 5; //列数
+    var colCount = $("#goods_table thead").find("tr").find("th").length - 6; //列数
     
     // 添加行
     function addRow(){
 
         var tr = $("#goods_table tbody").find("tr").eq(0).clone().find('input').val("").parents('tr').find('input').eq(0).attr('type','hidden').parents('tr');
-
-        console.log(tr);
+        $(tr).find('img').attr('src','');
         $("#goods_table tbody").append(tr);
         // rowCount++;
     

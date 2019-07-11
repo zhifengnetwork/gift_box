@@ -98,9 +98,10 @@
                                 <div>
                                     <table id="goods_table" class="table table-border table-bordered table-striped">
                                         <thead>
-                                         <tr>
+                                         <tr> 
                                              <th class="th_1"><input type="text" readonly="readonly" style="border: 0px;" name="goods_th[1][]" value="{:lang(\'规格\')}"></th>
                                              <th><input type="text" readonly="readonly" style="border: 0px;" name="img_th[img][]" value="{:lang(\'图片\')}"></th>
+                                             <th>图片</th>
                                              <th><input type="text" readonly="readonly" style="border: 0px;" name="pri_th[pri][]" value="{:lang(\'本店售价(元)\')}"></th>
                                              <!-- <th><input type="text" readonly="readonly" style="border: 0px;" name="pri_th[group_pri][]" value="{:lang(\'拼团价格\')}"></th> -->
                                              <th><input type="text" readonly="readonly" style="border: 0px;" name="goods_th[num][]" value="{:lang(\'库存\')}"></th>
@@ -111,8 +112,9 @@
                                              <tr class="tr_1">
                                                  <td class="td_1"><input class="input-text" type="text" name="goods_td[1][]"></td>
                                                  <td>
-                                                     <input type="file" name="img_td[img][]" />
+                                                    <input type="file" name="img_td[img][]" value="" onchange="upload_file(this)"/>
                                                 </td>
+                                                <td><img src="" width="50" alt=""></td>
                                                  <td><input type="text" class="pri_id" value="" name="pri_td[pri][]"></td>
                                                  <!-- <td><input type="text" class="pri_id" value="" name="pri_td[group_pri][]"></td> -->
                                                  <td><input class="input-text" type="text" name="goods_td[num][]"></td>
@@ -170,8 +172,6 @@
                             <div class="col-sm-9">
                                     <dd class="upload_area clearfix" style="margin: 0 auto;">
                                         <ul id="imglist" class="post_imglist">
-                                            
-                                            
                                         </ul>
                                         <div class="upload_btn">
                                             <input type="file" id="upload_image" value="图片上传" accept="image/jpeg,image/gif,image/png" capture="camera">
@@ -211,7 +211,7 @@
                             </div>
                         </div>
 
-                        <div class="form-group">
+                        <div class="form-group"> 
                             <label class="col-sm-2 control-label"><span style="color:red;">*</span>商品分类</label>
                             <div class="col-sm-9">
                                 <div style="line-height:34px;float:left;margin:0 10px 0 0;">
@@ -233,7 +233,7 @@
                             <label class="col-sm-2 control-label"><span style="color:red;">*</span>商品品牌</label>
                             <div class="col-sm-9">
                                 <div style="line-height:34px;float:left;margin:0 10px 0 0;">
-                                    <select class="form-control" name="brand_id" onchange="ajaxGetCategory(this)">
+                                    <select class="form-control" name="brand_id">
                                         <option value="" >请选择品牌</option>
                                         {volist name="brand" id="vo"}
                                         <option value="{$vo.id}">{$vo.name}</option>
@@ -363,7 +363,19 @@
 <script type="text/javascript" src="__STATIC__/ueditor/1.4.3/ueditor.all.min.js"> </script> 
 <script type="text/javascript" src="__STATIC__/ueditor/1.4.3/lang/zh-cn/zh-cn.js"></script> 
 <script src="__STATIC__/layui/src/localResizeIMG2.js" type="text/javascript"></script>
+<script src="__STATIC__/js/jquery.form.js" type="text/javascript"></script>
 <script type="text/javascript">
+//图片预览
+function upload_file(obj){
+    var file = obj.files[0];
+    var fr = new FileReader();
+    fr.readAsDataURL(file);
+    fr.onload = function(){
+        $('#avatar-img').attr('src',fr.result)
+        $(obj).parent().next().children('img').attr('src',fr.result);
+    }
+}
+
 //ajax获取二级栏目
 function ajaxGetAttr(obj){
     var id = $(obj).val()
@@ -409,8 +421,8 @@ var colCount = $("#goods_table thead").find("tr").find("th").length - 4; //列�
 var col_id = 0;
 // 添加行
 function addRow(){
-	rowCount++;
-	var base_row = $("#goods_table tbody .tr_1").html();
+    rowCount++;
+	var base_row =  $("#goods_table tbody .tr_1").html();
 	if (typeof(base_row) == 'undefined') {
 		var add_td;
 		var add_td_len = $("#goods_table thead tr th").length - 10;
@@ -419,8 +431,10 @@ function addRow(){
 		}
 		var base_row ='<td class="td_1"><input class="input-text" type="text" name="goods_td[1][]"></td>'+add_td+'<td><input class="input-text" type="text" name="attr_td[l][]"></td><td><input class="input-text" type="text" name="attr_td[w][]"></td><td><input class="input-text" type="text" name="attr_td[h][]"></td><td style="display: none;"><input class="input-text" type="text" name="attr_td[v][]" value="nonentity"></td><td><input class="input-text" type="text" name="attr_td[wg][]"></td><td><select style="height:25px" name="ref_td[ref][]"><option value="">--选择温藏--</option><option value="-18℃">-18℃</option><option value="-25℃ ~ -4℃">-25℃ ~ -4℃</option><option value="-4℃ ~ 10℃">-4℃ ~ 10℃</option><option value="0℃ ~ 8℃">0℃ ~ 8℃</option><option value="4℃ ~ 10℃">4℃ ~ 10℃</option></select></td><td><input type="hidden" class="pri_id" value="" name="pri_td[pri][]"><button  class="btn btn-primary radius pri_button" type="button">{:lang(\'本店售价\')}</button></td><td><input class="input-text" type="text" name="goods_td[num][]"></td><td onclick="delTr(this)"><i class="Hui-iconfont del_td"></i></td>';
 	}
-	var html = '<tr class = "tr_'+rowCount+'">'+base_row+'</tr>';
-	$("#goods_table tbody").append(html);
+    var html = '<tr class = "tr_'+rowCount+'">'+base_row+'</tr>';
+    console.log(html);
+    $("#goods_table tbody").append(html);
+    $("#goods_table tbody tr").eq(rowCount).find('img').attr('src','');
 }
 // 添加列
 function addCol(){

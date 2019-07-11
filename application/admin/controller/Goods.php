@@ -306,13 +306,62 @@ class Goods extends Common
         
         if( Request::instance()->isPost() ){
             $data = input('post.');
-            
+            $image = $data['sku_img'];
+            unset($data['sku_img']);
             //验证
             $validate = Loader::validate('Goods');
             if(!$validate->scene('edit')->check($data)){
                 $this->error( $validate->getError() );
             }
 
+            if(isset($_FILES['img_td'])){
+                $data['img_td'] = $_FILES['img_td'];
+            }else{
+                $data['img_td'] =array();
+            }
+            $img = [];
+            foreach($data['img_td'] as $key=>$value){
+                foreach($value['img'] as $k=>$v){
+                    $img[$k][$key] = $v;
+                }
+            }
+
+            foreach($img as $key=>$value){
+                if($value['error']==0){
+
+                    $file_name = 'sku_img/';
+                    $name = $file_name . request()->time().rand(0,99999) . '.png';
+                    $names = ROOT_PATH .Config('c_pub.img');
+                    //防止文件名重复
+                    $filename = $names . $name;
+                    //转码，把utf-8转成gb2312,返回转换后的字符串， 或者在失败时返回 FALSE。
+                    $filename =iconv("UTF-8","gb2312",$filename);
+                    
+                    if (!file_exists($names . $file_name)){
+                        mkdir($names . $file_name,0777,true);
+                    }
+                    //保存文件,   move_uploaded_file 将上传的文件移动到新位置
+                    move_uploaded_file($value["tmp_name"],$filename);//将临时地址移动到指定地址
+                    $name = '\public\upload\images\\'.$name;
+                    $data_spec[$key]['img'] = ['key' => 'img', 'value' => $name];
+                }else{
+                    $data_spec[$key]['img'] = ['key' => 'img', 'value' => ''];
+                }
+            }
+            //判断哪个修改了哪个没修改
+            foreach($image as $key=>$val){
+                if(!$val){
+                    foreach($data_spec as $k=>$v){
+                        $image[$key] = $v['img']['value'];
+                        unset($data_spec[$k]);
+                        break;
+                    }
+                }
+            }
+            foreach($image as $key=>$val){
+                $data_spec[$key]['img']['key'] = 'img';
+                $data_spec[$key]['img']['value'] = $val;
+            }
             // 规格id
             $sku_id_arr = $data['sku_id'];
             for ($n = 0; $n < count($sku_id_arr); $n++) {
@@ -375,32 +424,31 @@ class Goods extends Common
             
             $skuRes = setSukMore2($goods_id, $data_spec);
             
-            if( isset( $data['goods_attr'] ) ){
-                if( in_array( 6 , $data['goods_attr']  ) ){
-                    if( !in_array( 6 , $info['goods_attr']  ) ){
-                        //限时购redis
-                        foreach($data_spec as $key=>$value){
-                            foreach($value as $k=>$v){
-                                if($k == 'sku_id'){
-                                    $sku_id = $value['sku_id'];
-                                }
-                                if(isset($v['key']) && $v['key'] == '库存' ){
-                                    $redis = $this->getRedis();
-                                    $redis->del("GOODS_LIMITED_{$sku_id}");
-                                    for($i=0;$i<$v['value'];$i++){
-                                        $redis->rpush("GOODS_LIMITED_{$sku_id}",1);
-                                    }
-                                }
-                            }
-                        }
-                        $data['stock1'] = array_sum($data['goods_td']['num']);
-                    }
-                    $data['limited_start'] = strtotime( $data['limited_start'] );
-                    $data['limited_end'] = strtotime( $data['limited_end'] );
-                }
-                $data['goods_attr'] = implode( ',' , $data['goods_attr'] );
-            }
-
+            // if( isset( $data['goods_attr'] ) ){
+            //     if( in_array( 6 , $data['goods_attr']  ) ){
+            //         if( !in_array( 6 , $info['goods_attr']  ) ){
+            //             //限时购redis
+            //             foreach($data_spec as $key=>$value){
+            //                 foreach($value as $k=>$v){
+            //                     if($k == 'sku_id'){
+            //                         $sku_id = $value['sku_id'];
+            //                     }
+            //                     if(isset($v['key']) && $v['key'] == '库存' ){
+            //                         $redis = $this->getRedis();
+            //                         $redis->del("GOODS_LIMITED_{$sku_id}");
+            //                         for($i=0;$i<$v['value'];$i++){
+            //                             $redis->rpush("GOODS_LIMITED_{$sku_id}",1);
+            //                         }
+            //                     }
+            //                 }
+            //             }
+            //             $data['stock1'] = array_sum($data['goods_td']['num']);
+            //         }
+            //         $data['limited_start'] = strtotime( $data['limited_start'] );
+            //         $data['limited_end'] = strtotime( $data['limited_end'] );
+            //     }
+            //     $data['goods_attr'] = implode( ',' , $data['goods_attr'] );
+            // }
             //图片处理
             if( isset($data['img']) && !empty($data['img'][0])){
                 foreach ($data['img'] as $key => $value) {
@@ -486,27 +534,19 @@ class Goods extends Common
             $sku_attr = explode(',', trim(trim($val['sku_attr'], '{'), '}'));
             $spec_info[$key]['sku_id'] = $val['sku_id'];
             
+            
             foreach ($sku_attr as $k => $v) {
                 $sku_attr_arr = explode(':', $v);
                 $spec_th[$k] = $spec_arr[$sku_attr_arr[0]];
                 $spec_info[$key][] = $spec_attr_arr[$sku_attr_arr[1]];
             }
-            
+            $spec_info[$key]['img'] = $val['img'];//图片
             if ($sku_info[$key]['price'] !== '') {
                 // $spec_info[$key]['com_price'] = '1|'.$val['price'];
                 $spec_info[$key]['com_price'] = $val['price'];
             }
-            
-            $spec_info[$key]['groupon_price'] = $val['groupon_price'];
-
             $spec_info[$key]['inventory'] = $val['inventory'];
-            $spec_info[$key]['frozen_stock'] = $val['frozen_stock'];
         }
-        
-        $spec_th[] = '价格';
-        $spec_th[] = '拼团价格';
-        $spec_th[] = '库存';
-        $spec_th[] = '冻结库存';
         $info['th'] = $spec_th;
         $info['td'] = $spec_info;
         return $info;
@@ -1580,5 +1620,22 @@ class Goods extends Common
         $result['status'] = 1;
         $result['msg'] = '删除成功';
         return json($result);
+    }
+
+    //多文件上传
+    public function upload_move(){
+        // 获取表单上传文件
+        $files = request()->file('img_td[img]');
+        foreach($files as $file){
+            // 移动到框架应用根目录/public/uploads/ 目录下
+            $info = $file->move(ROOT_PATH . 'public' . DS . 'uploads');
+            if($info){
+                $data['url'][] = '/public/uploads/goods/'. $info->getExtension(); 
+            }else{
+                // 上传失败获取错误信息
+                $data['error'][]= $file->getError();
+            }    
+        }
+        return json($data);
     }
 }
