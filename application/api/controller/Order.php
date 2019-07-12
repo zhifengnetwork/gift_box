@@ -363,6 +363,8 @@ class Order extends ApiBase
                 $order_goods[$i]['sku_id'] = $v['sku_id'];
                 $order_goods[$i]['spec_key_name'] = $v['spec_key_name'];
                 $order_goods[$i]['delivery_id'] = $goods_res['delivery_id'];
+                $order_goods[$i]['taxes'] = $goods_res['taxes'];
+                $order_goods[$i]['discount'] = $goods_res['discount'];
                 $i++;
             }
         }
@@ -662,7 +664,7 @@ class Order extends ApiBase
 //        }
 //        $order['order_refund']['count_num'] = 0;
         $order['goods_total_amount']=0;
-        $order['goods_res'] = Db::table('order_goods')->field('goods_id,goods_name,goods_num,spec_key_name,goods_price')->where('order_id',$order['order_id'])->select();
+        $order['goods_res'] = Db::table('order_goods')->field('goods_id,goods_name,goods_num,spec_key_name,goods_price,taxes,discount')->where('order_id',$order['order_id'])->select();
         foreach($order['goods_res'] as $key=>$value){
 //            $order['order_refund']['count_num'] += $value['goods_num'];
             $order['goods_total_amount']=$order['goods_total_amount']+($value['goods_num']*$value['goods_price']);

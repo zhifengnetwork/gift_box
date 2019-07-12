@@ -98,7 +98,7 @@ class Cart extends Model
     public function cartList2($where = array())
     {
 
-        $cart_list = $this->field('id,selected,user_id,groupon_id,goods_id,goods_sn,goods_name,market_price,goods_price,member_goods_price,subtotal_price,sku_id,goods_num,spec_key_name')->where($where)->order('id DESC')->select();
+        $cart_list = $this->field('id,selected,user_id,groupon_id,goods_id,goods_sn,goods_name,market_price,goods_price,member_goods_price,subtotal_price,sku_id,goods_num,spec_key_name,taxes,discount')->where($where)->order('id DESC')->select();
 
         $arr = [];
         if($cart_list){
@@ -132,6 +132,8 @@ class Cart extends Model
                     $arr[$value['goods_id']]['market_price'] = $value['market_price'];
                     $arr[$value['goods_id']]['subtotal_price'] = $value['subtotal_price'];
                     $arr[$value['goods_id']]['goods_num'] = $value['goods_num'];
+                    $arr[$value['goods_id']]['taxes'] = $value['taxes'];
+                    $arr[$value['goods_id']]['discount'] = $value['discount'];
                     $arr[$value['goods_id']]['spec'][] = $value;
                 }
             }
