@@ -226,6 +226,7 @@ class Order extends ApiBase
         $cart_str = input("cart_id");
         $addr_id = input("address_id/d",0);
         $pay_type = input("pay_type/d",0);
+        $order_type = input("order_type/d",0); //订单类型，0犒劳自己，1：赠送单人，2：群抢
         $user_note = input("user_note", '', '');
         /* if($pay_type==1||$pay_type==4){ //没有余额支付，不需要支付密码
             $pwd        = input('pwd/s','');
@@ -479,6 +480,7 @@ class Order extends ApiBase
         if(!$user_id){
             $this->ajaxReturn(['status' => -1 , 'msg'=>'用户不存在','data'=>'']);
         }
+        $order_type = input('order_type/s','0'); //订单类型，0犒劳自己，1：赠送单人，2：群抢
         $type = input('type/d',0);
         $page = input('page/d',1);
         $num = input('num/d',6);
@@ -525,6 +527,7 @@ class Order extends ApiBase
         }
 
         $where['o.user_id'] = $user_id;
+        $where['o.order_type'] = ['in',$order_type];
         //$where['gi.main'] = 1;
         $where['o.deleted'] = 0;
 
@@ -535,7 +538,7 @@ class Order extends ApiBase
                         ->where($where)
                         ->group('og.order_id')
                         ->order('o.order_id DESC')
-                        ->field('o.order_id,o.add_time,o.order_sn,og.goods_name,gi.picture img,og.spec_key_name,og.goods_price,g.original_price,og.goods_num,o.order_status,o.pay_status,o.shipping_status,pay_type,o.total_amount,o.shipping_price')
+                        ->field('o.order_id,o.add_time,o.order_sn,og.goods_name,gi.picture img,og.spec_key_name,og.goods_price,g.original_price,og.goods_num,o.order_status,o.pay_status,o.shipping_status,pay_type,o.total_amount,o.shipping_price,o.order_type')
                         ->paginate($num,false,$pageParam)
                         ->toArray();
         if($order_list['data']){
