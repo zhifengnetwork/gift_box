@@ -20,7 +20,7 @@ class Gift extends ApiBase
         $order_id = input('order_id/d',0);
         $join_type = input('join_type/d',0); //参与类型，1：领取，2：参与群抢
 
-        $order = Db::name('order')->field('order_status,shipping_status,pay_status,order_type,lottery_time,giving_time,overdue_time')->where(['order_id'=>$order_id,'user_id'=>$user_id,'deleted'=>0])->find();
+        $order = Db::name('order')->field('order_status,shipping_status,pay_status,order_type,lottery_time,giving_time,overdue_time,gift_uid')->where(['order_id'=>$order_id,'user_id'=>$user_id,'deleted'=>0])->find();
         if(!$order){
             $this->ajaxReturn(['status' => -1 , 'msg'=>'订单不存在','data'=>'']);
         }elseif($order['pay_status'] != 1){
@@ -40,6 +40,8 @@ class Gift extends ApiBase
                 $this->ajaxReturn(['status' => -1 , 'msg'=>'该群抢已经开奖啦！','data'=>'']);
             elseif(($order['order_type'] == 2) && ($order['overdue_time'] > time()))
                 $this->ajaxReturn(['status' => -1 , 'msg'=>'该订单赠送已过期啦！','data'=>'']);
+            elseif($order['gift_uid'])
+                $this->ajaxReturn(['status' => -1 , 'msg'=>'该订单已有领取人啦！','data'=>'']);
         }elseif($order['giving_time'] == 0){
             $this->ajaxReturn(['status' => -1 , 'msg'=>'该订单未赠送！','data'=>'']);
         }
@@ -54,6 +56,30 @@ class Gift extends ApiBase
 
         $res = Db::name('gift_order_join')->insertGetId($data);
         if($res){
+            if($join_type == 1)M('Order')->where(['order_id'=>$order_id])->update(['gift_uid'=>$user_id]);
+            $this->ajaxReturn(['status' => 1 , 'msg'=>'请求成功！','data'=>$res]); 
+        }else{
+            $this->ajaxReturn(['status' => 1 , 'msg'=>'请求失败！','data'=>'']); 
+        }
+    }
+
+    //添加地址
+    public function set_address(){
+        $user_id = $this->get_user_id();
+        if(!$user_id){
+            $this->ajaxReturn(['status' => -2 , 'msg'=>'用户不存在','data'=>'']);
+        }
+
+        $joinid = input('joinid/d',0); //参与ID
+        $addressid = input('addressid/d',0); //地址ID
+        $info = M('gift_order_join')->field('id')->where(['status'=>1,'user_id'=>$user_id])->find($joinid);
+        if(!$info)
+            $this->ajaxReturn(['status' => -2 , 'msg'=>'不存在此次参与','data'=>'']);
+        if(!M('user_address')->where(['user_id'=>$user_id])->find($addressid))
+            $this->ajaxReturn(['status' => -2 , 'msg'=>'不存在此用户地址','data'=>'']);    
+
+        $res = Db::name('gift_order_join')->where(['id'=>$joinid])->update(['join_status'=>1,'addressid'=>$addressid]);
+        if(false !== $res){
             $this->ajaxReturn(['status' => 1 , 'msg'=>'请求成功！','data'=>'']); 
         }else{
             $this->ajaxReturn(['status' => 1 , 'msg'=>'请求失败！','data'=>'']); 
@@ -68,7 +94,7 @@ class Gift extends ApiBase
         }
 
         $order_id = input('order_id/d',0);
-        $order = Db::name('order')->field('order_status,shipping_status,pay_status,order_type,lottery_time,giving_time,overdue_time')->where(['order_id'=>$order_id,'user_id'=>$user_id,'deleted'=>0])->find();
+        $order = Db::name('order')->field('order_status,shipping_status,pay_status,order_type,lottery_time,giving_time,overdue_time,gift_uid')->where(['order_id'=>$order_id,'user_id'=>$user_id,'deleted'=>0])->find();
         
         if(!$order){
             $this->ajaxReturn(['status' => -1 , 'msg'=>'订单不存在','data'=>'']);
@@ -85,6 +111,8 @@ class Gift extends ApiBase
                 $this->ajaxReturn(['status' => -1 , 'msg'=>'该订单已赠送过啦！','data'=>'']);
             elseif(($order['order_type'] == 2) && ($order['overdue_time'] < time()))
                 $this->ajaxReturn(['status' => -1 , 'msg'=>'该订单已赠送过啦！','data'=>'']);
+            elseif($order['gift_uid'])
+                $this->ajaxReturn(['status' => -1 , 'msg'=>'该订单已有领取人啦！','data'=>'']);
         }
         
         //盒子发送多久开奖（分钟）
