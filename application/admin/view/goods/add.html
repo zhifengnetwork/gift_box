@@ -88,14 +88,14 @@
 
                         <div class="row cl">
                             <label class="col-sm-2 control-label"><span style="color:red;">*</span>{:lang(\'规格\')}:</label>
-                            <div class="col-sm-10">
+                            <div class="col-sm-9">
                                 <div class="check-box" style="padding-left: 10px;padding-bottom: 5px;">
                                     <input type="checkbox" checked id="checkbox-1" disabled>
                                     <label for="checkbox-1" >{:lang(\'规格\')}</label>
                                   </div>
                                 <button  class="btn btn-primary radius" type="button" style="margin-bottom: 10px;" onclick="addCol();">{:lang(\'其他属性\')}</button>
                                 <button  class="btn btn-primary radius" type="button" style="margin-bottom: 10px; float: right;" onclick="addRow();">{:lang(\'添加行\')}</button>
-                                <div>
+                                <div> 
                                     <table id="goods_table" class="table table-border table-bordered table-striped">
                                         <thead>
                                          <tr> 
@@ -417,7 +417,7 @@ function ajaxGetCategory(obj){
 
 
 var rowCount = $("#goods_table tbody").find("tr").length - 1; //行数
-var colCount = $("#goods_table thead").find("tr").find("th").length - 4; //列数
+var colCount = $("#goods_table thead").find("tr").find("th").length - 5; //列数
 var col_id = 0;
 // 添加行
 function addRow(){
