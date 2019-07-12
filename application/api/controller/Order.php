@@ -693,7 +693,6 @@ class Order extends ApiBase
         if(!$user_id){
             $this->ajaxReturn(['status' => -1 , 'msg'=>'用户不存在','data'=>'']);
         }
-
         $order_id = input('order_id');
         $status = input('status');
 
@@ -701,7 +700,7 @@ class Order extends ApiBase
             $this->ajaxReturn(['status' => -2 , 'msg'=>'参数错误！','data'=>'']);
         }
 
-        $order = Db::table('order')->where('order_id',$order_id)->where('user_id',$user_id)->field('order_status,groupon_id,pay_status,shipping_status')->find();
+        $order = Db::table('order')->where('order_id',$order_id)->where('user_id',$user_id)->field('order_id,order_sn,order_status,groupon_id,pay_status,shipping_status,order_amount')->find();
         if(!$order) $this->ajaxReturn(['status' => -2 , 'msg'=>'订单不存在！','data'=>'']);
 
         if( $order['order_status'] == 1 && $order['pay_status'] == 0 && $order['shipping_status'] == 0 ){
@@ -719,21 +718,6 @@ class Order extends ApiBase
                 }else if($goods['less_stock_type'] == 2){
                     Db::table('goods_sku')->where('sku_id',$value['sku_id'])->setDec('frozen_stock',$value['goods_num']);
                 }
-                //团购
-                if( $order['groupon_id'] ){
-                    $redis = getRedis();
-                    $redis->rpush("GOODS_GROUP_{$order['groupon_id']}",1);
-                }
-                //限时购
-                if($goods['goods_attr']){
-                    $attr = explode(',',$goods['goods_attr']);
-                    if(in_array(6,$attr)){
-                        $redis = getRedis();
-                        for($i=0;$i<$value['goods_num'];$i++){
-                            $redis->rpush("GOODS_LIMITED_{$value['sku_id']}",1);
-                        }
-                    }
-                }
             }
             if($res){
                 Db::commit();
@@ -742,8 +726,73 @@ class Order extends ApiBase
             }
         }else if( $order['order_status'] == 1 && $order['pay_status'] == 1 && $order['shipping_status'] == 1 ){
             //确认收货
+            Db::startTrans();
+
             if($status != 3) $this->ajaxReturn(['status' => -2 , 'msg'=>'参数错误！','data'=>'']);
-            $res = Db::table('order')->update(['order_id'=>$order_id,'order_status'=>4,'shipping_status'=>3]);
+            $res = Db::table('order')->update(['order_id'=>$order_id,'order_status'=>2,'shipping_status'=>3]);
+            if (!$res) {
+                Db::rollback();
+                $this->ajaxReturn(['status' => -2, 'msg' => '失败！']);
+            }
+            $member = Db::name('member')->where(['id' => $user_id])->field('is_vip')->find();
+            if(!$member['is_vip']){
+                $order_info = Db::table('order')->where(['user_id' => $user_id,'pay_status'=>1,'shipping_status'=>3, 'order_status' => 2])->whereOr(['order_status'=> 4])->field('count(order_id) as order_count,sum(goods_price) as ordermoney')->find();
+                if($order_info['ordermoney']>Sysset::getVipAmount()){
+                    Db::name('member')->where(['id' => $user_id])->update(['is_vip' => 1]);
+                }
+            }
+            // 释放记录后加释放日志
+            $percent = PointLogic::getSettingPercent();
+            $released = bcmul($order['order_amount'], $percent, 2);//释放积分
+            $released = $released > 0 ? $released : 0.01;
+            $unreleased = bcsub($order['order_amount'], $released, 2);
+            $finished = 0;
+            if ($unreleased <= 0) {
+                $unreleased = 0;
+                $finished = 1;
+                $released = $order['order_amount'];
+            }
+
+            $releaseId = Db::name('point_release')->insertGetId([
+                'user_id' => $user_id,
+                'order_id' => $order['order_id'],
+                'order_sn' => $order['order_sn'],
+                'amount' => $order['order_amount'],
+                'released' => $released,
+                'is_finished' => $finished,
+                'unreleased' => $unreleased,
+                'create_time' => time(),
+                'update_time' => time()
+            ]);
+            if (!$releaseId) {
+                Db::rollback();
+                $this->ajaxReturn(['status' => -2, 'msg' => '失败！']);
+            }
+            // 用户的待收货积分-订单金额，待释放积分+该订单未释放积分，可用积分+该订单已释放积分
+            $member = Db::name('member')->where(['id' => $user_id])->field('dsh_point,dsf_point,ky_point')->find();
+            $dsh_point = bcsub($member['dsh_point'], $order['order_amount'], 2);
+            $dsh_point = $dsh_point > 0 ? $dsh_point : 0;
+            $dsf_point = bcadd($member['dsf_point'], $unreleased, 2);
+            $ky_point = bcadd($member['ky_point'], $released, 2);
+            $result = Db::name('member')->where(['id' => $user_id])->update(['dsh_point' => $dsh_point > 0 ? $dsh_point : 0, 'dsf_point' => $dsf_point, 'ky_point' => $ky_point]);
+            if (!$result) {
+                Db::rollback();
+                $this->ajaxReturn(['status' => -2, 'msg' => '失败！']);
+            }
+            $res = Db::name('point_log')->insert([
+                'type' => 6,
+                'user_id' => $user_id,
+                'point' => $released,
+                'operate_id' => $releaseId,
+                'calculate' => 1,
+                'before' => $member['ky_point'],
+                'after' => $ky_point,
+                'data' => json_encode(['unreleased' => $unreleased]),
+                'create_time' => time()
+            ]);
+            if (!$res) Db::rollback();
+            Db::commit();
+
         }else if( ($order['order_status'] == 4 && $order['pay_status'] == 1 && $order['shipping_status'] == 3) || $order['order_status'] == 3 ){
             //删除订单
             if($status != 4 && $status != 5) $this->ajaxReturn(['status' => -2 , 'msg'=>'参数错误！','data'=>'']);
