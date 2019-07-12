@@ -474,87 +474,89 @@ class Order extends ApiBase
     * 订单列表
     */
     public function order_list()
-    {   
+    {
         $user_id = $this->get_user_id();
         if(!$user_id){
             $this->ajaxReturn(['status' => -1 , 'msg'=>'用户不存在','data'=>'']);
         }
-        $type = input('type');
-        if(!$type) $this->ajaxReturn(['status' => -2 , 'msg'=>'参数错误！','data'=>'']);
-        
-        $page = input('page',1);
-        
+        $type = input('type/d',0);
+        $page = input('page/d',1);
+        $num = input('num/d',6);
         $where = [];
         $pageParam = ['query' => []];
-
-        if ($type=='dfk'){
+        $pageParam['page']=$page;
+        if ($type == 7){
             $where = array('order_status' => 1 ,'pay_status'=>0 ,'shipping_status' =>0); //待付款
             $pageParam['query']['order_status'] = 1;
             $pageParam['query']['pay_status'] = 0;
             $pageParam['query']['shipping_status'] = 0;
         }
-        if ($type=='dfh'){
+        if ($type == 1){
             $where = array('order_status' => 1 ,'pay_status'=>1 ,'shipping_status' =>0); //待发货
             $pageParam['query']['order_status'] = 1;
             $pageParam['query']['pay_status'] = 1;
             $pageParam['query']['shipping_status'] = 0;
         }
-        if ($type=='dsh'){
+        if ($type == 2){
+            $where = array('order_status' => ['in',[0,1]] ,'pay_status'=>0); //待支付
+            $pageParam['query']['order_status'] = ['in',[0,1]];
+            $pageParam['query']['pay_status'] = 0;
+        }
+        if ($type == 3){
             $where = array('order_status' => 1 ,'pay_status'=>1 ,'shipping_status' =>1); //待收货
             $pageParam['query']['order_status'] = 1;
             $pageParam['query']['pay_status'] = 1;
             $pageParam['query']['shipping_status'] = 1;
         }
-        if ($type=='dpj'){
-            $where = array('order_status' => 4 ,'pay_status'=>1 ,'shipping_status' =>3); //待评价
-            $pageParam['query']['order_status'] = 4;
+        if ($type == 4){
+            $where = array('order_status' => 2 ,'pay_status'=>1 ,'shipping_status' =>3); //待评价
+            $pageParam['query']['order_status'] = 2;
             $pageParam['query']['pay_status'] = 1;
             $pageParam['query']['shipping_status'] = 3;
         }
-        if ($type=='tk'){
+        if ($type == 5){
             $where = array('order_status' => [['=',6],['=',7],['=',8],'or'] ,'pay_status'=>1); //退款/售后
             $pageParam['query']['order_status'] = [['=',6],['=',7],['=',8],'or'];
             $pageParam['query']['pay_status'] = 1;
         }
-        if ($type=='yqx'){
+        if ($type == 6){
             $where = array('order_status' => 3); //已取消
             $pageParam['query']['order_status'] = 3;
         }
 
         $where['o.user_id'] = $user_id;
-        $where['gi.main'] = 1;
+        //$where['gi.main'] = 1;
         $where['o.deleted'] = 0;
 
         $order_list = Db::table('order')->alias('o')
                         ->join('order_goods og','og.order_id=o.order_id','LEFT')
-                        ->join('goods_img gi','gi.goods_id=og.goods_id','LEFT')
+                        ->join('goods_img gi','gi.goods_id=og.goods_id and gi.main=1','LEFT')
                         ->join('goods g','g.goods_id=og.goods_id','LEFT')
                         ->where($where)
                         ->group('og.order_id')
                         ->order('o.order_id DESC')
-                        ->field('o.order_id,o.order_sn,og.goods_name,gi.picture img,og.spec_key_name,og.goods_price,g.original_price,og.goods_num,o.order_status,o.pay_status,o.shipping_status,pay_type')
-                        ->paginate(10,false,$pageParam)
+                        ->field('o.order_id,o.add_time,o.order_sn,og.goods_name,gi.picture img,og.spec_key_name,og.goods_price,g.original_price,og.goods_num,o.order_status,o.pay_status,o.shipping_status,pay_type,o.total_amount,o.shipping_price')
+                        ->paginate($num,false,$pageParam)
                         ->toArray();
-                        
         if($order_list['data']){
             foreach($order_list['data'] as $key=>&$value){
-
-                $value['comment'] = 0; 
+                $value['add_time']=date('Y-m-d H:i:s',$value['add_time']);
+                $value['img']= $value['img'] ? (SITE_URL.Config('c_pub.img').$value['img']) : '';
+                $value['comment'] = 0;
                 if( $value['order_status'] == 1 && $value['pay_status'] == 0 && $value['shipping_status'] == 0 ){
                     $value['status'] = 1;   //待付款
                 }else if( $value['order_status'] == 1 && $value['pay_status'] == 1 && $value['shipping_status'] == 0 ){
                     $value['status'] = 2;   //待发货
                 }else if( $value['order_status'] == 1 && $value['pay_status'] == 1 && $value['shipping_status'] == 1 ){
                     $value['status'] = 3;   //待收货
-                }else if( $value['order_status'] == 4 && $value['pay_status'] == 1 && $value['shipping_status'] == 3 ){
+                }else if( $value['order_status'] == 2 && $value['pay_status'] == 1 && $value['shipping_status'] == 3 ){
                     $value['status'] = 4;   //待评价
-                    
                     //是否评价
                     $comment = Db::table('goods_comment')->where('order_id',$value['order_id'])->find();
                     if($comment){
                         $value['comment'] = 1;
                     }else{
-                        $value['comment'] = 0; 
+                        $value['comment'] = 0;
                     }
 
                 }else if( $value['order_status'] == 3 && $value['pay_status'] == 0 && $value['shipping_status'] == 0 ){
@@ -568,7 +570,6 @@ class Order extends ApiBase
                 }
             }
         }
-        
         $this->ajaxReturn(['status' => 1 , 'msg'=>'获取成功','data'=>$order_list['data']]);
     }
 

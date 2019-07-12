@@ -290,6 +290,16 @@ class Query
         return $this->connection->getLastSql();
     }
 
+     /**
+     * 快捷获取最近一次查询的sql语句
+     * @access public
+     * @return string
+     */
+    public function _sql()
+    {
+        return $this->getLastSql();
+    }       
+
     /**
      * 执行数据库事务
      * @access public
