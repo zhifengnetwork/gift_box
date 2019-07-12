@@ -43,7 +43,7 @@ class Common extends Controller
         $this->view->lefts_menu  = self::lefts_menu($leftmenu);
         $this->view->left_menu   = $leftmenu;
         
-        View::share('meta_title', 'GAME');
+        View::share('meta_title', '电子礼盒后台管理');
     }
 
     /*
