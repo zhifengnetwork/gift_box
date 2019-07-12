@@ -17,17 +17,24 @@ class Login extends \think\Controller
      */
     public function index()
     {
+        //避免没有权限无限循环跳跳跳
+        Session::set('admin_user_auth', '');
         if (Request::instance()->isPost()) {
             $username = input('post.username');
             $password = input('post.password');
-
+            $code = input('post.code');
+            if(!$code){
+                $this->error('验证码不能为空');
+            }
             // 实例化验证器
             $validate = Loader::validate('Login');
             // 验证数据
-            $data = ['username' => $username, 'password' => $password, 'captcha' => input('captcha')];
-            // 验证
-            if (!$validate->check($data)) {
-                return $this->error($validate->getError());
+            $data = ['username' => $username, 'password' => $password];
+            // 验证码
+            $Verify = new \think\Verify();
+            $yzm = $Verify->check($code);
+            if($yzm == false){
+                $this->error('验证码错误');
             }
 
             $where['username'] = $username;
@@ -60,4 +67,20 @@ class Login extends \think\Controller
         session('ALL_MENU_LIST', null);
         $this->redirect('login/index');
     }
+
+    //验证码TP3的
+    public function verify() {
+        $config = array(
+            'codeSet'   =>  '123456789',   // 验证码字符集合
+            'useImgBg' => false,           // 使用背景图片
+            'fontSize' => 14,              // 验证码字体大小(px)
+            'useCurve' => false,          // 是否画混淆曲线
+            'useNoise' => false,          // 是否添加杂点
+            'length' => 4,                 // 验证码位数
+            'bg' => array(255, 255, 255),  // 背景颜色
+        );
+        $Verify = new \think\Verify($config);
+        $Verify->entry();
+    }
+
 }

@@ -15,10 +15,10 @@ class BoxCate extends Common
      */
     public function index()
     {
-        $list = Db::table('box_cate')->where('pid',0)->order('sort asc')->paginate(10);;
-        foreach($list as $key=>$val){
-            $list[$key]['list'] = Db::table('box_cate')->where('pid',$val['id'])->order('sort')->select();
-        }
+        $list = Db::table('box_cate')->where('pid',0)->order('sort asc')->paginate(10)->each(function($v,$k){
+            $v['list'] = Db::table('box_cate')->where('pid',$v['id'])->order('sort')->select();
+            return $v;
+        });;
         $this->assign('list',$list);
         return $this->fetch();
     }

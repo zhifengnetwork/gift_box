@@ -18,9 +18,6 @@ class Common extends Controller
      */
     public function _initialize()
     {
-        $session['mgid']     = 26;
-        $session['username'] = 'xiaozhi';
-        Session::set('admin_user_auth',$session);
         config((new Config)->getConfig());
         if (session('admin_user_auth')) {
             if (!defined('UID')) {

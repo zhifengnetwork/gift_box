@@ -817,3 +817,4 @@ function checkAttr($attrs,$attr_id,$spec_id){
     }
     return false;
 }
+
