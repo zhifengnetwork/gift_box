@@ -145,4 +145,16 @@ class Index extends ApiBase
         $this->ajaxReturn(['status' => 1, 'msg' => '获取数据成功','data'=>$phone]);
     }
 
+    //获取随机一组俏皮话
+    public function getJoke()
+    {
+        $list =  Db::name('turntable_joke')->field('status,addtime',true)->where('status',0)->select();
+        if(count($list) > 1){
+            $data = $list[rand(0,count($list)-1)];
+        }else{
+            $data = $list;
+        }
+        $this->ajaxReturn(['status' => 1, 'msg' => '获取数据成功','data'=>$data]);
+    }
+
 }
