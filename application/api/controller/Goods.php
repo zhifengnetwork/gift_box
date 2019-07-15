@@ -94,6 +94,10 @@ class Goods extends ApiBase
         }
 
         $goods_id = input('goods_id');
+        if(!$goods_id){
+            $this->ajaxReturn(['status' => -1 , 'msg'=>'goods_id不存在','data'=>'']);
+        }
+
 
         $goodsRes = Db::table('goods')->alias('g')
                     ->join('goods_attr ga','FIND_IN_SET(ga.id,g.goods_attr)','LEFT')
