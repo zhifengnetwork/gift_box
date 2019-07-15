@@ -69,7 +69,7 @@ class ApiBase extends Controller
         $payload = array(
             "iss" => "DC",
             "iat" => $time,
-            "exp" => (($endtime ? $endtime : ($time + 36000)) , 
+            "exp" => (($endtime ? $endtime : ($time + 36000))),
             "user_id" => $user_id,
         );
         $key = 'zhelishimiyao';
