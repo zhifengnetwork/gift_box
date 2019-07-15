@@ -515,7 +515,7 @@ class Order extends ApiBase
             $where['goj.status'] = 1;   
             $where['goj.user_id'] = $user_id; 
             $where['goj.join_status'] = ['notin',[4]];   
-            $where['goj.addressid'] = 0;   
+            $where['goj.addressid'] = ['gt',0];   
 
             $order_list = Db::table('gift_order_join')->alias('goj')
             ->join('order o','goj.order_id=o.order_id','LEFT')
