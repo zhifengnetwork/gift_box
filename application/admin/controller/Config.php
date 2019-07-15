@@ -26,6 +26,7 @@ class Config extends Common
         $this->assign('info',$info);
         return $this->fetch();
     }
+    
     /**
      * 基本配置
      */
