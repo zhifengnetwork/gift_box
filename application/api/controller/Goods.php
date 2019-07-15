@@ -117,6 +117,9 @@ class Goods extends ApiBase
 
         //组图
         $goodsRes['img'] = Db::table('goods_img')->where('goods_id',$goods_id)->field('picture')->order('main DESC')->select();
+        foreach($goodsRes['img'] as $k=>$v){
+            $v['picture'] && ($goodsRes['img'][$k]['picture'] = SITE_URL . $v['picture']);
+        }
         
         //收藏
         $goodsRes['collection'] = Db::table('collection')->where('user_id',$user_id)->where('goods_id',$goods_id)->find();
