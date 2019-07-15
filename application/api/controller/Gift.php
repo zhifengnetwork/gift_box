@@ -113,6 +113,7 @@ class Gift extends ApiBase
         }
 
         $order_id = input('order_id/d',0);
+        $act = input('act/d',0);
         $order = Db::name('order')->field('order_status,shipping_status,pay_status,order_type,lottery_time,giving_time,overdue_time,gift_uid')->where(['order_id'=>$order_id,'user_id'=>$user_id,'deleted'=>0])->find();
         
         if(!$order){
@@ -133,6 +134,9 @@ class Gift extends ApiBase
             elseif($order['gift_uid'])
                 $this->ajaxReturn(['status' => -1 , 'msg'=>'该订单已有领取人啦！','data'=>'']);
         }
+
+        if($act == 1)
+            $this->ajaxReturn(['status' => 1 , 'msg'=>'可以分享！','data'=>'']);
         
         //盒子发送多久开奖（分钟）
         $start_time = M('Config')->where(['id'=>50])->value('value'); 
