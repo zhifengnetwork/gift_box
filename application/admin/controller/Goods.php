@@ -303,7 +303,7 @@ class Goods extends Common
         if($info['goods_attr']){
             $info['goods_attr'] = explode(',',$info['goods_attr']);
         }
-        
+        $data_spec = array();
         if( Request::instance()->isPost() ){
             $data = input('post.');
             $image = $data['sku_img'];

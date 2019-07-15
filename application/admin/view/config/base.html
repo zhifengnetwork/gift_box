@@ -149,6 +149,12 @@
                             </div>
                         </div>
                         <div class="form-group">
+                            <label class="col-sm-2 control-label">纳税人识别号说明</label>
+                            <div class="col-sm-9">
+                                <script id="editor2" name="identification" type="text/plain" style="width:100%;height:400px;">{$info.identification}</script> 
+                            </div>
+                        </div>
+                        <div class="form-group">
                             <label class="col-sm-2 control-label">商品详情赠礼须知</label>
                             <div class="col-sm-9">
                                 <script id="editor" name="gift_notice" type="text/plain" style="width:100%;height:400px;">{$info.gift_notice}</script> 
@@ -176,6 +182,18 @@
 <script>
     //实例化富文本编辑器
     var ue = UE.getEditor('editor',{
+        initialFrameWidth:650,
+        initialFrameHeight:180,
+        toolbars: [[
+            'fullscreen', 'source', '|', 'undo', 'redo', '|', 'searchreplace' ,
+            'bold', 'italic', 'underline', 'fontborder', 'strikethrough', 'superscript', 'subscript', 'removeformat', 'formatmatch','pasteplain', '|', 'forecolor', 'backcolor', 'insertorderedlist', 'insertunorderedlist', 'selectall', 'cleardoc', '|',
+            'rowspacingtop', 'rowspacingbottom', 'lineheight', 'paragraph', 'fontfamily', 'fontsize', 'indent', '|',
+            'justifyleft', 'justifycenter', 'justifyright', 'justifyjustify', '|', 'touppercase', 'tolowercase', '|',
+            'link', 'unlink', 'insertimage', 'insertvideo', 'music', 'attachment', 'map', 'gmap',
+        ]]
+    });
+    //实例化富文本编辑器
+    var ue = UE.getEditor('editor2',{
         initialFrameWidth:650,
         initialFrameHeight:180,
         toolbars: [[
