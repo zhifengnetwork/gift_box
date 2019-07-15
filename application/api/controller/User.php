@@ -975,7 +975,7 @@ class User extends ApiBase
         $info = Db::name('member')->field('nickname,sex,birthday,introduce,avatar')->where('id',$user_id)->find();
         $info['avatar'] = $info['avatar']?SITE_URL.$info['avatar']:'';
         if($res){
-            $this->ajaxReturn(['status' => 1 , 'msg'=>'修改成功','data'=>$info);
+            $this->ajaxReturn(['status' => 1 , 'msg'=>'修改成功','data'=>$info]);
         }else{
             $this->ajaxReturn(['status' => -1 , 'msg'=>'数据未改变','data'=>$info]);
         }
