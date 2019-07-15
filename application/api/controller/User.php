@@ -966,12 +966,27 @@ class User extends ApiBase
     public function edit_user()
     {
         $user_id = $this->get_user_id();
-        $data['nickname'] = input('nickname');
-        $data['sex'] = input('sex');
-        $data['birthday'] = input('birthday');
-        $data['introduce'] = input('introduce');
-        $data['avatar'] = input('avatar');
-        $res = Db::name('member')->where('id',$user_id)->update($data);
+        $post = input('post.');
+        $data = array();
+        $res = '';
+        if(isset($post['nickname'])){
+            $data['nickname'] = $post['nickname'];
+        }
+        if(isset($post['birthday'])){
+            $data['birthday'] = $post['birthday'];
+        }
+        if(isset($post['introduce'])){
+            $data['introduce'] = $post['introduce'];
+        }
+        if(isset($post['avatar'])){
+            $data['avatar'] =  str_replace(SITE_URL,'',$post['avatar']);
+        }
+        if(isset($post['sex'])){
+            $data['sex'] = $post['sex'];
+        }
+        if($data){
+            $res = Db::name('member')->where('id',$user_id)->update($data);
+        }
         $info = Db::name('member')->field('nickname,sex,birthday,introduce,avatar')->where('id',$user_id)->find();
         $info['avatar'] = $info['avatar']?SITE_URL.$info['avatar']:'';
         if($res){
