@@ -164,4 +164,11 @@ class Index extends ApiBase
         $this->ajaxReturn(['status' => 1, 'msg' => '获取数据成功','data'=>$gift_notice]);
     }
 
+    //纳税人识别号说明
+    public function getIdentification()
+    {
+        $getIdentification =  Db::name('config')->where(['name'=>'getIdentification','status'=>1])->value('value');
+        $this->ajaxReturn(['status' => 1, 'msg' => '获取数据成功','data'=>$getIdentification]);
+    }
+
 }
