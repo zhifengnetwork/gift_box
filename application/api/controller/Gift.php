@@ -12,14 +12,21 @@ class Gift extends ApiBase
 {
     //领取/参与
     public function receive_join(){
-        $this->create_token(time(),time()+3600);
         $user_id = $this->get_user_id();
         if(!$user_id){
-            $this->ajaxReturn(['status' => -2 , 'msg'=>'用户不存在','data'=>'']);
+            $this->ajaxReturn(['status' => -1 , 'msg'=>'用户不存在','data'=>'']);
         }
 
         $order_id = input('order_id/d',0);
         $join_type = input('join_type/d',0); //参与类型，1：领取，2：参与群抢
+        
+        $pwdstr = input('pwdstr/s',''); //加密字符串
+        $arr = $this->decode_token($pwdstr);
+        if(!$arr || !$arr['exp'] || ($arr['exp'] < time())){
+            $this->ajaxReturn(['status' => -1 , 'msg'=>'该链接已失效','data'=>'']);
+        }elseif($order_id != $arr['user_id']){  //分享回调接口，user_id化用为order_id
+            $this->ajaxReturn(['status' => -1 , 'msg'=>'警告，参数错误！','data'=>'']);
+        }
 
         $order = Db::name('order')->field('order_status,shipping_status,pay_status,order_type,lottery_time,giving_time,overdue_time,gift_uid')->where(['order_id'=>$order_id,'user_id'=>$user_id,'deleted'=>0])->find();
         if(!$order){
@@ -35,11 +42,13 @@ class Gift extends ApiBase
         }elseif(($order['order_type'] == 2) && ($join_type != 2)){
             $this->ajaxReturn(['status' => -1 , 'msg'=>'参与类型不符合','data'=>'']);
         }elseif($order['giving_time'] > 0){
-            if(($order['order_type'] == 1) && ($order['overdue_time'] > time()))
+            if($arr['exp'] < $order['giving_time']){
+                $this->ajaxReturn(['status' => -1 , 'msg'=>'该链接已失效','data'=>'']);
+            }elseif(($order['order_type'] == 1) && ($order['overdue_time'] < time()))
                 $this->ajaxReturn(['status' => -1 , 'msg'=>'该订单赠送已过期啦！','data'=>'']);
-            elseif(($order['order_type'] == 2) && ($order['lottery_time'] > time()))
+            elseif(($order['order_type'] == 2) && ($order['lottery_time'] < time()))
                 $this->ajaxReturn(['status' => -1 , 'msg'=>'该群抢已经开奖啦！','data'=>'']);
-            elseif(($order['order_type'] == 2) && ($order['overdue_time'] > time()))
+            elseif(($order['order_type'] == 2) && ($order['overdue_time'] < time()))
                 $this->ajaxReturn(['status' => -1 , 'msg'=>'该订单赠送已过期啦！','data'=>'']);
             elseif($order['gift_uid'])
                 $this->ajaxReturn(['status' => -1 , 'msg'=>'该订单已有领取人啦！','data'=>'']);
@@ -71,16 +80,16 @@ class Gift extends ApiBase
     public function set_address(){
         $user_id = $this->get_user_id();
         if(!$user_id){
-            $this->ajaxReturn(['status' => -2 , 'msg'=>'用户不存在','data'=>'']);
+            $this->ajaxReturn(['status' => -1 , 'msg'=>'用户不存在','data'=>'']);
         }
 
         $joinid = input('joinid/d',0); //参与ID
         $addressid = input('addressid/d',0); //地址ID
         $info = M('gift_order_join')->field('id')->where(['status'=>1,'user_id'=>$user_id])->find($joinid);
         if(!$info)
-            $this->ajaxReturn(['status' => -2 , 'msg'=>'不存在此次参与','data'=>'']);
+            $this->ajaxReturn(['status' => -1 , 'msg'=>'不存在此次参与','data'=>'']);
         if(!M('user_address')->where(['user_id'=>$user_id])->find($addressid))
-            $this->ajaxReturn(['status' => -2 , 'msg'=>'不存在此用户地址','data'=>'']);    
+            $this->ajaxReturn(['status' => -1 , 'msg'=>'不存在此用户地址','data'=>'']);    
 
         $res = Db::name('gift_order_join')->where(['id'=>$joinid])->update(['join_status'=>1,'addressid'=>$addressid]);
         if(false !== $res){
@@ -94,7 +103,7 @@ class Gift extends ApiBase
     public function share_callback(){
         $user_id = $this->get_user_id();
         if(!$user_id){
-            $this->ajaxReturn(['status' => -2 , 'msg'=>'用户不存在','data'=>'']);
+            $this->ajaxReturn(['status' => -1 , 'msg'=>'用户不存在','data'=>'']);
         }
 
         $order_id = input('order_id/d',0);
@@ -127,16 +136,19 @@ class Gift extends ApiBase
         $data = [
             'giving_time'   => time(),
         ];
-        if($order['order_type'] == 1) 
-            $data['overdue'] = (time() + $end_time * 60);
-        if($order['order_type'] == 2) 
+        if($order['order_type'] == 1){
+            $data['overdue_time'] = (time() + $end_time * 60);
+            $pwdstr = $this->create_token($order_id,$data['overdue_time']);
+        }if($order['order_type'] == 2){
             $data['lottery_time'] = (time() + $start_time * 60);
+            $pwdstr = $this->create_token($order_id,$data['overdue_time']);
+        }
 
         $res = M('Order')->where(['order'=>$order_id])->update($data);
         if(false !== $res){
-            $this->ajaxReturn(['status' => 1 , 'msg'=>'操作成功','data'=>'']);
+            $this->ajaxReturn(['status' => 1 , 'msg'=>'操作成功','data'=>$pwdstr]);
         }else{
-            $this->ajaxReturn(['status' => -1 , 'msg'=>'操作失败','data'=>'']);    
+            $this->ajaxReturn(['status' => -1 , 'msg'=>'操作失败','data'=>$pwdstr]);    
         }
     }
 
