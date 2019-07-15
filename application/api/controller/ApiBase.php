@@ -63,13 +63,13 @@ class ApiBase extends Controller
     /**
      * 生成token
      */
-    public function create_token($user_id)
+    public function create_token($user_id,$endtime=0)
     {
         $time = time();
         $payload = array(
             "iss" => "DC",
             "iat" => $time,
-            "exp" => $time + 36000,
+            "exp" => (($endtime ? $endtime : ($time + 36000))),
             "user_id" => $user_id,
         );
         $key = 'zhelishimiyao';
