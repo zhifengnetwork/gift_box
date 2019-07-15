@@ -977,7 +977,7 @@ class User extends ApiBase
         if($res){
             $this->ajaxReturn(['status' => 1 , 'msg'=>'修改成功','data'=>$info);
         }else{
-            $this->ajaxReturn(['status' => -1 , 'msg'=>'数据未改变','data'=>$info);
+            $this->ajaxReturn(['status' => -1 , 'msg'=>'数据未改变','data'=>$info]);
         }
     }
 
