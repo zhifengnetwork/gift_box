@@ -228,7 +228,7 @@ class Order extends ApiBase
 
         if($invoice_desc && !$invoice_mobile)
             $this->ajaxReturn(['status' => -1 , 'msg'=>'请填写收票人手机！','data'=>'']);
-        if(!$invoice_desc && invoice_mobile)
+        if(!$invoice_desc && $invoice_mobile)
             $this->ajaxReturn(['status' => -1 , 'msg'=>'请填写发票内容！','data'=>'']);
 
         $addrWhere = array();
@@ -262,7 +262,7 @@ class Order extends ApiBase
             $goods_coupon[$value['goods_id']]['subtotal_price'] =  $value['subtotal_price'];
 
             //处理运费
-            $goods_res = Db::table('goods')->field('shipping_setting,shipping_price,delivery_id,less_stock_type,goods_attr,goods_name')->where('goods_id',$value['goods_id'])->where('is_show',1)->find();
+            $goods_res = Db::table('goods')->field('shipping_setting,shipping_price,delivery_id,less_stock_type,goods_attr,goods_name,taxes,discount')->where('goods_id',$value['goods_id'])->where('is_show',1)->find();
             if(!$goods_res){
                 $this->ajaxReturn(['status' => -1 , 'msg'=>"商品：{$goods_res['goods_name']}已下架，请重新选择",'data'=>'']);
                 continue;
