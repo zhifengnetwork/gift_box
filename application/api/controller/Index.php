@@ -157,4 +157,11 @@ class Index extends ApiBase
         $this->ajaxReturn(['status' => 1, 'msg' => '获取数据成功','data'=>$data]);
     }
 
+    //赠礼须知
+    public function getGiftNotice()
+    {
+        $gift_notice =  Db::name('config')->where(['name'=>'gift_notice','status'=>1])->value('value');
+        $this->ajaxReturn(['status' => 1, 'msg' => '获取数据成功','data'=>$gift_notice]);
+    }
+
 }
