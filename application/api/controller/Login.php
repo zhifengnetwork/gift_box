@@ -160,8 +160,12 @@ class Login extends \think\Controller
             Db::table('member')->insert(['openid'=>$openid]); 
             $data = Db::table('member')->where('openid',$openid)->find(); 
 
+            $data['token'] = $this->create_token($data['id']);
+
             $this->ajaxReturn(['status' => 1 , 'msg'=>'获取成功','data'=>$data]);
         }else{
+            
+            $data['token'] = $this->create_token($data['id']);
             
             $this->ajaxReturn( ['status'=>1,'msg'=>'获取用户信息成功','data'=>$data]);
             
