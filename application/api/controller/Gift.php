@@ -24,8 +24,16 @@ class Gift extends ApiBase
         $arr = $this->decode_token($pwdstr);
         if(!$arr || !$arr['exp'] || ($arr['exp'] < time())){
             $this->ajaxReturn(['status' => -1 , 'msg'=>'该链接已失效','data'=>'']);
-        }elseif($order_id != $arr['user_id']){  //分享回调接口，user_id化用为order_id
-            $this->ajaxReturn(['status' => -1 , 'msg'=>'警告，参数错误！','data'=>'']);
+        }else{  //分享回调接口，user_id化用为id-order_id
+            $resarr = explode('-',$arr['user_id']);
+            $joinid = 0;
+            if(count($resarr) == 2){
+                $joinid = $resarr[0];
+            }
+            if((count($resarr) == 1) && ($order_id != $resarr[0]))
+                $this->ajaxReturn(['status' => -1 , 'msg'=>'警告，参数错误！','data'=>'']);
+            elseif((count($resarr) == 2) && ($order_id != $resarr[1]))
+                $this->ajaxReturn(['status' => -1 , 'msg'=>'警告，参数错误！','data'=>'']);
         }
 
         $order = Db::name('order')->field('order_status,shipping_status,pay_status,order_type,lottery_time,giving_time,overdue_time,gift_uid')->where(['order_id'=>$order_id,'user_id'=>$user_id,'deleted'=>0])->find();
@@ -58,10 +66,11 @@ class Gift extends ApiBase
 
         $data = [
             'order_id'      => $order_id,
-            'order_type'    => $order['order_type'],
+            'order_type'    => $joinid ? 3 : $order['order_type'],
             'addtime'       => time(),
             'status'        => ($join_type == 1) ? 1 : 0,
-            'user_id'       => $user_id
+            'user_id'       => $user_id,
+            'parentid'      => $joinid,
         ];
 
         // 启动事务
@@ -158,6 +167,11 @@ class Gift extends ApiBase
         $data = [
             'giving_time'   => time(),
         ];
+
+        if($act == 3){
+            $order_id = $joininfo['id'] . '-' . $order_id;
+        }
+
         if($order['order_type'] == 1){
             $data['overdue_time'] = (time() + $end_time * 60);
             $pwdstr = $this->create_token($order_id,$data['overdue_time']);
@@ -169,8 +183,9 @@ class Gift extends ApiBase
         if($act == 3){
             // 启动事务
             Db::startTrans();
-            $res = M('gift_order_join')->where(['id'=>$joininfo['id']])->update(['parentid'=>$joininfo['id'],'join_status'=>5]);
-            if(false !== $res){
+
+            $res = M('gift_order_join')->field('id')->where(['id'=>$joininfo['id']])->update(['join_status'=>5]);
+            if($res !== false){
                 $r = M('Order')->where(['order'=>$order_id])->update($data);
                 // 提交事务
                 Db::commit(); 
@@ -178,11 +193,11 @@ class Gift extends ApiBase
             }else{
                 // 回滚事务
                 Db::rollback();
-                $this->ajaxReturn(['status' => -1 , 'msg'=>'操作失败','data'=>$pwdstr]);  
+                $this->ajaxReturn(['status' => -1 , 'msg'=>'操作失败','data'=>$pwdstr]);    
             }
-        }else
-            $r = M('Order')->where(['order'=>$order_id])->update($data);
+        }
 
+        $r = M('Order')->where(['order'=>$order_id])->update($data);
         if(false !== $r){
             $this->ajaxReturn(['status' => 1 , 'msg'=>'操作成功','data'=>$pwdstr]);
         }else{
