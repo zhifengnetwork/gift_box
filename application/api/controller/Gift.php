@@ -64,14 +64,20 @@ class Gift extends ApiBase
             'user_id'       => $user_id
         ];
 
+        // 启动事务
+        if($join_type == 1)Db::startTrans();
         $res = Db::name('gift_order_join')->insertGetId($data);
         if($res){
             if($join_type == 1){
                 M('Order')->where(['order_id'=>$order_id])->update(['gift_uid'=>$user_id]);
                 Db::name('gift_order_join')->where(['id'=>['neq',$res],'order_id'=>$order_id,'order_type'=>1])->update(['join_status'=>4]);
+                // 提交事务
+                Db::commit(); 
             }
             $this->ajaxReturn(['status' => 1 , 'msg'=>'请求成功！','data'=>$res]); 
         }else{
+            // 回滚事务
+            if($join_type == 1)Db::rollback();
             $this->ajaxReturn(['status' => 1 , 'msg'=>'请求失败！','data'=>'']); 
         }
     }
