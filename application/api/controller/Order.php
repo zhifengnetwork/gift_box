@@ -418,6 +418,7 @@ class Order extends ApiBase
         $orderInfoData['invoice_desc'] = $invoice_desc;
         $orderInfoData['invoice_mobile'] = $invoice_mobile;
         $orderInfoData['invoice_email'] = $invoice_email;
+        $orderInfoData['order_type'] = $order_type;
         
         $order_id = Db::table('order')->insertGetId($orderInfoData);
 

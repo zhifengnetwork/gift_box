@@ -12,6 +12,7 @@ class Gift extends ApiBase
 {
     //领取/参与
     public function receive_join(){
+        $this->create_token(time(),time()+3600);
         $user_id = $this->get_user_id();
         if(!$user_id){
             $this->ajaxReturn(['status' => -2 , 'msg'=>'用户不存在','data'=>'']);
@@ -56,7 +57,10 @@ class Gift extends ApiBase
 
         $res = Db::name('gift_order_join')->insertGetId($data);
         if($res){
-            if($join_type == 1)M('Order')->where(['order_id'=>$order_id])->update(['gift_uid'=>$user_id]);
+            if($join_type == 1){
+                M('Order')->where(['order_id'=>$order_id])->update(['gift_uid'=>$user_id]);
+                Db::name('gift_order_join')->where(['id'=>['neq',$res],'order_id'=>$order_id,'order_type'=>1])->update(['join_status'=>4]);
+            }
             $this->ajaxReturn(['status' => 1 , 'msg'=>'请求成功！','data'=>$res]); 
         }else{
             $this->ajaxReturn(['status' => 1 , 'msg'=>'请求失败！','data'=>'']); 
