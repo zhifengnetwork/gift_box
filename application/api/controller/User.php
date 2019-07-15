@@ -972,10 +972,12 @@ class User extends ApiBase
         $data['introduce'] = input('introduce');
         $data['avatar'] = input('avatar');
         $res = Db::name('member')->where('id',$user_id)->update($data);
+        $info = Db::name('member')->field('nickname,sex,birthday,introduce,avatar')->where('id',$user_id)->find();
+        $info['avatar'] = $info['avatar']?SITE_URL.$info['avatar']:'';
         if($res){
-            $this->ajaxReturn(['status' => 1 , 'msg'=>'修改成功','data'=>[]]);
+            $this->ajaxReturn(['status' => 1 , 'msg'=>'修改成功','data'=>$info]);
         }else{
-            $this->ajaxReturn(['status' => -1 , 'msg'=>'数据未改变','data'=>[]]);
+            $this->ajaxReturn(['status' => -1 , 'msg'=>'数据未改变','data'=>$info]);
         }
     }
 
