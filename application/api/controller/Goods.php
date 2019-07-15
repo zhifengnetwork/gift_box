@@ -500,4 +500,173 @@ class Goods extends ApiBase
             $this->ajaxReturn(['status' => 1 , 'msg'=>'点赞成功！','data'=>'']);
         }
     }
+
+    /*
+    attrList: [
+        {
+          attrName: '空调类型',                    // 规格名称
+          attrType: '1',                          // 规格类型
+          id: '915859d5376a46d5834f27edcf3dc114', // 规格id
+          attr: [                                 // 规格属性列表
+            {
+              attributeId: '915859d5376a46d5834f27edcf3dc114',   // 规格id
+              id: '5',                                           // 此规格属性id
+              attributeValue: '正1匹',                           // 属性名称
+              enable: false,                                     // 是否可选
+              select: false,                                     // 是否选择
+            },
+            {
+              attributeId: '915859d5376a46d5834f27edcf3dc114',
+              id: '6',
+              attributeValue: '正1.5匹',
+              enable: false,
+              select: false,
+            },
+            {
+              attributeId: '915859d5376a46d5834f27edcf3dc114',
+              id: '7',
+              attributeValue: '小1.5匹',
+              enable: false,
+              select: false,
+            },
+            {
+              attributeId: '915859d5376a46d5834f27edcf3dc114',
+              id: '8',
+              attributeValue: '正2匹',
+              enable: false,
+              select: false,
+            },
+            {
+              attributeId: '915859d5376a46d5834f27edcf3dc114',
+              id: '9',
+              attributeValue: '正3匹',
+              enable: false,
+              select: false,
+            },
+          ],
+        },
+        {
+          attrName: '颜色',
+          attrType: 'text',
+          id: 'e95a7777c08c41769d5207c075a25ddc',
+          attr: [
+            {
+              attributeId: 'e95a7777c08c41769d5207c075a25ddc',
+              id: '236bbb1d5c654e9cb3a1493a2bb4785b',
+              attributeValue: '红色',
+              enable: false,
+              select: false,
+            },
+            {
+              attributeId: 'e95a7777c08c41769d5207c075a25ddc',
+              id: 'bc6aa3592ab94ad9bd81a319a72c25fe',
+              attributeValue: '白色',
+              enable: false,
+              select: false,
+            },
+            {
+              attributeId: 'e95a7777c08c41769d5207c075a25ddc',
+              id: 'f52cf21afd2c42b68cfc3f9c601458f7',
+              attributeValue: '黑色',
+              enable: false,
+              select: false,
+            },
+          ],
+        },
+      ], // 清单列表
+      skuBeanList: [
+        {
+          name: '正1匹_红色_', // 名称
+          price: '1002',      // 价钱
+          count: 100,         // 库存量
+          attributes: [
+            {
+              attributeId: '915859d5376a46d5834f27edcf3dc114', // 规格id
+              attributeValId: '5',                             // 属性id
+            },
+            {
+              attributeId: 'e95a7777c08c41769d5207c075a25ddc',
+              attributeValId: '236bbb1d5c654e9cb3a1493a2bb4785b',
+            },
+          ]
+        },
+        {
+          name: '正1匹_白色_',
+          price: '1002',
+          count: 100,
+          attributes: [
+            {
+              attributeId: '915859d5376a46d5834f27edcf3dc114',
+              attributeValId: '5',
+            },
+            {
+              attributeId: 'e95a7777c08c41769d5207c075a25ddc',
+              attributeValId: 'bc6aa3592ab94ad9bd81a319a72c25fe',
+            }
+          ]
+        },
+        {
+          name: '正1.5匹_红色_',
+          price: '1002',
+          count: 100,
+          attributes: [
+            {
+              attributeId: '915859d5376a46d5834f27edcf3dc114',
+              attributeValId: '6',
+            },
+            {
+              attributeId: 'e95a7777c08c41769d5207c075a25ddc',
+              attributeValId: '236bbb1d5c654e9cb3a1493a2bb4785b',
+            }
+          ]
+        },
+      ], // 存库列表
+      */
+    public function ddd(){
+
+        // $user_id = $this->get_user_id();
+        // if(!$user_id){
+        //     $this->ajaxReturn(['status' => -1 , 'msg'=>'用户不存在','data'=>'']);
+        // }
+
+        $goods_id = input('goods_id');
+        if(!$goods_id){
+            $this->ajaxReturn(['status' => -1 , 'msg'=>'goods_id不存在','data'=>'']);
+        }
+
+    
+        $data = Db::table('goods')->alias('g')
+                    ->join('goods_attr ga','FIND_IN_SET(ga.id,g.goods_attr)','LEFT')
+                    ->field('g.*,GROUP_CONCAT(ga.name) attr_name')
+                    ->where('g.is_show',1)
+                    ->find($goods_id);
+        if (empty($data)) {
+            $this->ajaxReturn(['status' => -2 , 'msg'=>'商品不存在！']);
+        }
+
+        $attrList = Db::table('goods_spec_attr')->where(['goods_id'=>$goods_id])->field('spec_id as id')->select();
+        $attrList = array_unique($attrList,SORT_REGULAR);
+
+        foreach($attrList as $k => $v){
+            $attrList[$k]['attrName'] = Db::table('goods_spec')->where(['spec_id'=>$v['id']])->value('spec_name');
+            $attrList[$k]['attr'] = Db::table('goods_spec_attr')->where(['goods_id'=>$goods_id,'spec_id'=>$v['id']])->field('attr_id as attributeId,attr_name as attributeValue,spec_id as id')->select();
+            foreach($attrList[$k]['attr'] as $kk => $vv){
+                $attrList[$k]['attr'][$kk]['attributeId'] = md5($v['id']);
+                $attrList[$k]['attr'][$kk]['enable'] = false;
+                $attrList[$k]['attr'][$kk]['select'] = false;
+            }
+            $attrList[$k]['id'] = md5($v['id']);
+        }
+
+
+
+
+
+        $skuBeanList = [];
+
+
+        $data['skuBeanList'] = $skuBeanList;
+        $data['attrList'] = $attrList;
+        $this->ajaxReturn(['status' => 1 , 'msg'=>'请求成功！','data'=>$data]);
+    } 
 }
