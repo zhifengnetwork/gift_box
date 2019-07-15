@@ -1,11 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: MyPC
- * Date: 2019/4/22
- * Time: 17:53
- */
-
 namespace app\api\controller;
 
 use think\Db;
@@ -15,7 +8,7 @@ use think\Session;
 use think\captcha\Captcha;
 use app\common\util\jwt\JWT;
 
-class Login extends \think\Controller
+class Login extends ApiBase
 {
 
     public function ajaxReturn($data)
