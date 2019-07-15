@@ -452,6 +452,7 @@ class Order extends ApiBase
         }
         $order_type = input('order_type/s','0'); //订单类型，0犒劳自己，1：赠送单人，2：群抢
         $type = input('type/d',0);
+        $gift_type = input('gift_type/d',0); //0全部，1已送礼物-已领，2已送礼物-未领，3已收礼物
         $page = input('page/d',1);
         $num = input('num/d',6);
         $where = [];
@@ -500,17 +501,48 @@ class Order extends ApiBase
         $where['o.order_type'] = ['in',$order_type];
         //$where['gi.main'] = 1;
         $where['o.deleted'] = 0;
+        if($gift_type == 1){ //已送礼物-已领
+            $where['goj.status'] = 1;   
+            $where['goj.join_status'] = ['notin',[4,5]];   
+            $where['goj.addressid'] = ['gt',0];   
+        }elseif($gift_type == 2){  //已送礼物-未领
+            $where['goj.status'] = 1;   
+            $where['goj.join_status'] = ['notin',[4]];   
+            $where['goj.addressid'] = 0;   
+        }elseif($gift_type == 3){   //已收礼物
+            unset($where['o.user_id']);
 
-        $order_list = Db::table('order')->alias('o')
+            $where['goj.status'] = 1;   
+            $where['goj.user_id'] = $user_id; 
+            $where['goj.join_status'] = ['notin',[4]];   
+            $where['goj.addressid'] = 0;   
+
+            $order_list = Db::table('gift_order_join')->alias('goj')
+            ->join('order o','goj.order_id=o.order_id','LEFT')
+            ->join('order_goods og','og.order_id=o.order_id','LEFT')
+            ->join('goods_img gi','gi.goods_id=og.goods_id and gi.main=1','LEFT')
+            ->join('goods g','g.goods_id=og.goods_id','LEFT')
+            ->where($where)
+            ->group('og.order_id')
+            ->order('o.order_id DESC')
+            ->field('o.order_id,o.add_time,o.order_sn,og.goods_name,gi.picture img,og.spec_key_name,og.goods_price,g.original_price,og.goods_num,o.order_status,o.pay_status,o.shipping_status,pay_type,o.total_amount,o.shipping_price,o.order_type')
+            ->paginate($num,false,$pageParam)
+            ->toArray();
+        }
+
+        if($gift_type != 3){
+            $order_list = Db::table('order')->alias('o')
                         ->join('order_goods og','og.order_id=o.order_id','LEFT')
                         ->join('goods_img gi','gi.goods_id=og.goods_id and gi.main=1','LEFT')
                         ->join('goods g','g.goods_id=og.goods_id','LEFT')
+                        ->join('gift_order_join goj','o.order_id=goj.order_id','LEFT')
                         ->where($where)
                         ->group('og.order_id')
                         ->order('o.order_id DESC')
                         ->field('o.order_id,o.add_time,o.order_sn,og.goods_name,gi.picture img,og.spec_key_name,og.goods_price,g.original_price,og.goods_num,o.order_status,o.pay_status,o.shipping_status,pay_type,o.total_amount,o.shipping_price,o.order_type')
                         ->paginate($num,false,$pageParam)
                         ->toArray();
+        }
         if($order_list['data']){
             foreach($order_list['data'] as $key=>&$value){
                 $value['add_time']=date('Y-m-d H:i:s',$value['add_time']);
