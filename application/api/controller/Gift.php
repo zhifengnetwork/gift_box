@@ -69,7 +69,8 @@ class Gift extends ApiBase
         $res = Db::name('gift_order_join')->insertGetId($data);
         if($res){
             if($join_type == 1){
-                M('Order')->where(['order_id'=>$order_id])->update(['gift_uid'=>$user_id]);
+                //领取成功则将 赠送时间，赠送/群抢过期时间，群抢开奖时间 设置为空，以转赠
+                M('Order')->where(['order_id'=>$order_id])->update(['lottery_time'=>0,'giving_time'=>0,'overdue_time'=>0,'gift_uid'=>$user_id]);
                 Db::name('gift_order_join')->where(['id'=>['neq',$res],'order_id'=>$order_id,'order_type'=>1])->update(['join_status'=>4]);
                 // 提交事务
                 Db::commit(); 
@@ -113,8 +114,12 @@ class Gift extends ApiBase
         }
 
         $order_id = input('order_id/d',0);
-        $act = input('act/d',0);
-        $order = Db::name('order')->field('order_status,shipping_status,pay_status,order_type,lottery_time,giving_time,overdue_time,gift_uid')->where(['order_id'=>$order_id,'user_id'=>$user_id,'deleted'=>0])->find();
+        $act = input('act/d',0);  //操作，0回调，1：检测是否可分享，2：转赠检测，3：转赠回调
+        
+        $where = ['order_id'=>$order_id,'deleted'=>0];
+        if(!in_array($act,[2,3]))$where['user_id'] = $user_id;
+
+        $order = Db::name('order')->field('order_status,shipping_status,pay_status,order_type,lottery_time,giving_time,overdue_time,gift_uid')->where($where)->find();
         
         if(!$order){
             $this->ajaxReturn(['status' => -1 , 'msg'=>'订单不存在','data'=>'']);
@@ -135,7 +140,14 @@ class Gift extends ApiBase
                 $this->ajaxReturn(['status' => -1 , 'msg'=>'该订单已有领取人啦！','data'=>'']);
         }
 
-        if($act == 1)
+        if(in_array($act,[2,3])){ //查看是否可以转赠
+            $joininfo = M('gift_order_join')->field('id')->where(['order_id'=>$order_id,'status'=>1,'user_id'=>$user_id,'join_status'=>0,'addressid'=>0])->find();
+            
+            if(!$joininfo)
+                $this->ajaxReturn(['status' => -1 , 'msg'=>'您不能转赠该礼物啦！','data'=>'']);
+        }
+
+        if(in_array($act,[1,2]))
             $this->ajaxReturn(['status' => 1 , 'msg'=>'可以分享！','data'=>'']);
         
         //盒子发送多久开奖（分钟）
@@ -154,8 +166,24 @@ class Gift extends ApiBase
             $pwdstr = $this->create_token($order_id,$data['overdue_time']);
         }
 
-        $res = M('Order')->where(['order'=>$order_id])->update($data);
-        if(false !== $res){
+        if($act == 3){
+            // 启动事务
+            Db::startTrans();
+            $res = M('gift_order_join')->where(['id'=>$joininfo['id']])->update(['parentid'=>$joininfo['id'],'join_status'=>5]);
+            if(false !== $res){
+                $r = M('Order')->where(['order'=>$order_id])->update($data);
+                // 提交事务
+                Db::commit(); 
+                $this->ajaxReturn(['status' => 1 , 'msg'=>'操作成功','data'=>$pwdstr]);
+            }else{
+                // 回滚事务
+                Db::rollback();
+                $this->ajaxReturn(['status' => -1 , 'msg'=>'操作失败','data'=>$pwdstr]);  
+            }
+        }else
+            $r = M('Order')->where(['order'=>$order_id])->update($data);
+
+        if(false !== $r){
             $this->ajaxReturn(['status' => 1 , 'msg'=>'操作成功','data'=>$pwdstr]);
         }else{
             $this->ajaxReturn(['status' => -1 , 'msg'=>'操作失败','data'=>$pwdstr]);    

@@ -91,7 +91,8 @@ class Team extends Controller{
         // 启动事务
         Db::startTrans();
         try{
-            $Order->where(['order_id'=>$v['order_id']])->update(['gift_uid'=>$info['user_id']]);
+            //领取成功则将 赠送时间，赠送/群抢过期时间，群抢开奖时间 设置为空，以转赠
+            $Order->where(['order_id'=>$v['order_id']])->update(['lottery_time'=>0,'giving_time'=>0,'overdue_time'=>0,'gift_uid'=>$info['user_id']]);
             $GiftOrderJoin->where(['id'=>$info['id']])->update(['status'=>1]);
             // 提交事务
             Db::commit(); 
