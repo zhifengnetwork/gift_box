@@ -1216,10 +1216,11 @@ class Order extends ApiBase
         $order_id = I('post.order_id/d',0);
         $type = I('post.type/d',0); //类型，1：仅退款，2：退款退货，3：换货
         $reason = I('post.reason/d',0); //退款理由，1.7天无理由，2.退运费，3.少件/漏发，4.质量问题，5.商品信息描述不符，6.包装/商品破损/污渍
-        $rec_id = I('post.rec_id/s','');  //order_goods表ID,多个以逗号分隔
+        $rec_id = I('post.rec_id/d',0);  //order_goods表ID
         $msg = I('post.msg/s','');  //退款说明
-        $goods_num = I('post.goods_num/s','');  //退款数量,多个以逗号分隔
+        $goods_num = I('post.goods_num/d',0);  //退款数量
         $prine_way = I('post.prine_way/d',0); //退回途径，微信
+        $refund_apply_id = I('post.refund_apply_id/d',0); //退款ID
 
         if(!$order_id || !$rec_id || !$goods_num)
             $this->ajaxReturn(['status' => -1 , 'msg'=>'参数错误！','data'=>'']);
@@ -1248,60 +1249,92 @@ class Order extends ApiBase
             elseif($orderinfo['pay_status'] != 1)
                 $this->ajaxReturn(['status' => -1 , 'msg'=>'该订单未付款！','data'=>'']);
         }elseif($type == 2){ //退款退货
-            if(!in_array($orderinfo['order_status'],[1,2]))
+            if(!in_array($orderinfo['order_status'],[1]))
                 $this->ajaxReturn(['status' => -1 , 'msg'=>'该订单状态不能执行退款退货操作！','data'=>'']);
-            elseif(!in_array($orderinfo['shipping_status'],[1,2,3]))
+            elseif(!in_array($orderinfo['shipping_status'],[1,2]))
                 $this->ajaxReturn(['status' => -1 , 'msg'=>'该订单不是已发货状态！','data'=>'']);
             elseif($orderinfo['pay_status'] != 1)
                 $this->ajaxReturn(['status' => -1 , 'msg'=>'该订单未付款！','data'=>'']);
         }elseif($type == 2){ //换货
-            if(!in_array($orderinfo['order_status'],[1,2,4]))
+            if(!in_array($orderinfo['order_status'],[1]))
                 $this->ajaxReturn(['status' => -1 , 'msg'=>'该订单状态不能执行换货操作！','data'=>'']);
-            elseif(!in_array($orderinfo['shipping_status'],[1,2,3]))
+            elseif(!in_array($orderinfo['shipping_status'],[1,2]))
                 $this->ajaxReturn(['status' => -1 , 'msg'=>'该订单不是已发货状态！','data'=>'']);
             elseif($orderinfo['pay_status'] != 1)
                 $this->ajaxReturn(['status' => -1 , 'msg'=>'该订单未付款！','data'=>'']);
         }
 
-        $rec_ids = explode(',',$rec_id);
-        $goods_nums = explode(',',$goods_num);
         $RefundApply = M('refund_apply');
 
-        $data = $data1 = [];
+        $data = [];
         $OrderGoods = M('Order_goods');
-        foreach($rec_ids as $k=>$v){
-            $recinfo = $OrderGoods->field('goods_price,goods_num,taxes,discount')->find($v);
-            if($recinfo['goods_num'] < $goods_nums[$k]){
-                $this->ajaxReturn(['status' => -1 , 'msg'=>'退款数量超出订单数量！','data'=>'']);
-            }
-
-            $data1['order_id']          = $order_id;
-            $data1['type']              = $type;
-            $data1['addtime']           = time();
-            $data1['reason']            = $reason;
-            $data1['rec_id']            = intval($v);
-            $data1['msg']               = $msg;
-            $data1['pic']               = $pics;
-            $data1['goods_num']         = $goods_nums[$k];
-            $data1['price']             = ($goods_nums[$k] - $recinfo['discount']) * $recinfo['goods_price'];
-            $data1['real_pay_price']    = $goods_nums[$k] * $recinfo['goods_price'];
-            $data1['prine_way']         = $prine_way;
-
-            $data[] = $data1;
+        $recinfo = $OrderGoods->field('goods_price,goods_num,taxes,discount')->find($rec_id);
+        if($recinfo['goods_num'] < $goods_num){
+            $this->ajaxReturn(['status' => -1 , 'msg'=>'退款数量超出订单数量！','data'=>'']);
         }
 
+        //税费
+        $taxes = floor(($recinfo['goods_price'] - $recinfo['discount']) * $recinfo['taxes'] * $goods_num)/100;
+        //商品总额
+        $price = ($recinfo['goods_price'] - $recinfo['discount']) * $goods_num;
+        $data['order_id']          = $order_id;
+        $data['type']              = $type;
+        $data['addtime']           = time();
+        $data['reason']            = $reason;
+        $data['rec_id']            = $rec_id;
+        $data['msg']               = $msg;
+        $data['pic']               = $pics;
+        $data['goods_num']         = $goods_num;
+        $data['price']             = $price + $taxes;
+        $data['real_pay_price']    = $price + $taxes;
+        $data['prine_way']         = $prine_way;
+        $data['user_id']           = $user_id;
+
         Db::startTrans();
-        $res = $RefundApply->insertAll($data);
+        $res = $RefundApply->insertGetId($data);
 
         if($res){
-            M('Order')->where(['order_id'=>$order_id])->update(['order_status'=>6]);
-            $raids = $RefundApply->where(['order_id'=>$order_id,'rec_id'=>['in',$rec_ids]])->column('id');
-            
+            //查看当前订单商品是否已全部退货
+            $rec_ids1 = $OrderGoods->where(['order_id'=>$order_id])->column('rec_id');
+            $rec_ids2 = $RefundApply->where(['order_id'=>$order_id,'rec_id'=>['in',$rec_ids],'status'=>['notin',[1,4]]])->column('rec_id');
+            $arr = array_diff($rec_ids1,$rec_ids2);
+
+            if(empty($arr))M('Order')->where(['order_id'=>$order_id])->update(['order_status'=>6]);
+
             Db::commit(); 
-            $this->ajaxReturn(['status' => 1 , 'msg'=>'请求成功！','data'=>implode(',',$raids)]);
+            $this->ajaxReturn(['status' => 1 , 'msg'=>'请求成功！','data'=>$res]);
         }else{
             Db::rollback();
             $this->ajaxReturn(['status' => -1 , 'msg'=>'请求失败！','data'=>'']);
         }
     }
+
+    //查看退款详细信息
+    public function get_refund_info(){
+        $user_id    = $this->get_user_id();
+        if(!$user_id){
+            $this->ajaxReturn(['status' => -1 , 'msg'=>'用户不存在！','data'=>'']);
+        }      
+        
+        $refund_apply_id = I('post.refund_apply_id/d',0); //退款ID
+        $info = M('refund_apply')->field('id,order_id,rec_id,status,type,addtime,kuaidi_number,reason,msg,pic,kuaidi_com,tel,kuaidi_msg,kuaidi_pic,goods_num,price,integral,real_pay_price,prine_way')->where(['user_id'=>$user_id])->find($refund_apply_id);
+
+        if(!$info)
+            $this->ajaxReturn(['status' => -1 , 'msg'=>'未查询到此次退款信息！','data'=>'']);
+        if($info['pic']){
+            $info['pic'] = explode(',',$info['pic']);
+            foreach($info['pic'] as $k=>$v){
+                $info['pic'][$k] = SITE_URL . $v;
+            }
+        }
+        if($info['kuaidi_pic']){
+            $info['kuaidi_pic'] = explode(',',$info['pic']);
+            foreach($info['kuaidi_pic'] as $k=>$v){
+                $info['kuaidi_pic'][$k] = SITE_URL . $v;
+            }
+        }
+
+        $this->ajaxReturn(['status' => 1 , 'msg'=>'请求成功！','data'=>$info]);
+    }
+    
 }
