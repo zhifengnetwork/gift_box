@@ -622,19 +622,19 @@ class Goods extends ApiBase
         },
       ], // 存库列表
       */
-    public function ddd(){
 
-        // $user_id = $this->get_user_id();
-        // if(!$user_id){
-        //     $this->ajaxReturn(['status' => -1 , 'msg'=>'用户不存在','data'=>'']);
-        // }
+    public function detail(){
+
+        $user_id = $this->get_user_id();
+        if(!$user_id){
+            $this->ajaxReturn(['status' => -1 , 'msg'=>'用户不存在','data'=>'']);
+        }
 
         $goods_id = input('goods_id');
         if(!$goods_id){
             $this->ajaxReturn(['status' => -1 , 'msg'=>'goods_id不存在','data'=>'']);
         }
 
-    
         $data = Db::table('goods')->alias('g')
                     ->join('goods_attr ga','FIND_IN_SET(ga.id,g.goods_attr)','LEFT')
                     ->field('g.*,GROUP_CONCAT(ga.name) attr_name')
