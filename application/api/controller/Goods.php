@@ -658,11 +658,20 @@ class Goods extends ApiBase
             $attrList[$k]['id'] = md5($v['id']);
         }
 
-
-
-
-
-        $skuBeanList = [];
+        $skuBeanList=Db::table('goods_sku')->where(['goods_id'=>$goods_id])->field('img as name,price,inventory as count,sku_attr')->select();
+        foreach ($skuBeanList as $sku_k=>$sku_v){
+            $spec=$sku_v['sku_attr'];
+            $skuBeanList[$sku_k]['name']="";
+            $sku_attr = explode(',', trim(trim($spec, '{'), '}'));
+            foreach($sku_attr as $kkk=>$vvv){
+                $arr = explode(':',$vvv);
+                $skuBeanList[$sku_k]['attributes'][$kkk]['attributeId']=md5($arr[0]);
+                $skuBeanList[$sku_k]['attributes'][$kkk]['attributeValId']=md5($arr[1]);
+                $sku_name=Db::table('goods_spec_attr')->where(['attr_id'=>$arr[1]])->value('attr_name');
+                $skuBeanList[$sku_k]['name']=$skuBeanList[$sku_k]['name'].$sku_name."_";
+            }
+            unset($skuBeanList[$sku_k]['sku_attr']);
+        }
 
 
         $data['skuBeanList'] = $skuBeanList;
