@@ -43,6 +43,9 @@ class Team extends Controller{
     }
 
     //群抢开奖，每分钟执行一次
+    /* $wx_content = "订单支付成功！\n\n订单：{$order_sn}\n支付时间：{$time}\n商户：凡露希环球直供\n金额：{$order['total_amount']}\n\n【凡露希环球直供】欢迎您的再次购物！";
+    $wechat = new \app\common\logic\wechat\WechatUtil();
+    $wechat->sendMsg($userinfo['openid'], 'text', $wx_content);   */  
     public function lottery(){
         //获取开奖时间100秒以内，且未设置开奖用户的群抢订单
         $Order = M('Order');
@@ -55,7 +58,7 @@ class Team extends Controller{
                 $Order->where(['order_id'=>$v['order_id']])->update(['lottery_time'=>0,'giving_time'=>0,'overdue_time'=>0]);
             }elseif($num == 1){  //只有一人参与
                 $info = $GiftOrderJoin->field('id,user_id')->where(['order_id'=>$v['order_id'],'order_type'=>2,'join_status'=>['neq',4]])->find();
-                $this->set_gift_time1($Order,$GiftOrderJoin,$v);
+                $this->set_gift_time1($Order,$GiftOrderJoin,$v,$info);
             }elseif($num > 1){  //多人参与
                 //查看有无内定
                 $info = $GiftOrderJoin->field('id,user_id')->where(['order_id'=>$v['order_id'],'order_type'=>2,'status'=>1,'join_status'=>['neq',4]])->find();
@@ -64,8 +67,11 @@ class Team extends Controller{
                     $n = rand(1,$num);  
                     $info = $GiftOrderJoin->field('id,user_id')->where(['order_id'=>$v['order_id'],'order_type'=>2,'join_status'=>['neq',4]])->limit($n-1,1)->find();
                 }
-                $this->set_gift_time1($Order,$GiftOrderJoin,$v);
+                $this->set_gift_time1($Order,$GiftOrderJoin,$v,$infos);
             }
+
+            //开奖推送
+            //$GiftOrderJoin->
         } 
     }    
 
@@ -96,6 +102,8 @@ class Team extends Controller{
             $GiftOrderJoin->where(['id'=>$info['id']])->update(['status'=>1]);
             // 提交事务
             Db::commit(); 
+
+            //中奖推送
         }catch(Exception $t) {
             // 回滚事务
             Db::rollback();
