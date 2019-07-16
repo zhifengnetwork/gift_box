@@ -21,41 +21,24 @@
                         <table class="table table-striped">
                             <thead>
                             <tr>
-                                <th>ID</th>
-                                <th>类别名称</th>
-                                <th>状态</th>
-                                <th>添加时间</th>
-                                <th>排序</th>
+                                <th>订单id</th>
+                                <th>开奖时间</th>
+                                <th>结束时间</th>
+                                <th>盒子id</th>
                                 <th>操作</th>
                             </tr>
                             </thead>
                             <tbody>
                             {volist name="list" id="vo"}
                             <tr>
-                                <td>{$vo.id}</td>
-                                <td>{$vo.name}</td>
-                                <td>{if condition="$vo.status eq 1"}启用{else/}禁用{/if}</td>
-                                <td>{$vo.addtime|date='Y-m-d',###}</td>
-                                <td>{$vo.sort}</td>
+                                <td>{$vo.order_id}</td>
+                                <td>{$vo.lottery_time|date="Y-m-d H:i:s",###}</td>
+                                <td>{$vo.overdue_time|date="Y-m-d H:i:s",###}</td>
+                                <td>{$vo.box_id}</td>
                                 <td>
-                                    <a class="btn btn-default delete" href="{:url('edit',['id'=>$vo.id],false)}" >编辑 </i></a>
-                                    <a class="btn btn-default delete" href="{:url('add',['pid'=>$vo.pid],false)}" >添加子分类</i></a>
-                                    <a class="btn btn-default delete" onclick="del(this,{$vo.id})" href="javascript:;" >删除 </i></a>
+                                    <a class="btn btn-default delete" href="{:url('edit',['id'=>$vo.order_id],false)}" >查看</i></a>
                                 </td>
                             </tr>
-                                {volist name="vo.list" id="v"}
-                                <tr>
-                                    <td>{$v.id}</td>
-                                    <td>------ {$v.name}</td>
-                                    <td>{if condition="$v.status eq 1"}启用{else/}禁用{/if}</td>
-                                    <td>{$v.addtime|date='Y-m-d',###}</td>
-                                    <td>{$v.sort}</td>
-                                    <td>
-                                        <a class="btn btn-default delete" href="{:url('edit',['id'=>$v.id],false)}" >编辑 </i></a>
-                                        <a class="btn btn-default delete" onclick="del(this,{$v.id})" href="javascript:;" >删除 </i></a>
-                                    </td>
-                                </tr>
-                                {/volist}
                             {/volist}
                             </tbody>
                         </table>
@@ -69,6 +52,7 @@
     </div>
 {/block}
 {block name='script'}
+<script src="__LIB__/layer/layer.js"></script>
 <script>
     function del(obj,id){
         if(window.confirm('确认删除该分类吗？')){

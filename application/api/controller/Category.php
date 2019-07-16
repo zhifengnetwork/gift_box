@@ -16,7 +16,7 @@ class Category extends ApiBase
         $pid = input('cat_id',0);
         $list = Db::table('category')->field('cat_id,cat_name,img')->where('pid',$pid)->where('is_show',1)->order('sort')->select();
         foreach($list as $key=>$val){
-            $list[$key]['img'] = $val['img']?SITE_URL.$val['img']:'';
+            $list[$key]['img'] = $val['img']?SITE_URL.'/public/upload/images/'.$val['img']:'';
         }
         $this->ajaxReturn(['status' => 1 , 'msg'=>'获取成功','data'=>$list]);
     }
