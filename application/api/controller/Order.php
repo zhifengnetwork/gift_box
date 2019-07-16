@@ -525,13 +525,13 @@ class Order extends ApiBase
             ->where($where)
             ->group('og.order_id')
             ->order('o.order_id DESC')
-            ->field('o.order_id,o.add_time,o.order_sn,og.goods_name,gi.picture img,og.spec_key_name,og.goods_price,g.original_price,og.goods_num,o.order_status,o.pay_status,o.shipping_status,pay_type,o.total_amount,o.shipping_price,o.order_type')
+            ->field('o.order_id,o.add_time,o.order_sn,og.goods_name,gi.picture img,og.spec_key_name,og.goods_price,g.original_price,og.goods_num,o.order_status,o.pay_status,o.shipping_status,pay_type,o.total_amount,o.shipping_price,o.order_type,o.lottery_time,o.giving_time,o.overdue_time,o.gift_uid')
             ->paginate($num,false,$pageParam)
             ->toArray();
         }
 
         if($gift_type != 3){
-            $order_list = Db::table('order')->alias('o')
+             $order_list = Db::table('order')->alias('o')
                         ->join('order_goods og','og.order_id=o.order_id','LEFT')
                         ->join('goods_img gi','gi.goods_id=og.goods_id and gi.main=1','LEFT')
                         ->join('goods g','g.goods_id=og.goods_id','LEFT')
@@ -539,14 +539,15 @@ class Order extends ApiBase
                         ->where($where)
                         ->group('og.order_id')
                         ->order('o.order_id DESC')
-                        ->field('o.order_id,o.add_time,o.order_sn,og.goods_name,gi.picture img,og.spec_key_name,og.goods_price,g.original_price,og.goods_num,o.order_status,o.pay_status,o.shipping_status,pay_type,o.total_amount,o.shipping_price,o.order_type')
+                        ->field('o.order_id,o.add_time,o.order_sn,og.goods_name,gi.picture img,og.spec_key_name,og.goods_price,g.original_price,og.goods_num,o.order_status,o.pay_status,o.shipping_status,pay_type,o.total_amount,o.shipping_price,o.order_type,o.lottery_time,o.giving_time,o.overdue_time,o.gift_uid')
                         ->paginate($num,false,$pageParam)
-                        ->toArray();
+                        ->toArray(); 
         }
         if($order_list['data']){
+            $OrderGoods = M('Order_goods');
             foreach($order_list['data'] as $key=>&$value){
                 $value['add_time']=date('Y-m-d H:i:s',$value['add_time']);
-                $value['img']= $value['img'] ? (SITE_URL.Config('c_pub.img').$value['img']) : '';
+                $value['img']= $value['img'] ? (SITE_URL.$value['img']) : '';
                 $value['comment'] = 0;
                 if( $value['order_status'] == 1 && $value['pay_status'] == 0 && $value['shipping_status'] == 0 ){
                     $value['status'] = 1;   //待付款
@@ -573,6 +574,8 @@ class Order extends ApiBase
                 }else if( $value['order_status'] == 8 ){
                     $value['status'] = 8;   //拒绝退款
                 }
+
+                $value['goods_list'] = $OrderGoods->alias('og')->join('goods g','og.goods_id=g.goods_id','left')->join('goods_sku gs','og.sku_id=gs.sku_id','left')->join('refund_apply ra','og.rec_id=ra.rec_id','left')->field('og.rec_id,og.goods_id,og.goods_name,og.goods_num,og.goods_price,og.sku_id,og.spec_key_name,og.taxes,og.discount,gs.price,gs.img,g.picture,ra.status,ra.type')->where(['og.order_id'=>$value['order_id']])->select();
             }
         }
         $this->ajaxReturn(['status' => 1 , 'msg'=>'获取成功','data'=>$order_list['data']]);
@@ -635,7 +638,7 @@ class Order extends ApiBase
                 $order['pay_type'] = $value['pay_name'];
             }
         }
-//        $order_refund = 0;
+
         $data['order_refund'] = [];
         if( $order['order_status'] == 1 && $order['pay_status'] == 0 && $order['shipping_status'] == 0 ){
             $order['status'] = 1;   //待付款
@@ -649,28 +652,22 @@ class Order extends ApiBase
             $order['status'] = 5;   //已取消
         }else if( $order['order_status'] == 6 ){
             $order['status'] = 6;   //待退款
-//            $order_refund = 1;
         }else if( $order['order_status'] == 7 ){
             $order['status'] = 7;   //已退款
-//            $order_refund = 1;
         }else if( $order['order_status'] == 8 ){
             $order['status'] = 8;   //拒绝退款
-//            $order_refund = 1;
         }
         if($act == 1)$this->ajaxReturn(['status' => 1 , 'msg'=>'获取成功','data'=>$order]);
 
-//        if($order_refund){
-//            $order['order_refund'] = Db::table('order_refund')->where('order_id',$order_id)->find();
-//        }
-//        $order['order_refund']['count_num'] = 0;
         $order['goods_total_amount']=0;
         $order['goods_res'] = Db::table('order_goods')->field('rec_id,goods_id,goods_name,goods_num,spec_key_name,goods_price,taxes,discount')->where('order_id',$order['order_id'])->select();
+        $RefundApply = M('Refund_apply');
         foreach($order['goods_res'] as $key=>$value){
-//            $order['order_refund']['count_num'] += $value['goods_num'];
             $order['goods_total_amount']=$order['goods_total_amount']+($value['goods_num']*$value['goods_price']);
             $order['goods_res'][$key]['original_price'] = Db::table('goods')->where('goods_id',$value['goods_id'])->value('original_price');
             $order['goods_res'][$key]['img'] = Db::table('goods_img')->where('goods_id',$value['goods_id'])->where('main',1)->value('picture');
             $order['goods_res'][$key]['img']=SITE_URL.Config('c_pub.img').$order['goods_res'][$key]['img'];
+            $order['goods_res'][$key]['refund_apply_info'] = $RefundApply->where(['order_id'=>$order_id,'rec_id'=>$value['rec_id']])->find();
 
         }
         $order['add_time']=date('Y-m-d H:i:s', $order['add_time']);
@@ -1265,6 +1262,8 @@ class Order extends ApiBase
         }
 
         $RefundApply = M('refund_apply');
+        $ranum = $RefundApply->where(['order_id'=>$order_id,'rec_id'=>$rec_id])->count();
+        if($ranum)$this->ajaxReturn(['status' => -1 , 'msg'=>'该订单不能再进行此操作了！','data'=>'']);
 
         $data = [];
         $OrderGoods = M('Order_goods');
@@ -1274,7 +1273,8 @@ class Order extends ApiBase
         }
 
         //税费
-        $taxes = floor(($recinfo['goods_price'] - $recinfo['discount']) * $recinfo['taxes'] * $goods_num)/100;
+        //$taxes = floor(($recinfo['goods_price'] - $recinfo['discount']) * $recinfo['taxes'] * $goods_num)/100;
+        $taxes = 0; //2019-07-16 20:00修改为退款不退税
         //商品总额
         $price = ($recinfo['goods_price'] - $recinfo['discount']) * $goods_num;
         $data['order_id']          = $order_id;

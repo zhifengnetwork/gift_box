@@ -151,6 +151,11 @@ class Gift extends ApiBase
 
         if(in_array($act,[2,3])){ //查看是否可以转赠
             $joininfo = M('gift_order_join')->field('id')->where(['order_id'=>$order_id,'status'=>1,'user_id'=>$user_id,'join_status'=>0,'addressid'=>0])->find();
+
+            //只能转赠一次
+            $joinnum = M('gift_order_join')->where(['order_id'=>$order_id,'join_status'=>5])->count();
+            if($joinnum)
+                $this->ajaxReturn(['status' => -1 , 'msg'=>'该礼物已经被转赠过一次啦！','data'=>'']);
             
             if(!$joininfo)
                 $this->ajaxReturn(['status' => -1 , 'msg'=>'您不能转赠该礼物啦！','data'=>'']);
