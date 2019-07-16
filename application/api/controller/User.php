@@ -208,7 +208,7 @@ class User extends ApiBase
         // ];
         //第二种方法
         $where = $parent_id ? ['parent_id'=>$parent_id] : ['area_type'=>1];
-        $list  = Db::name('region')->field('area_id,parent_id,area_name')->where($where)->select();
+        $list  = Db::name('region')->field('area_id,parent_id,area_name,code')->where($where)->select();
         /*
         foreach($list as $v){
            if($v['area_type'] == 1){
