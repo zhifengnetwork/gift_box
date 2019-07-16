@@ -68,6 +68,8 @@ class Member extends Common
         $id = input('id');
         $nickname = input('nickname');
         $where['id'] = ['gt',0];
+        $where['nickname'] = ['neq',''];
+        $where['avatar'] = ['neq',''];
         if($id){
             $where['id'] = ['like','%'.$id.'%'];
         }

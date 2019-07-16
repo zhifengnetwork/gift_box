@@ -30,9 +30,13 @@ class Index extends ApiBase
         $goods_attr = Db::table('goods_attr')->field('id,name,english')->where('id','<',8)->order('id')->where('pid',0)->select();
         
         //佳礼只选-猜你喜欢的商品
-        $goods_list1 = Db::table('goods')->alias('g')->join('goods_img i','g.goods_id=i.goods_id','LEFT')->field('g.goods_id,g.goods_name,g.price,i.picture')->where(['goods_attr1'=>1,'g.is_recommend'=>1,'is_del'=>0,'is_show'=>1,'i.main'=>1])->order('add_time desc')->limit(8)->select();
-        $goods_info2 = Db::table('goods')->alias('g')->join('goods_img i','g.goods_id=i.goods_id','LEFT')->field('g.goods_id,g.goods_name,g.price,i.picture')->where(['goods_attr1'=>2,'g.is_recommend'=>1,'is_del'=>0,'is_show'=>1,'i.main'=>1])->order('add_time desc')->find();
+        $goods_list1 = Db::table('goods')->alias('g')->join('goods_img i','g.goods_id=i.goods_id','LEFT')->field('g.goods_id,g.goods_name,g.price,i.picture,g.picture as sy_picture')->where(['goods_attr1'=>1,'g.is_recommend'=>1,'is_del'=>0,'is_show'=>1,'i.main'=>1])->order('add_time desc')->limit(8)->select();
+        foreach($goods_list1 as $key=>$val){
+            $goods_list1[$key]['picture'] = $val['sy_picture']?$val['sy_picture']:$val['picture'];
+        }
+        $goods_info2 = Db::table('goods')->alias('g')->join('goods_img i','g.goods_id=i.goods_id','LEFT')->field('g.goods_id,g.goods_name,g.price,i.picture,g.picture as sy_picture')->where(['goods_attr1'=>2,'g.is_recommend'=>1,'is_del'=>0,'is_show'=>1,'i.main'=>1])->order('add_time desc')->find();
         if($goods_info2){
+            $goods_info2['picture'] = $goods_info2['sy_picture']?$goods_info2['sy_picture']:$goods_info2['picture'];
             $goods_info2['picture'] = $goods_info2['picture']?SITE_URL.$goods_info2['picture']:'';
         }else{
             $goods_info2 = array();
@@ -40,12 +44,16 @@ class Index extends ApiBase
 
         $goods_list3 = Db::table('goods')->alias('g')->join('goods_img i','g.goods_id=i.goods_id','LEFT')->field('g.goods_id,g.goods_name,g.price,i.picture')->where(['goods_attr1'=>3,'g.is_recommend'=>1,'is_del'=>0,'is_show'=>1,'i.main'=>1])->order('add_time desc')->limit(3)->select();
 
-        $goods_list4 = Db::table('goods')->alias('g')->join('goods_img i','g.goods_id=i.goods_id','LEFT')->field('g.goods_id,g.goods_name,g.price,i.picture')->where(['goods_attr1'=>4,'g.is_recommend'=>1,'is_del'=>0,'is_show'=>1,'i.main'=>1])->order('add_time desc')->limit(8)->select();
+        $goods_list4 = Db::table('goods')->alias('g')->join('goods_img i','g.goods_id=i.goods_id','LEFT')->field('g.goods_id,g.goods_name,g.price,i.picture,g.picture as sy_picture')->where(['goods_attr1'=>4,'g.is_recommend'=>1,'is_del'=>0,'is_show'=>1,'i.main'=>1])->order('add_time desc')->limit(8)->select();
+        foreach($goods_list4 as $key=>$val){
+            $goods_list4[$key]['picture'] = $val['sy_picture']?$val['sy_picture']:$val['picture'];
+        }
 
         $goods_list5 = Db::table('goods')->alias('g')->join('goods_img i','g.goods_id=i.goods_id','LEFT')->field('g.goods_id,g.goods_name,g.price,i.picture')->where(['goods_attr1'=>5,'g.is_recommend'=>1,'is_del'=>0,'is_show'=>1,'i.main'=>1])->order('add_time desc')->limit(9)->select();
 
-        $goods_info6 = Db::table('goods')->alias('g')->join('goods_img i','g.goods_id=i.goods_id','LEFT')->field('g.goods_id,g.goods_name,g.price,i.picture')->where(['goods_attr1'=>6,'g.is_recommend'=>1,'is_del'=>0,'is_show'=>1,'i.main'=>1])->order('add_time desc')->find();
+        $goods_info6 = Db::table('goods')->alias('g')->join('goods_img i','g.goods_id=i.goods_id','LEFT')->field('g.goods_id,g.goods_name,g.price,i.picture,g.picture as sy_picture')->where(['goods_attr1'=>6,'g.is_recommend'=>1,'is_del'=>0,'is_show'=>1,'i.main'=>1])->order('add_time desc')->find();
         if($goods_info6){
+            $goods_info6['picture'] = $goods_info6['sy_picture']?$goods_info6['sy_picture']:$goods_info6['picture'];
             $goods_info6['picture'] = $goods_info2['picture']?SITE_URL.$goods_info2['picture']:'';
         }else{
             $goods_info6 = array();

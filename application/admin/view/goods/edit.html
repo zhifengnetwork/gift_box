@@ -83,6 +83,9 @@
                 </div>
                 <div class="ibox-content">
                     <form method="post" class="form-horizontal" onsubmit="return check()" action="">
+                        <!-- 商品封面图 -->
+                        <input type="hidden" name="picture" value="{$info.picture}">
+
                         <div class="form-group">
                             <label class="col-sm-2 control-label"><span style="color:red;">*</span>商品名称</label>
                             <div class="col-sm-9">
@@ -204,6 +207,20 @@
                                         {/volist}
                                     </select>
                                 </div>
+                            </div>
+                        </div>
+                        <div class="form-group syfm" style="display: none">
+                            <label class="col-sm-2 control-label">首页封面图</label>
+                            <div class="col-sm-9">
+                                <dd class="upload_area clearfix" style="margin: 0 auto;">
+                                    <ul id="imglist2" class="post_imglist_syfm"  style="float: left;">
+                                            <li><img src="{$info.picture}" width="100" alt=""></li>
+                                    </ul>
+                                    <label for="upload_image2" style="float: left;"><div class="upload_btn">
+                                    </div></label>
+                                    <div style=" margin-left: 10px;float: left;line-height: 60px;"><span class="jianyi" style="color: #5fb878;"></span></div>
+                                </dd>
+                            
                             </div>
                         </div>
                         <style type="text/css">
@@ -374,6 +391,10 @@
                             </div>
                         </div>
                     </form>
+                    <!-- 图片上传 -->
+                    <form method="post" class="form-horizontal" id="ajaxForm" action="{:url('goods/upload_file')}" enctype="multipart/form-data">
+                        <input type="file" id="upload_image2" value="图片上传" accept="image/jpeg,image/gif,image/png" onchange="upload_file2()" name="file" capture="camera" style="display: none;">
+                    </form>
                 </div>
             </div>
         </div>
@@ -387,6 +408,7 @@
 <script type="text/javascript" src="__STATIC__/ueditor/1.4.3/ueditor.all.min.js"> </script> 
 <script type="text/javascript" src="__STATIC__/ueditor/1.4.3/lang/zh-cn/zh-cn.js"></script> 
 <script src="__STATIC__/layui/src/localResizeIMG2.js" type="text/javascript"></script>
+<script src="__STATIC__/js/jquery.form.js" type="text/javascript"></script>
 <style type="text/css">
     .mask_img{
           position: fixed;
@@ -412,6 +434,34 @@ function upload_file(obj){
     }
 }
 
+//首页封面图上传
+function upload_file2(){
+    $("#ajaxForm").ajaxSubmit(function (data) {
+        if(data.status == 1){
+            $('input[name="picture"]').val(data.data);
+            $('.post_imglist_syfm').html('<li><img src="'+data.data+'" width="100" alt=""></li>');
+        }else{
+            alert(data.msg);
+        }
+    });
+}
+
+getSyfm();
+//判断需不需要上传首页封面图
+function getSyfm(){
+    var id = $('select[name="goods_attr1"]').val();
+    if(id == 1){
+        $('.syfm').css('display','block');
+        $('.jianyi').html('建议上传74x142的图片');
+    }else if(id== 2 || id==4 || id==6){
+        $('.syfm').css('display','block');
+        $('.jianyi').html('建议上传320x170的图片');
+    }else{
+        $('.syfm').css('display','none');
+        $('.jianyi').html('');
+    }
+}
+
 //ajax获取二级栏目
 function ajaxGetAttr(obj){
     var id = $(obj).val()
@@ -419,6 +469,7 @@ function ajaxGetAttr(obj){
         $('select[name="goods_attr2"]').html('<option>请选择二级栏目</option>');
         return false;
     }
+    getSyfm();
     $.post("{:url('goods/ajaxGetAttr')}",{'id':id},function(data){
         if(data.status){
             var option = '<option>请选择二级栏目</option>';
