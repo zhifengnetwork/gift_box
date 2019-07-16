@@ -652,8 +652,8 @@ class Goods extends ApiBase
             $attrList[$k]['attr'] = Db::table('goods_spec_attr')->where(['goods_id'=>$goods_id,'spec_id'=>$v['id']])->field('attr_id as attributeId,attr_name as attributeValue,spec_id as id')->select();
             foreach($attrList[$k]['attr'] as $kk => $vv){
                 $attrList[$k]['attr'][$kk]['attributeId'] = md5($v['id']);
-                $attrList[$k]['attr'][$kk]['enable'] = false;
-                $attrList[$k]['attr'][$kk]['select'] = false;
+                $attrList[$k]['attr'][$kk]['enable'] = true;
+                $attrList[$k]['attr'][$kk]['select'] = true;
             }
             $attrList[$k]['id'] = md5($v['id']);
         }
