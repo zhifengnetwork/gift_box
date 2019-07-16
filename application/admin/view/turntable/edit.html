@@ -13,9 +13,9 @@
                     <form method="post" class="form-horizontal" action="{:url('edit')}" enctype="multipart/form-data">
                         <input type="hidden" name="order_id" value="{$order_id}">
                         <dd>
-                            <div><label><input type="checkbox" name="ids[]">用户1</label></div>
-                            <div><label><input type="checkbox" name="ids[]">用户2</label></div>
-                            <div><label><input type="checkbox" name="ids[]">用户3</label></div>
+                            {volist name="list" id="vo"}
+                            <div><label><input type="checkbox" value="{$vo.id}" {if condition="$vo.status eq 1"}checked{/if} name="ids[]">{$vo.nickname}</label></div>
+                            {/volist}
                         </dd>
                         <div class="form-group">
                             <div class="col-sm-4 col-sm-offset-2">
