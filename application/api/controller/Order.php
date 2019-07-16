@@ -664,7 +664,7 @@ class Order extends ApiBase
 //        }
 //        $order['order_refund']['count_num'] = 0;
         $order['goods_total_amount']=0;
-        $order['goods_res'] = Db::table('order_goods')->field('goods_id,goods_name,goods_num,spec_key_name,goods_price,taxes,discount')->where('order_id',$order['order_id'])->select();
+        $order['goods_res'] = Db::table('order_goods')->field('rec_id,goods_id,goods_name,goods_num,spec_key_name,goods_price,taxes,discount')->where('order_id',$order['order_id'])->select();
         foreach($order['goods_res'] as $key=>$value){
 //            $order['order_refund']['count_num'] += $value['goods_num'];
             $order['goods_total_amount']=$order['goods_total_amount']+($value['goods_num']*$value['goods_price']);
@@ -1205,4 +1205,24 @@ class Order extends ApiBase
         //$user_id=$order_info['user_id'];
         $this->ajaxReturn(['status' => -1 , 'msg'=>'未知错误，请联系管理员！','data'=>'']);
     }    
+
+    //申请退款
+    public function refund_apply(){
+        $res = $this->UploadFile('pic','refund'); 
+        dd($res);
+        return;
+        $user_id    = $this->get_user_id();
+        if(!$user_id){
+            $this->ajaxReturn(['status' => -1 , 'msg'=>'用户不存在！','data'=>'']);
+        }      
+        
+        $order_id = I('post.order_id/d',0);
+        $type = I('post.type/d',0); //类型，1：仅退款，2：退款退货，3：换货
+        $reason = I('post.reason/d',0);
+        $rec_id = I('post.rec_id/s','');  //order_goods表ID,多个以逗号分隔
+        $msg = I('post.msg/s',''); 
+        $goods_num = I('post.goods_num/s','');  //退款数量,多个以逗号分隔
+        $price = I('post.price/s',''); //退款金额,多个以逗号分隔
+        $real_pay_price = I('post.real_pay_price/s','');  //实付金额,多个以逗号分隔
+    }
 }

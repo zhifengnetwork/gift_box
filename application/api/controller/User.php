@@ -592,30 +592,11 @@ class User extends ApiBase
      */
     public function upload_file()
     {
-    	// 获取表单上传文件 例如上传了001.jpg
-        $file = request()->file('file');
-	    // 移动到框架应用根目录/public/uploads/ 目录下
-	    if($file){
-	        $info = $file->validate(['size'=>1024*1024*10])->move(ROOT_PATH . 'public' . DS . 'uploads' . DS . 'user' . DS);
-	        if($info){
-	            // 成功上传后 获取上传信息
-	            $result['data'] = SITE_URL.'/public/uploads/user/'.$info->getSaveName();
-	            $result['status'] = 1;
-	            $result['msg'] = '上传成功';
-	            $this->ajaxReturn($result);
-	        }else{
-	            // 上传失败获取错误信息
-	            $result['msg'] = $file->getError();
-	            $result['status'] = -1;
-	            $result['data'] = '';
-	            $this->ajaxReturn($result);
-	        }
+        $res = $this->UploadFile('file','user');
+        if($res['status'] == 1){
+            $res['data'] = $res['data'][0];
         }
-        // 上传失败获取错误信息
-        $result['msg'] = '上传文件不存在';
-        $result['status'] = -1;
-        $result['data'] = '';
-        $this->ajaxReturn($result);
+        $this->ajaxReturn($res);
     }
 
 
