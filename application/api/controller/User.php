@@ -197,30 +197,9 @@ class User extends ApiBase
         if(!$user_id){
             $this->ajaxReturn(['status' => -1 , 'msg'=>'用户不存在','data'=>'']);
         }
-        //第一种方法
-        //$province_list  =  Db::name('region')->field('*')->where(['area_type' => 1])->column('area_id,area_name');
-        // $city_list      =  Db::name('region')->field('*')->where(['area_type' => 2])->column('area_id,area_name');
-        // $county_list    =  Db::name('region')->field('*')->where(['area_type' => 3])->column('area_id,area_name');
-        // $data = [
-        //     'province_list' => $province_list,
-        //     'city_list'     => $city_list,
-        //     'county_list'   => $county_list,
-        // ];
-        //第二种方法
+
         $where = $parent_id ? ['parent_id'=>$parent_id] : ['area_type'=>1];
         $list  = Db::name('region')->field('area_id,parent_id,area_name')->where($where)->select();
-        /*
-        foreach($list as $v){
-           if($v['area_type'] == 1){
-              $address_list['province_list'][$v['code'] * 10000]=  $v['area_name'];
-           }
-           if($v['area_type'] == 2){
-              $address_list['city_list'][$v['code'] *100]=  $v['area_name'];
-           }
-           if($v['area_type'] == 3){
-              $address_list['county_list'][$v['code']]=  $v['area_name'];
-           }
-        }*/
         $this->ajaxReturn(['status'=>1,'msg'=>'获取地址成功','data'=>$list]);
     }
 
