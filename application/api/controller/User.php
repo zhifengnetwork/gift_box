@@ -562,7 +562,9 @@ class User extends ApiBase
         }
 
         $info = Db::name('member')->where('id',$user_id)->find();
-       
+        if($info['avatar'] && substr($info['avatar'],0,1) != 'h'){
+            $info['avatar'] = SITE_URL.$info['avatar'];
+        }
         $this->ajaxReturn(['status' => 1 , 'msg'=>'修改成功','data'=>$info]);
     }
 
