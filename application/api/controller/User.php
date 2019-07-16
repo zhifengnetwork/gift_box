@@ -198,7 +198,7 @@ class User extends ApiBase
             $this->ajaxReturn(['status' => -1 , 'msg'=>'用户不存在','data'=>'']);
         }
 
-        $where = $parent_id ? ['parent_id'=>$parent_id] : ['area_type'=>1];
+        $where = $parent_id ? ['code'=>$parent_id] : ['area_type'=>1];
         $list  = Db::name('region')->field('area_id,parent_id,area_name')->where($where)->select();
         $this->ajaxReturn(['status'=>1,'msg'=>'获取地址成功','data'=>$list]);
     }
