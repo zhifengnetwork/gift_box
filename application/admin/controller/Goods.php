@@ -210,12 +210,12 @@ class Goods extends Common
                         $img=base64_decode($value);
                         //生成文件夹
                         $names = "goods" ;
-                        $name = "goods/" .date('Ymd',time()) ;
-                        if (!file_exists(ROOT_PATH .Config('c_pub.img').$names)){ 
-                            mkdir(ROOT_PATH .Config('c_pub.img').$names,0777,true);
+                        $name = "goods/" .date('Ymd',time()).'/' ;
+                        if (!file_exists(ROOT_PATH .Config('c_pub.img').$name)){ 
+                            mkdir(ROOT_PATH .Config('c_pub.img').$name,0777,true);
                         }
                         //保存图片到本地
-                        file_put_contents(ROOT_PATH .Config('c_pub.img').$name.$saveName,$img);
+                        file_put_contents(ROOT_PATH .Config('c_pub.img').$name.'/'.$saveName,$img);
 
                         unset($data['img'][$key]);
                         $data['img'][] = $name.$saveName;
@@ -228,7 +228,7 @@ class Goods extends Common
                         }else{
                             $datas[$key]['main'] = 0;
                         }
-                        $datas[$key]['picture'] = '/public/upload/images/'.$name.$value;
+                        $datas[$key]['picture'] = '/public/upload/images/'.$value;
                         $datas[$key]['goods_id'] = $goods_id;
                     }
 
@@ -458,9 +458,9 @@ class Goods extends Common
                     $img=base64_decode($value);
                     //生成文件夹
                     $names = "goods" ;
-                    $name = "goods/" .date('Ymd',time()) ;
-                    if (!file_exists(ROOT_PATH .Config('c_pub.img').$names)){ 
-                        mkdir(ROOT_PATH .Config('c_pub.img').$names,0777,true);
+                    $name = "goods/" .date('Ymd',time()).'/' ;
+                    if (!file_exists(ROOT_PATH .Config('c_pub.img').$name)){ 
+                        mkdir(ROOT_PATH .Config('c_pub.img').$name,0777,true);
                     }
                     //保存图片到本地
                     file_put_contents(ROOT_PATH .Config('c_pub.img').$name.$saveName,$img);
