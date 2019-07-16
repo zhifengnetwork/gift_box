@@ -54,7 +54,7 @@ class Index extends ApiBase
         $goods_info6 = Db::table('goods')->alias('g')->join('goods_img i','g.goods_id=i.goods_id','LEFT')->field('g.goods_id,g.goods_name,g.price,i.picture,g.picture as sy_picture')->where(['goods_attr1'=>6,'g.is_recommend'=>1,'is_del'=>0,'is_show'=>1,'i.main'=>1])->order('add_time desc')->find();
         if($goods_info6){
             $goods_info6['picture'] = $goods_info6['sy_picture']?$goods_info6['sy_picture']:$goods_info6['picture'];
-            $goods_info6['picture'] = $goods_info2['picture']?SITE_URL.$goods_info2['picture']:'';
+            $goods_info6['picture'] = $goods_info6['picture']?SITE_URL.$goods_info6['picture']:'';
         }else{
             $goods_info6 = array();
         }
