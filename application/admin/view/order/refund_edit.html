@@ -89,7 +89,7 @@
                     <label class="col-xs-12 col-sm-2 control-label">用户</label>
                       
                     <div class="col-sm-8 col-xs-12">
-                        <span class="help-block">{$info.realname}</span> 
+                        <span class="help-block">{$info.nickname}</span> 
 
                         </div>
                 </div>
@@ -97,7 +97,7 @@
                     <label class="col-xs-12 col-sm-2 control-label">申请日期
                       </label>
                       <div class="col-sm-8 col-xs-12">
-                            <span class="help-block">{$info.create_time|date="y-m-d H:i:s",###}</span> 
+                            <span class="help-block">{$info.addtime|date="y-m-d H:i:s",###}</span> 
                         </div>
                 </div>
                 <div class="form-group form-group-s s"  >
@@ -111,7 +111,7 @@
                     <label class="col-xs-12 col-sm-2 control-label">服务类型</label>
                         <div class="col-sm-8 col-xs-12">
                                 <span class="help-block">  
-                                       {$refund_reason[$info.refund_reason]}
+                                       {$refund_reason[$info.reason]}
                                 </span> 
                         </div>
                  </div>
@@ -119,7 +119,7 @@
                     <label class="col-xs-12 col-sm-2 control-label">退货原因</label>
                         <div class="col-sm-8 col-xs-12">
                                 <span class="help-block">  
-                                        {$info.cancel_remark}
+                                        
                                  </span> 
                        </div>
                  </div>
@@ -127,7 +127,7 @@
                         <label class="col-xs-12 col-sm-2 control-label">退货描述</label>
                             <div class="col-sm-8 col-xs-12">
                                     <span class="help-block">  
-                                            {$info.cancel_remark}
+                                            {$info.msg}
                                      </span> 
                          </div>
                   </div>
@@ -151,7 +151,7 @@
                         </div>
                     </div>
 
-                {eq name="$info.refund_status" value="1"}
+                {eq name="$info.status" value="1"}
                 <div class="form-group">
                     <label class="col-sm-2 control-label">审核意见</label>
                     <div class="col-sm-9">
@@ -180,7 +180,7 @@
                  <div class="form-group">
                         <label class="col-xs-12 col-sm-3 col-md-2 control-label"></label>
                         <div class="col-sm-9 col-xs-12">
-                            {eq name="$info.refund_status" value="1"}
+                            {eq name="$info.status" value="1"}
                             <button class="btn btn-primary ajax-post col-lg-1" target-form="form-horizontal" type="submit">保存</button>
                             {/eq}
                             <button class="btn btn-white" onclick="javascript:history.back(-1);return false;">返回</button>

@@ -149,7 +149,7 @@ class Order extends Common
     /***
      * 退换货列表
      */
-    public function order_refund(){
+    /* public function order_refund(){
         $refundstatus  = input('refundstatus',-1);
         $order_id       = input('order_id','');
         $where = array();
@@ -183,16 +183,53 @@ class Order extends Common
             'order_id'      => $order_id,
             'refundstatus'  => $refundstatus,
         ]);
+    } */
+    public function order_refund(){
+        $refundstatus  = input('refundstatus',-1);
+        $order_id       = input('order_id','');
+        $where = array();
+        if(!empty($order_id)){
+            $where['o.order_sn']       = $order_id;
+        }
+
+        if($refundstatus >= 0){
+            $where['ra.status']   = $refundstatus;
+        }
+
+        $list  = Db::name('refund_apply')->alias('ra')->field('ra.*,o.order_sn,og.spec_key_name')
+                ->join("order o",'ra.order_id=o.order_id','LEFT')
+                ->join("order_goods og",'ra.rec_id=og.rec_id','LEFT')
+                ->where($where)
+                ->order('ra.addtime DESC')
+                ->paginate(10, false, ['query' => [
+                    'ra.status' => $refundstatus,
+                    'o.order_sn'      => $order_id,
+                ]]);
+        //退换货状态
+       
+        $refund_status           = config('REFUND_STATUS');
+        $refund_status['-1']     = '默认全部';
+        //退货原因
+        $refund_reason           = config('REFUND_REASON');
+        return $this->fetch('',[
+            'meta_title'    => '退换货列表', 
+            'list'          => $list, 
+            'refund_reason' => $refund_reason,
+            'refund_status' => $refund_status,
+            'order_id'      => $order_id,
+            'refundstatus'  => $refundstatus,
+        ]);
     }
     /**
      *退换货详情
      */
     public function refund_edit(){
         $id    = input('id');
-        $info  = Db::name('order_refund')->alias('uo')->field('uo.*,order_sn,order_amount,realname')
-                ->join("order d",'uo.order_id=d.order_id','LEFT')
-                ->join("member m",'uo.user_id=m.id','LEFT')
-                ->where(['uo.id' => $id])
+        $info  =  Db::name('refund_apply')->alias('ra')->field('ra.*,o.order_sn,og.spec_key_name,m.nickname')
+                ->join("order o",'ra.order_id=o.order_id','LEFT')
+                ->join("order_goods og",'ra.rec_id=og.rec_id','LEFT')
+                ->join("member m",'ra.user_id=m.id','LEFT')
+                ->where(['ra.id' => $id])
                 ->find();
         if( Request::instance()->isPost()){
 
