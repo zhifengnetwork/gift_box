@@ -26,6 +26,11 @@ class Category extends ApiBase
     */
     public function search_goods()
     {
+        $user_id = $this->get_user_id();
+        if(!$user_id){
+            $this->ajaxReturn(['status' => -1 , 'msg'=>'用户不存在','data'=>'']);
+        }
+
         $keyword = input('keyword');
         $page = input('page',1);
         $num = input('num',10);
@@ -34,7 +39,7 @@ class Category extends ApiBase
             $this->ajaxReturn(['status'=>-1,'msg'=>'请输入搜索关键字']);
         }
         //写进搜索记录
-        $search['user_id'] = 1;
+        $search['user_id'] = $user_id;
         $search['addtime'] = time();
         $search['keyword'] = $keyword;
         if($page == 1){
