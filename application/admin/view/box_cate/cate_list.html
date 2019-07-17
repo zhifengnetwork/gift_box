@@ -8,7 +8,7 @@
                 <div class="ibox-title">
                     <h5>{$meta_title}</h5>
                     <div class="pull-right" style="margin-top:-8px;">
-                        <!-- <a class="btn btn-info" href="{:url('add')}"><i class="fa fa-plus"></i> 添加类别</a> -->
+                            <a class="btn btn-info" href="{:url('add_cate')}"><i class="fa fa-plus"></i> 添加类别</a>
                     </div>
                 </div>
                 <div class="ibox-content">
@@ -21,24 +21,21 @@
                         <table class="table table-striped">
                             <thead>
                             <tr>
-                                <th>订单id</th>
-                                <th>礼盒数量</th>
-                                <th>开奖时间</th>
-                                <th>结束时间</th>
-                                <th>盒子id</th>
+                                <th>ID</th>
+                                <th>名称</th>
+                                <th>图片</th>
                                 <th>操作</th>
                             </tr>
                             </thead>
                             <tbody>
                             {volist name="list" id="vo"}
                             <tr>
-                                <td>{$vo.order_id}</td>
-                                <td>{$vo.godos_num|default="0"}</td>
-                                <td>{$vo.lottery_time|date="Y-m-d H:i:s",###}</td>
-                                <td>{$vo.overdue_time|date="Y-m-d H:i:s",###}</td>
-                                <td>{$vo.box_id}</td>
+                                <td>{$vo.id}</td>
+                                <td>{$vo.name}</td>
+                                <td><img src="{$vo.picture}" width="60"></td>
                                 <td>
-                                    <a class="btn btn-default delete" href="{:url('edit',['order_id'=>$vo.order_id],false)}" >设置中奖名单</i></a>
+                                    <a class="btn btn-default delete" href="{:url('add_cate',['id'=>$vo.id],false)}" >编辑 </i></a>
+                                    <a class="btn btn-default delete" onclick="del(this,{$vo.id})" href="javascript:;" >删除 </i></a>
                                 </td>
                             </tr>
                             {/volist}
@@ -47,6 +44,7 @@
                     </div>
                     
                     <ul class="pagination">
+                        {$list->render()}
                     </ul>
                 </div>
             </div>
@@ -54,11 +52,10 @@
     </div>
 {/block}
 {block name='script'}
-<script src="__LIB__/layer/layer.js"></script>
 <script>
     function del(obj,id){
         if(window.confirm('确认删除该分类吗？')){
-            $.post("{:url('del')}",{'id':id},function(data){
+            $.post("{:url('del_cate')}",{'id':id},function(data){
                 alert(data.msg);
                 if(data.status){
                     $(obj).parents('tr').remove();

@@ -16,9 +16,8 @@ class Box extends Common
     {
         $list = Db::table('box')->alias('b')
                 ->join('member u','u.id=b.user_id','LEFT')
-                ->join('member us','us.id=b.sender_id','LEFT')
                 ->join('box_cate c','c.id=b.cate_id','LEFT')
-                ->field('b.id,b.cate_id,b.user_id,b.sender_id,b.music_id,b.addtime,u.nickname as u_nickname,us.nickname as sender_nickname,c.name')
+                ->field('b.id,b.cate_id,b.user_id,b.music_id,b.addtime,u.nickname as u_nickname,c.name')
                 ->order('b.id desc')
                 ->paginate(10);
         $this->assign('list',$list);
@@ -55,31 +54,6 @@ class Box extends Common
     }
 
     /**
-     * 语音文件上传
-     */
-    public function upload_music()
-    {
-    	// 获取表单上传文件 例如上传了001.jpg
-        $file = request()->file('voice_file');
-	    // 移动到框架应用根目录/public/uploads/ 目录下
-	    if($file){
-	        $info = $file->move(ROOT_PATH . 'public' . DS . 'uploads' . DS . 'box' . DS);
-	        if($info){
-	            // 成功上传后 获取上传信息
-	            $result['url'] = '/public/uploads/box/'.$info->getSaveName();
-	            $result['status'] = 1;
-	            $result['msg'] = '上传成功';
-	            return json($result);
-	        }else{
-	            // 上传失败获取错误信息
-	            $result['msg'] = $file->getError();
-	            $result['status'] = 2;
-	            return json($result);
-	        }
-	    }
-    }
-
-    /**
      * 照片文件上传
      */
     public function upload_photo()
@@ -88,7 +62,7 @@ class Box extends Common
 	    $file = request()->file('photo_file');
 	    // 移动到框架应用根目录/public/uploads/ 目录下
 	    if($file){
-	        $info = $file->move(ROOT_PATH . 'public' . DS . 'uploads' . DS . 'box' . DS);
+	        $info = $file->validate(['size'=>1024*1024*10])->move(ROOT_PATH . 'public' . DS . 'uploads' . DS . 'box' . DS);
 	        if($info){
 	            // 成功上传后 获取上传信息
 	            $result['url'] = '/public/uploads/box/'.$info->getSaveName();

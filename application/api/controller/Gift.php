@@ -276,4 +276,19 @@ class Gift extends ApiBase
         $this->ajaxReturn(['status' => 1 , 'msg'=>'获取成功','data'=>$result]);
     }
 
+    //转盘
+    public function smoke_gift()
+    {
+        $user_id = $this->get_user_id();
+        $order_id = input('order_id',0);
+        if(!$user_id){
+            $this->ajaxReturn(['status' => -1 , 'msg'=>'用户不存在','data'=>'']);
+        }
+        if(!$order_id){
+            $this->ajaxReturn(['status' => -1 , 'msg'=>'群抢id不能为空','data'=>'']);
+        }
+        $count = Db::name('gift_order_join')->where(['user_id'=>$user_id,'order_id'=>$order_id,'status'=>1])->count();
+        $this->ajaxReturn(['status' => 1 , 'msg'=>'获取成功','data'=>['status'=>$count]]);
+    }
+
 }

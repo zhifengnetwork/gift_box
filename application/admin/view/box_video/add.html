@@ -8,32 +8,28 @@
         <div class="col-lg-12">
             <div class="ibox float-e-margins">
                 <div class="ibox-title">
-                    <h5>添加音乐</h5>
+                    <h5>添加视频</h5>
                 </div>
                 <div class="ibox-content">
-                    <form method="post" class="form-horizontal" action="{:url('box_music/add')}" enctype="multipart/form-data">
-                        <input type="hidden" name="music_url" >
+                    <form method="post" class="form-horizontal" action="{:url('box_video/add')}" enctype="multipart/form-data">
+                        <input type="hidden" name="video_url" >
                         <div class="form-group">
-                            <label class="col-sm-2 control-label"><span style="color:red;">*</span>音乐名称</label>
+                            <label class="col-sm-2 control-label"><span style="color:red;">*</span>视频名称</label>
                             <div class="col-sm-9">
                                 <input type="text" name="name" value="" class="form-control">
                             </div>
                         </div>
                         <div class="form-group">
-                            <label class="col-sm-2 control-label"><span style="color:red;">*</span>音乐人</label>
+                            <label class="col-sm-2 control-label">视频上传</label>
                             <div class="col-sm-9">
-                                <input type="text" name="musician" value="" class="form-control">
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label class="col-sm-2 control-label">音乐上传</label>
-                            <div class="col-sm-9">
-                                    <dd class="upload_area clearfix" style="margin: 0 auto;">
-                                        <ul id="imglist" class="post_imglist">
-                                            <li><a href="" class="music_css"><img class="wh60" id="file0" src="__STATIC__/images/default.jpg"></a></li>
-                                        </ul>
-                                        <label for="file_apload"><div class="upload_btn"></div></label>
-                                    </dd>
+                                <dd class="upload_area clearfix" style="margin: 0 auto;">
+                                    <ul id="imglist" class="post_imglist">
+                                        <li>
+                                            <video src="" controls="controls" id="file0" style=" width: 300px !important;height: 300px !important;"></video>
+                                        </li>
+                                    </ul>
+                                    <label for="file_apload"><div class="upload_btn"></div></label>
+                                </dd>
                             </div>
                         </div>
 
@@ -48,8 +44,6 @@
                                 </label>
                             </div>
                         </div>
-                        
-
                         <div class="form-group">
                             <div class="col-sm-4 col-sm-offset-2">
                                 <input value="提交" type="submit" class="btn btn-primary ajax-post" target-form="form-horizontal" type="submit">
@@ -58,7 +52,7 @@
                         </div>
                     </form>
                     <form method="post" class="form-horizontal" id="ajaxForm" action="{:url('box/upload_photo')}" enctype="multipart/form-data">
-                        <input type="file" id="file_apload" value="" accept=".wav,.mp3,.ogg,.acc,.webm" name="photo_file" onchange="music_upload()" style="display: none">
+                        <input type="file" id="file_apload" value=""  name="photo_file" onchange="video_upload()" style="display: none">
                     </form>
                 </div>
             </div>
@@ -72,29 +66,17 @@
 <script src="__STATIC__/js/jquery.form.js" type="text/javascript"></script>
 <script type="text/javascript">
     //音乐上传
-    function music_upload(){
+    function video_upload(){
         $("#ajaxForm").ajaxSubmit(function (data) {
             // data = eval('('+data+')');
             if(data.status == 1){
-                $('input[name="music_url"]').val(data.url);
-                $('#file0').attr('src','/static/images/music.jpg');
-                $('.music_css').attr('href',data.url);
-                tiao();
+                $('input[name="video_url"]').val(data.url);
+                $('#file0').attr('src',data.url);
             }else{
                 alert(data.msg);
             }
         });
     }
 
-    //跳窗口
-    tiao();
-    function tiao(){
-        //音乐
-        if($('.music_css').attr('href') != '' && $('.music_css').attr('href') != 'javascript:;'){
-            $('.music_css').attr('target','_blank');
-        }else{
-            $('.music_css').attr('href','javascript:;');
-        }
-    }
 </script>
 {/block}

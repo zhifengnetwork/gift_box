@@ -12,12 +12,12 @@ class Box extends ApiBase
     /*
      * 获取应用场景
      */
-    public function box_cate_list()
+    public function box_scene_list()
     {
         //获取应用场景
-        $list = Db::name('box_cate')->field('id,name')->where(['pid'=>0,'status'=>1])->order('sort')->select();
+        $list = Db::name('box_scene')->field('id,name')->where(['pid'=>0,'status'=>1])->order('sort')->select();
         foreach($list as $key=>$val){
-            $list[$key]['list'] = Db::table('box_cate')->field('id,name,picture')->where('pid',$val['id'])->select();
+            $list[$key]['list'] = Db::table('box_scene')->field('id,name,picture')->where('pid',$val['id'])->select();
             foreach($list[$key]['list'] as $k=>$v){
                 $list[$key]['list'][$k]['picture'] = $v['picture']?SITE_URL.$v['picture']:'';
             }
@@ -29,12 +29,43 @@ class Box extends ApiBase
     }
 
     /*
+     * 获取分类列表
+     */
+    public function box_cate_list()
+    {
+        //获取分类列表
+        $list = Db::name('box_cate')->field('id,name,picture')->order('id desc')->select();
+        foreach($list as $key=>$val){
+            $list[$key]['picture'] = $val['picture']?SITE_URL.$val['picture']:'';
+        }
+        $data['status'] = 1;
+        $data['data'] = $list;
+        $data['msg'] = '获取数据成功';
+        $this->ajaxReturn($data);
+    }
+
+    /*
+     * 获取视频列表
+     */
+    public function box_video_list()
+    {
+        $list = Db::name('box_video')->field('id,name,video_url')->where('status',1)->order('addtime desc')->select();
+        foreach($list as $key=>$val){
+            $list[$key]['video_url'] = $val['video_url']?SITE_URL.$val['video_url']:'';
+        }
+        $data['status'] = 1;
+        $data['data'] = $list;
+        $data['msg'] = '获取数据成功';
+        $this->ajaxReturn($data);
+    }
+
+    /*
      * 获取应用场景的数据
      * 
      */
-    public function get_cate(){
+    public function get_scene(){
         $id = input('post.id',0);
-        $list = Db::table('box_cate')->field('id,name,picture')->where('pid',$id)->order('sort')->select();
+        $list = Db::table('box_scene')->field('id,name,picture')->where('pid',$id)->order('sort')->select();
         if(!$list){
             $data['data'] = array();
             $data['status'] = 1;
@@ -42,7 +73,7 @@ class Box extends ApiBase
             $this->ajaxReturn($data);
         }
         if($id == 0){
-            $list[0]['list'] = Db::table('box_cate')->field('id,name,picture')->where('pid',$list[0]['id'])->order('sort')->select();
+            $list[0]['list'] = Db::table('box_scene')->field('id,name,picture')->where('pid',$list[0]['id'])->order('sort')->select();
             foreach($list[0]['list'] as $key=>$val){
                 $list[0]['list'][$key]['picture'] = $val['picture']?SITE_URL.$val['picture']:'';
             }
@@ -106,7 +137,9 @@ class Box extends ApiBase
     {
         $id = input('id',0);
         $cate_id = input('cate_id',0);
+        $advice = input('advice',0);
         $data['user_id'] = $this->get_user_id();
+        $data['advice'] = $advice;//赠言
         if(!$id && !$cate_id){
             $result['status'] = -1;
             $result['msg'] = '创建盒子需要传类别id';

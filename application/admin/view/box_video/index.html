@@ -8,19 +8,16 @@
                 <div class="ibox-title">
                     <h5>{$meta_title}</h5>
                     <div class="pull-right" style="margin-top:-8px;">
-                            <a class="btn btn-info" href="{:url('box_music/add')}"><i class="fa fa-plus"></i> 添加音乐</a>
+                            <a class="btn btn-info" href="{:url('box_video/add')}"><i class="fa fa-plus"></i> 添加视频</a>
                     </div>
                 </div>
                 <div class="ibox-content">
-
                     <div class="table-responsive">
-                        <form action="{:URL('Box/delMusicAll')}" method="post">
                         <table class="table table-striped">
                             <thead>
                             <tr>
                                 <th>ID</th>
-                                <th>音乐名</th>
-                                <th>音乐人</th>
+                                <th>视频名称</th>
                                 <th>状态</th>
                                 <th>添加时间 </th>
                                 <th>操作</th>
@@ -31,7 +28,6 @@
                             <tr>
                                 <td>{$vo.id}</td>
                                 <td>{$vo.name}</td>
-                                <td>{$vo.musician}</td>
                                 <td>{if condition="$vo.status"}启用{else /}禁用{/if}</td>
                                 <td>{$vo.addtime|date="Y-m-d",###}</td>
                                 <td>
@@ -43,7 +39,6 @@
                             {/volist}
                             </tbody>
                         </table>
-                        </form>
                     </div>
                     
                     <ul class="pagination">
@@ -57,8 +52,8 @@
 {block name='script'}
 <script>
     function del(obj,music_id){
-        if(window.confirm('确认删除该音乐吗？')){
-            $.post("{:url('box_music/del')}",{'music_id':music_id},function(data){
+        if(window.confirm('确认删除该视频吗？')){
+            $.post("{:url('del')}",{'music_id':music_id},function(data){
                 alert(data.msg);
                 if(data.status == 1){
                     $(obj).parents('tr').remove();
@@ -79,7 +74,7 @@
         }
 
         if(window.confirm(ts)){
-            $.post("{:url('box_music/is_show')}",{'music_id':music_id,'status':is_show},function(data){
+            $.post("{:url('music/is_show')}",{'music_id':music_id,'status':is_show},function(data){
                 if(data.status == 1){
                     $(obj).attr('is_show',is_show);
                     if( is_show ){

@@ -8,12 +8,12 @@
                 <div class="ibox-title">
                     <h5>{$meta_title}</h5>
                     <div class="pull-right" style="margin-top:-8px;">
-                            <a class="btn btn-info" href="{:url('add')}"><i class="fa fa-plus"></i> 添加礼盒</a>
+                            <!-- <a class="btn btn-info" href="{:url('add')}"><i class="fa fa-plus"></i> 添加礼盒</a> -->
                     </div>
                 </div>
                 <div class="ibox-content">
                     <div class="row" style="margin-left:0px;" >
-                        <a class="btn btn-default delete" href="{:url('add')}" >添加礼盒 </i></a>
+                        <!-- <a class="btn btn-default delete" href="{:url('add')}" >添加礼盒 </i></a> -->
                         <!-- <a class="btn btn-default delete" onclick="del_all(0)" href="javascript:;" >批量删除 <i class="fa fa-trash-o"></i></a> -->
                     </div>
 
@@ -25,7 +25,7 @@
                                 <th>ID</th>
                                 <th>类别 </th>
                                 <th>制作人 </th>
-                                <th>发送的对象</th>
+                                <!-- <th>发送的对象</th> -->
                                 <th>添加时间</th>
                                 <th>操作</th>
                             </tr>
@@ -36,11 +36,10 @@
                                 <td>{$vo.id}</td>
                                 <td>{$vo.name}</td>
                                 <td>{$vo.u_nickname}</td>
-                                <td>{$vo.sender_nickname}</td>
                                 <td>{$vo.addtime|date="Y-m-d",###}</td>
                                 <td>
-                                    <a class="btn btn-default delete" href="{:url('box/edit',['id'=>$vo.id],false)}" >编辑 </i></a>
-                                    <a class="btn btn-default delete" onclick="del(this,{$vo.id})" href="javascript:;" >删除 </i></a>
+                                    <a class="btn btn-default delete" href="{:url('box/edit',['id'=>$vo.id],false)}" >查看 </i></a>
+                                    <!-- <a class="btn btn-default delete" onclick="del(this,{$vo.id})" href="javascript:;" >删除 </i></a> -->
                                 </td>
                             </tr>
                             {/volist}
