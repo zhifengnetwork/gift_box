@@ -1219,7 +1219,7 @@ class Order extends ApiBase
         $prine_way = I('post.prine_way/d',0); //退回途径，微信
         $refund_apply_id = I('post.refund_apply_id/d',0); //退款ID
 
-        if(!$order_id || !$rec_id || !$goods_num)
+        if(!$order_id || !$rec_id || !$goods_num || !in_array($type,[1,2,3]) || !in_array($reason,[1,2,3,4,5,6]))
             $this->ajaxReturn(['status' => -1 , 'msg'=>'参数错误！','data'=>'']);
         if(($type != 3) && !$prine_way)
             $this->ajaxReturn(['status' => -1 , 'msg'=>'请选择退款退回途径！','data'=>'']);

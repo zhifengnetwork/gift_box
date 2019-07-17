@@ -61,7 +61,7 @@
                                 {volist name="list" id="vo"}
                                 <tr>
                                     <td>{$vo.order_sn}</td>
-                                    <td>{:getPayBody($vo.order_id)}</td>
+                                    <td>{$vo.spec_key_name} * {$vo.goods_num}件</td>
                                     <td>{$refund_reason[$vo.reason]}</td>
                                     <td>
                                         {eq name="$vo.prine_way" value="1"}

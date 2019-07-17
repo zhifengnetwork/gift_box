@@ -104,14 +104,14 @@
                     <label class="col-xs-12 col-sm-2 control-label">商品 </label>
                   
                         <div class="col-sm-8 col-xs-12">
-                                <span class="help-block">  {:getPayBody($info.order_id)}</span> 
+                                <span class="help-block">  {$info.spec_key_name} * {$info.goods_num}件</span> 
                        </div>
                  </div>
                  <div class="form-group form-group-s s"  >
                     <label class="col-xs-12 col-sm-2 control-label">服务类型</label>
                         <div class="col-sm-8 col-xs-12">
                                 <span class="help-block">  
-                                       {$refund_reason[$info.reason]}
+                                       {$refund_apply_type[$info.type]}
                                 </span> 
                         </div>
                  </div>
@@ -119,7 +119,7 @@
                     <label class="col-xs-12 col-sm-2 control-label">退货原因</label>
                         <div class="col-sm-8 col-xs-12">
                                 <span class="help-block">  
-                                        
+                                    {$refund_reason[$info.reason]}
                                  </span> 
                        </div>
                  </div>
@@ -137,11 +137,11 @@
                         <div class="col-sm-9">
                                 <dd class="upload_area clearfix" style="margin: 0 auto;">
                                     <ul id="imglist" class="post_imglist">
-                                            {notempty name="$img"}
-                                            {volist name="$img" id="vo"}
+                                            {notempty name="$info.pic"}
+                                            {volist name="$info.pic" id="vo"}
                                             <li style="" class="li_img">
                                                 <div>
-                                                    <img class="wh60" src="__IMAGES__/" onclick="showimg()">
+                                                    <img class="wh60" src="{$vo}" onclick="showimg()">
                                                 </div>
                                             </li>
                                             {/volist}
@@ -151,17 +151,17 @@
                         </div>
                     </div>
 
-                {eq name="$info.status" value="1"}
+                {eq name="$info.status" value="0"}
                 <div class="form-group">
                     <label class="col-sm-2 control-label">审核意见</label>
                     <div class="col-sm-9">
                         <div class="radio radio-success radio-inline">
-                            <input type="radio" value="1" name="status" id="status1" />
+                            <input type="radio" value="2" name="status" id="status1" />
                             <label for="alipay1">审核通过</label>
                         </div>
 
                         <div class="radio radio-danger radio-inline">
-                            <input type="radio" value="0" name="status" id="status2"  />
+                            <input type="radio" value="1" name="status" id="status2"  />
                             <label for="alipay2">拒绝通过</label>
                         </div>
 
@@ -171,8 +171,7 @@
                 <div class="form-group form-group-s s"  >
                         <label class="col-xs-12 col-sm-2 control-label">处理备注</label>
                             <div class="col-sm-8 col-xs-12">
-                                 <input type="text" name="handle_remark
-                                 " value="" class="form-control">
+                                 <input type="text" name="handle_remark" value="{$info.remark}" class="form-control">
                          </div>
                   </div>
                 
@@ -180,7 +179,7 @@
                  <div class="form-group">
                         <label class="col-xs-12 col-sm-3 col-md-2 control-label"></label>
                         <div class="col-sm-9 col-xs-12">
-                            {eq name="$info.status" value="1"}
+                            {eq name="$info.status" value="0"}
                             <button class="btn btn-primary ajax-post col-lg-1" target-form="form-horizontal" type="submit">保存</button>
                             {/eq}
                             <button class="btn btn-white" onclick="javascript:history.back(-1);return false;">返回</button>

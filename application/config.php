@@ -327,6 +327,11 @@ return [
         0 => '支付原路退回',
         1 => '退到用户余额',
     ),
+    'REFUND_APPLY_TYPE' => array(
+        1 => '仅退款',
+        2 => '退款退货',
+        3 => '换货',
+    ),
     'PAY_TYPE' => array(
         'credit' => ['pay_type'=>1,'pay_name'=>'余额支付'],
         'weixin' => ['pay_type'=>2,'pay_name'=>'微信支付'],

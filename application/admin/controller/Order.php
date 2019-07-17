@@ -231,23 +231,25 @@ class Order extends Common
                 ->join("member m",'ra.user_id=m.id','LEFT')
                 ->where(['ra.id' => $id])
                 ->find();
+        $info['pic'] && ($info['pic'] = explode(',',info['pic']));
         if( Request::instance()->isPost()){
 
-            $refund_status = input('refund_status/d',0);
-            $handle_remark = input('handle_remark','');
+            $status = input('status/d',0);
+            $handle_remark = input('handle_remark/s','');
             $update = [
-                'end_time'        => time(),
-                'handle_remark'   => $handle_remark,
-                'refund_status'   => $refund_status,
+                //'end_time'        => time(),
+                'remark'   => $handle_remark,
+                'status'   => $status,
             ]; 
+            /*
             if($refund_status == 2){
                 //todo::调用退款程序 
                $relut = OrderRefund::refund_obj($info);
                
 
 
-            }
-            $res = Db::name('order_refund')->where(['id' => $id])->update($update);
+            }*/
+            $res = Db::name('refund_apply')->where(['id' => $id])->update($update);
 
             if($res !== false){
                 $this->success('审核成功', url('order/refund_edit',['id' => $id]));
@@ -256,13 +258,12 @@ class Order extends Common
 
 
         }
-        $img = empty($info['img'])?'': explode(",", $info['img']);
         return $this->fetch('',[
-            'img'           => $img,
             'meta_title'    => '退换货详情', 
             'info'          => $info, 
             'refund_reason' => config('REFUND_REASON'), //退货原因
             'refund_status' => config('REFUND_STATUS'),//退换货状态
+            'refund_apply_type' => config('REFUND_APPLY_TYPE'),//退换类型
         ]);
 
     }
