@@ -210,4 +210,70 @@ class Gift extends ApiBase
         }
     }
 
+    //领取礼物/参与抽奖-----未用
+    public function order_join()
+    {
+        $user_id = $this->get_user_id();
+        $order_id = input('order_id',0);
+        if(!$user_id){
+            $this->ajaxReturn(['status' => -1 , 'msg'=>'用户不存在','data'=>'']);
+        }
+        if(!$order_id){
+            $this->ajaxReturn(['status' => -1 , 'msg'=>'群抢id不能为空','data'=>'']);
+        }
+        //获取订单详情
+        $info = Db::name('order')->field('order_id,order_type,lottery_time,overdue_time')->where('order_id',$order_id)->find();
+        $result['order_type'] = $info['order_type'];
+        if($info['order_type'] == 1){
+            //判断有没有人领取过
+            $gift = Db::name('gift_order_join')->where(['order_id'=>$order])->find();
+            if($gift['user_id'] == $user_id){
+                $this->ajaxReturn(['status' => -1 , 'msg'=>'您已经领取过该礼物','data'=>$result['order_type']]);
+            }
+            if($gift){
+                $data['order_type'] = 3;
+                $data['parentid'] = $gift['user_id'];
+            }else{
+                $data['order_type'] = 1;
+            }
+            $data['status'] = 1;
+        }else if($info['order_type'] == 2){
+            if(time() > $info['lottery_time']){
+                $this->ajaxReturn(['status' => -1 , 'msg'=>'活动已终止','data'=>$result['order_type']]);
+            }
+            $count = Db::name('gift_order_join')->where(['user_id'=>$user_id,'order_id'=>$order_id])->count();
+            if($count){
+                $this->ajaxReturn(['status' => -1 , 'msg'=>'您已经参与过该次抽奖了','data'=>$result['order_type']]);
+            }
+            $data['order_type'] = 2;
+            $data['status'] = 0;
+            $data['parentid'] = 0;
+        }else{
+            $this->ajaxReturn(['status' => -1 , 'msg'=>'该订单不能进行参与操作','data'=>$result['order_type']]);
+        }
+        $data['order_id'] = $order_id;
+        $data['addtime'] = time();
+        $data['user_id'] = $user_id;
+        $res = Db::name('gift_order_join')->insert($data);
+        if($res){
+            $this->ajaxReturn(['status' => 1 , 'msg'=>'参与抽奖成功','data'=>$result['order_type']]);
+        }else{
+            $this->ajaxReturn(['status' => -1 , 'msg'=>'参与抽奖失败','data'=>$result['order_type']]);
+        }
+    }
+
+    //获取中奖名单
+    public function get_gift_order()
+    {
+        $order_id = input('order_id',0);
+        $user_list = Db::name('gift_order_join')->where(['order_id'=>$order_id,'status'=>1,'parentid'=>0])->column('user_id');
+        if(!$user_list){
+            $this->ajaxReturn(['status' => 1 , 'msg'=>'暂未有人中奖','data'=>'无']);
+        }
+        //获取昵称
+        $result = Db::name('member')->where('id','in',$user_list)->column('nickname');
+        $result = implode('、',$result);
+        $this->ajaxReturn(['status' => 1 , 'msg'=>'获取成功','data'=>$result]);
+    }
+
 }

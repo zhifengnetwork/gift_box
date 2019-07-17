@@ -80,7 +80,16 @@ class Category extends ApiBase
     public function hot_search()
     {
         $time = time()-24*3600*7;
+        $user_id = $this->get_user_id();
+        if(!$user_id){
+            $this->ajaxReturn(['status' => -1 , 'msg'=>'用户不存在','data'=>'']);
+        }
+        //搜索热词
         $list = Db::table('search')->field('id,keyword,count(*) count')->where('addtime','>',$time)->group('keyword')->order('count desc')->limit(10)->select();
-        $this->ajaxReturn(['status'=>1,'msg'=>'获取数据成功','data'=>$list]);
+        //搜索关键字
+        $data = Db::table('search')->field('id,keyword')->where('user_id',$user_id)->order('addtime desc')->limit(8)->select();
+        $result['hot'] = $list;
+        $result['history'] = $data;
+        $this->ajaxReturn(['status'=>1,'msg'=>'获取数据成功','data'=>$result]);
     }
 }
