@@ -248,6 +248,8 @@ class Order extends ApiBase
         if(!$cart_res){
             $this->ajaxReturn(['status' => -1 , 'msg'=>'购物车商品不存在！','data'=>'']);
         }
+        if((count($cart_res) > 1) && ($order_type == 2))
+            $this->ajaxReturn(['status' => -1 , 'msg'=>'群抢类型不支持多种商品！','data'=>'']);
 
         $order_amount = '0'; //订单价格
         $order_goods = [];  //订单商品
@@ -258,7 +260,6 @@ class Order extends ApiBase
         //$goods_ids = '';//商品IDS
         $goods_coupon = [];
         foreach($cart_res as $key=>$value){
-        //$goods_ids .= $value['goods_id'] . ',';
             $goods_coupon[$value['goods_id']]['subtotal_price'] =  $value['subtotal_price'];
 
             //处理运费
@@ -391,16 +392,10 @@ class Order extends ApiBase
 
         // 添加订单商品
         foreach($order_goods as $key=>$value){
-
             $order_goods[$key]['order_id'] = $order_id;
             //拍下减库存
-//            if($value['less_stock_type']==1){
-                Db::table('goods_sku')->where('sku_id',$value['sku_id'])->setDec('inventory',$value['goods_num']);
-                Db::table('goods')->where('goods_id',$value['goods_id'])->setDec('stock',$value['goods_num']);
-//            }else if($value['less_stock_type']==2){
-//                //冻结库存
-//                Db::table('goods_sku')->where('sku_id',$value['sku_id'])->setInc('frozen_stock',$value['goods_num']);
-//            }
+            Db::table('goods_sku')->where('sku_id',$value['sku_id'])->setDec('inventory',$value['goods_num']);
+            Db::table('goods')->where('goods_id',$value['goods_id'])->setDec('stock',$value['goods_num']);
             unset($order_goods[$key]['less_stock_type']);
         }
 
@@ -410,6 +405,22 @@ class Order extends ApiBase
         }
 
         $res = Db::table('order_goods')->insertAll($order_goods);
+        
+        if($order_type == 2){ //群抢订单拆分成多个子订单
+            for($i=0; $i<$order_goods[0]['goods_num']; $i++){
+                $orderInfoData1 = $orderInfoData;
+                $orderInfoData1['parent_id'] = $order_id;
+                $order_sn_child = $orderInfoData['order_sn'];
+                $order_sn_child .= '-'.$i;
+                $orderInfoData1['order_sn'] = $order_sn_child;
+                $order_id_child = Db::table('order')->insertGetId($orderInfoData1);  
+                $childordergoods = $order_goods[0];
+                $childordergoods['order_id'] = $order_id_child;
+                $childordergoods['goods_num'] = 1;
+                Db::table('order_goods')->insert($childordergoods);
+            }
+        }
+
         if (!empty($res)) {
             //将商品从购物车删除
             Db::table('cart')->where($cart_where)->delete();
@@ -455,48 +466,54 @@ class Order extends ApiBase
         $gift_type = input('gift_type/d',0); //0全部，1已送礼物-已领，2已送礼物-未领，3已收礼物
         $page = input('page/d',1);
         $num = input('num/d',6);
+        $parent_id = input('parent_id/d',0); //父单单号
         $where = [];
         $pageParam = ['query' => []];
         $pageParam['page']=$page;
+
+        if($parent_id && ($order_type != 2))
+            $this->ajaxReturn(['status' => -1 , 'msg'=>'父单单号与订单类型冲突','data'=>'']);
+
         if ($type == 7){
-            $where = array('order_status' => 1 ,'pay_status'=>0 ,'shipping_status' =>0); //待付款
+            $where = array('o.order_status' => 1 ,'o.pay_status'=>0 ,'o.shipping_status' =>0); //待付款
             $pageParam['query']['order_status'] = 1;
             $pageParam['query']['pay_status'] = 0;
             $pageParam['query']['shipping_status'] = 0;
         }
         if ($type == 1){
-            $where = array('order_status' => 1 ,'pay_status'=>1 ,'shipping_status' =>0); //待发货
+            $where = array('o.order_status' => 1 ,'o.pay_status'=>1 ,'o.shipping_status' =>0); //待发货
             $pageParam['query']['order_status'] = 1;
             $pageParam['query']['pay_status'] = 1;
             $pageParam['query']['shipping_status'] = 0;
         }
         if ($type == 2){
-            $where = array('order_status' => ['in',[0,1]] ,'pay_status'=>0); //待支付
+            $where = array('o.order_status' => ['in',[0,1]] ,'o.pay_status'=>0); //待支付
             $pageParam['query']['order_status'] = ['in',[0,1]];
             $pageParam['query']['pay_status'] = 0;
         }
         if ($type == 3){
-            $where = array('order_status' => 1 ,'pay_status'=>1 ,'shipping_status' =>1); //待收货
+            $where = array('o.order_status' => 1 ,'o.pay_status'=>1 ,'o.shipping_status' =>1); //待收货
             $pageParam['query']['order_status'] = 1;
             $pageParam['query']['pay_status'] = 1;
             $pageParam['query']['shipping_status'] = 1;
         }
         if ($type == 4){
-            $where = array('order_status' => 2 ,'pay_status'=>1 ,'shipping_status' =>3); //待评价
+            $where = array('o.order_status' => 2 ,'o.pay_status'=>1 ,'o.shipping_status' =>3); //待评价
             $pageParam['query']['order_status'] = 2;
             $pageParam['query']['pay_status'] = 1;
             $pageParam['query']['shipping_status'] = 3;
         }
         if ($type == 5){
-            $where = array('order_status' => [['=',6],['=',7],['=',8],'or'] ,'pay_status'=>1); //退款/售后
+            $where = array('o.order_status' => [['=',6],['=',7],['=',8],'or'] ,'o.pay_status'=>1); //退款/售后
             $pageParam['query']['order_status'] = [['=',6],['=',7],['=',8],'or'];
             $pageParam['query']['pay_status'] = 1;
         }
         if ($type == 6){
-            $where = array('order_status' => 3); //已取消
+            $where = array('o.order_status' => 3); //已取消
             $pageParam['query']['order_status'] = 3;
         }
 
+        $parent_id && ($where['goj.parent_id'] = $parent_id);
         $where['o.user_id'] = $user_id;
         $where['o.order_type'] = ['in',$order_type];
         //$where['gi.main'] = 1;
@@ -525,21 +542,29 @@ class Order extends ApiBase
             ->where($where)
             ->group('og.order_id')
             ->order('o.order_id DESC')
-            ->field('o.order_id,o.add_time,o.order_sn,og.goods_name,gi.picture img,og.spec_key_name,og.goods_price,g.original_price,og.goods_num,o.order_status,o.pay_status,o.shipping_status,pay_type,o.total_amount,o.shipping_price,o.order_type,o.lottery_time,o.giving_time,o.overdue_time,o.gift_uid')
+            ->field('o.order_id,o.add_time,o.order_sn,og.goods_name,gi.picture img,og.spec_key_name,og.goods_price,g.original_price,og.goods_num,o.order_status,o.pay_status,o.shipping_status,pay_type,o.parent_id,o.total_amount,o.shipping_price,o.order_type,o.lottery_time,o.giving_time,o.overdue_time,o.gift_uid')
             ->paginate($num,false,$pageParam)
             ->toArray();
         }
 
-        if($gift_type != 3){
+        if($gift_type != 3){ 
+            $whereor = 'o1.order_type=2';
+            if($order_type != 0)    //非群抢，非犒劳自己时，不取母ID为0
+                $whereor .= ' and o1.parent_id<>0';
+            else                    //非群抢，犒劳自己时，只取母ID=0
+                $whereor .= ' and o1.parent_id=0';
+
              $order_list = Db::table('order')->alias('o')
+                        ->join('order o1','o.order_id=o1.order_id','LEFT')
                         ->join('order_goods og','og.order_id=o.order_id','LEFT')
                         ->join('goods_img gi','gi.goods_id=og.goods_id and gi.main=1','LEFT')
                         ->join('goods g','g.goods_id=og.goods_id','LEFT')
                         ->join('gift_order_join goj','o.order_id=goj.order_id','LEFT')
                         ->where($where)
+                        ->whereor($whereor)
                         ->group('og.order_id')
                         ->order('o.order_id DESC')
-                        ->field('o.order_id,o.add_time,o.order_sn,og.goods_name,gi.picture img,og.spec_key_name,og.goods_price,g.original_price,og.goods_num,o.order_status,o.pay_status,o.shipping_status,pay_type,o.total_amount,o.shipping_price,o.order_type,o.lottery_time,o.giving_time,o.overdue_time,o.gift_uid')
+                        ->field('o.order_id,o.add_time,o.order_sn,og.goods_name,gi.picture img,og.spec_key_name,og.goods_price,g.original_price,og.goods_num,o.order_status,o.pay_status,o.shipping_status,o.pay_type,o.parent_id,o.total_amount,o.shipping_price,o.order_type,o.lottery_time,o.giving_time,o.overdue_time,o.gift_uid')
                         ->paginate($num,false,$pageParam)
                         ->toArray(); 
         }
@@ -1233,9 +1258,11 @@ class Order extends ApiBase
                 $pics = implode(',',$pics['data']);
         }
 
-        $orderinfo = M('Order')->field('order_status,shipping_status,pay_status,gift_uid')->where(['user_id'=>$user_id])->find($order_id);
+        $orderinfo = M('Order')->field('order_status,shipping_status,pay_status,parent_id,gift_uid')->where(['user_id'=>$user_id])->find($order_id);
         if(!$orderinfo){
             $this->ajaxReturn(['status' => -1 , 'msg'=>'订单不存在！','data'=>'']);
+        }elseif($orderinfo['parent_id']){
+            $this->ajaxReturn(['status' => -1 , 'msg'=>'子订单不能进行此操作！','data'=>'']);
         }elseif($orderinfo['gift_uid']){
             $this->ajaxReturn(['status' => -1 , 'msg'=>'该订单已被人领取，不能执行退款操作！','data'=>'']);
         }elseif($type == 1){ //仅退款

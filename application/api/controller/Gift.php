@@ -36,9 +36,11 @@ class Gift extends ApiBase
                 $this->ajaxReturn(['status' => -1 , 'msg'=>'警告，参数错误！','data'=>'']);
         }
 
-        $order = Db::name('order')->field('order_status,shipping_status,pay_status,order_type,lottery_time,giving_time,overdue_time,gift_uid')->where(['order_id'=>$order_id,'user_id'=>$user_id,'deleted'=>0])->find();
+        $order = Db::name('order')->field('order_status,shipping_status,pay_status,parent_id,order_type,lottery_time,giving_time,overdue_time,gift_uid')->where(['order_id'=>$order_id,'user_id'=>$user_id,'deleted'=>0])->find();
         if(!$order){
             $this->ajaxReturn(['status' => -1 , 'msg'=>'订单不存在','data'=>'']);
+        }elseif(($order['parent_id'] > 0) && ($join_type == 2)){
+            $this->ajaxReturn(['status' => -1 , 'msg'=>'子订单不能进行此操作','data'=>'']);
         }elseif($order['pay_status'] != 1){
             $this->ajaxReturn(['status' => -1 , 'msg'=>'订单还未支付','data'=>'']);
         }elseif(!in_array($order['order_status'],[0,1])){
@@ -128,7 +130,7 @@ class Gift extends ApiBase
         $where = ['order_id'=>$order_id,'deleted'=>0];
         if(!in_array($act,[2,3]))$where['user_id'] = $user_id;
 
-        $order = Db::name('order')->field('order_status,shipping_status,pay_status,order_type,lottery_time,giving_time,overdue_time,gift_uid')->where($where)->find();
+        $order = Db::name('order')->field('order_status,shipping_status,pay_status,parent_id,order_type,lottery_time,giving_time,overdue_time,gift_uid')->where($where)->find();
         
         if(!$order){
             $this->ajaxReturn(['status' => -1 , 'msg'=>'订单不存在','data'=>'']);
@@ -141,13 +143,24 @@ class Gift extends ApiBase
         }elseif($order['giving_time'] > 0){
             if(($order['order_type'] == 1) && ($order['overdue_time'] < time()))
                 $this->ajaxReturn(['status' => -1 , 'msg'=>'该订单已赠送过啦！','data'=>'']);
-            elseif(($order['order_type'] == 2) && ($order['lottery_time'] < time()))
+            elseif($order['order_type'] == 2)
                 $this->ajaxReturn(['status' => -1 , 'msg'=>'该订单已赠送过啦！','data'=>'']);
-            elseif(($order['order_type'] == 2) && ($order['overdue_time'] < time()))
+            elseif($order['order_type'] == 2)
                 $this->ajaxReturn(['status' => -1 , 'msg'=>'该订单已赠送过啦！','data'=>'']);
             elseif($order['gift_uid'])
                 $this->ajaxReturn(['status' => -1 , 'msg'=>'该订单已有领取人啦！','data'=>'']);
-        }
+        }elseif(($order['order_type'] == 2) && in_array($act,[2,3])){
+            if($order['giving_time'] > 0){
+                if($order['lottery_time'] < time())
+                    $this->ajaxReturn(['status' => -1 , 'msg'=>'该订单已赠送过啦！','data'=>'']);
+                elseif($order['overdue_time'] < time())
+                    $this->ajaxReturn(['status' => -1 , 'msg'=>'该订单已赠送过啦！','data'=>'']);
+                elseif($order['gift_uid'])
+                    $this->ajaxReturn(['status' => -1 , 'msg'=>'该订单已有领取人啦！','data'=>'']);
+            }elseif(!$order['parent_id'])
+                $this->ajaxReturn(['status' => -1 , 'msg'=>'群抢母订单不能转赠！','data'=>'']);
+        }elseif(in_array($act,[2,3]) && ($order['gift_uid'] != $user_id))
+            $this->ajaxReturn(['status' => -1 , 'msg'=>'您不能转赠该礼物！','data'=>'']);
 
         if(in_array($act,[2,3])){ //查看是否可以转赠
             $joininfo = M('gift_order_join')->field('id')->where(['order_id'=>$order_id,'status'=>1,'user_id'=>$user_id,'join_status'=>0,'addressid'=>0])->find();
@@ -191,6 +204,7 @@ class Gift extends ApiBase
 
             $res = M('gift_order_join')->field('id')->where(['id'=>$joininfo['id']])->update(['join_status'=>5]);
             if($res !== false){
+                $data['order_type'] = 1;
                 $r = M('Order')->where(['order'=>$order_id])->update($data);
                 // 提交事务
                 Db::commit(); 
@@ -200,9 +214,9 @@ class Gift extends ApiBase
                 Db::rollback();
                 $this->ajaxReturn(['status' => -1 , 'msg'=>'操作失败','data'=>$pwdstr]);    
             }
-        }
+        }else
+            $r = M('Order')->where(['order'=>$order_id])->whereor(['parent_id'=>$order_id])->update($data);
 
-        $r = M('Order')->where(['order'=>$order_id])->update($data);
         if(false !== $r){
             $this->ajaxReturn(['status' => 1 , 'msg'=>'操作成功','data'=>$pwdstr]);
         }else{
