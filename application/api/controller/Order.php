@@ -1283,12 +1283,13 @@ class Order extends ApiBase
         $data['reason']            = $reason;
         $data['rec_id']            = $rec_id;
         $data['msg']               = $msg;
-        $data['pic']               = $pics;
         $data['goods_num']         = $goods_num;
         $data['price']             = $price + $taxes;
         $data['real_pay_price']    = $price + $taxes;
         $data['prine_way']         = $prine_way;
         $data['user_id']           = $user_id;
+
+        $pics && $data['pic'] = $pics;
 
         Db::startTrans();
         $res = $RefundApply->insertGetId($data);
@@ -1335,6 +1336,54 @@ class Order extends ApiBase
         }
 
         $this->ajaxReturn(['status' => 1 , 'msg'=>'请求成功！','data'=>$info]);
+    }
+
+    //设置退款快递 
+    public function set_refund_kuaidi(){
+        $user_id    = $this->get_user_id();
+        if(!$user_id){
+            $this->ajaxReturn(['status' => -1 , 'msg'=>'用户不存在！','data'=>'']);
+        }      
+        
+        $refund_apply_id = I('post.refund_apply_id/d',0); //退款ID
+        $info = M('refund_apply')->field('id,order_id,rec_id,status,type,kuaidi_number')->where(['user_id'=>$user_id])->find($refund_apply_id);
+
+        if(!$info)
+            $this->ajaxReturn(['status' => -1 , 'msg'=>'未查询到此次退款信息！','data'=>'']);       
+        elseif($info['kuaidi_number'])
+            $this->ajaxReturn(['status' => -1 , 'msg'=>'已填写退款物流信息啦！','data'=>'']);   
+            
+        $kuaidi_com = I('post.kuaidi_com/s','');    
+        $kuaidi_number = I('post.kuaidi_number/s',''); 
+        $tel = I('post.tel/s',''); 
+        $kuaidi_msg = I('post.kuaidi_msg/s','');   
+
+        if(!$kuaidi_com || !$kuaidi_number || !$tel){
+            $this->ajaxReturn(['status' => -1 , 'msg'=>'参数错误！','data'=>'']);       
+        }
+        
+        $pics = '';
+        if(isset($_FILES['kuaidi_pic'])){
+            $pics = $this->UploadFile('kuaidi_pic','refund'); 
+            if($pics['status'] == -1)
+                $this->ajaxReturn($pics);
+            else
+                $pics = implode(',',$pics['data']);
+        }
+
+        $data = [
+            'kuaidi_com'    => $kuaidi_com,
+            'kuaidi_number' => $kuaidi_number,
+            'tel'           => $tel,
+            'kuaidi_msg'    => $kuaidi_msg
+        ];
+        if($pics)$data['kuaidi_pic'] = $pics;
+
+        $res = M('refund_apply')->where(['id'=>$refund_apply_id])->update($data);
+        if($res !== false){
+            $this->ajaxReturn(['status' => -1 , 'msg'=>'设置成功！','data'=>'']);      
+        }else
+        $this->ajaxReturn(['status' => -1 , 'msg'=>'设置失败！','data'=>'']);  
     }
     
 }

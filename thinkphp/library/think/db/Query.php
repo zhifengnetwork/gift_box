@@ -2302,6 +2302,10 @@ class Query
         return $result;
     }
 
+    public function add(array $data = [], $replace = false, $getLastInsID = false, $sequence = null){
+        return $this->insert($data, $replace, $getLastInsID, $sequence);
+    }
+
     /**
      * 插入记录并获取自增ID
      * @access public

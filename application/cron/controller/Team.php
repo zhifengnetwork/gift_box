@@ -20,6 +20,7 @@ class Team extends Controller{
     {
         $this->lottery();   //群抢开奖
         $this->setGiving();   ///检测过期时间
+        M('A')->add(['msg'=>date('Y-m-d H:i:s',time())]);
     }
 
     //检测赠送过期时间，每分钟执行一次
