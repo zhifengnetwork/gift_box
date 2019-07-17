@@ -217,7 +217,22 @@ class User extends ApiBase
             $this->ajaxReturn(['status' => -1, 'msg'=>'用户不存在','data'=>'']);
         }
         $data        =  Db::name('user_address')->where('user_id', $user_id)->select();
-        $region_list =  Db::name('region')->field('*')->column('area_id,area_name');
+        if(!$data){
+            $this->ajaxReturn(['status' => 1 , 'msg'=>'获取成功','data'=>[]]);
+        }
+        //定义空数组
+        $region = array();
+        $region_list = array();
+        foreach($data as $val){
+            $region[] = $val['province'];
+            $region[] = $val['city'];
+            $region[] = $val['district'];
+            $region[] = $val['twon'];
+        }
+        if($region){
+            $region_list =  Db::name('region')->where('area_id','in',$region)->column('area_id,area_name');
+        }
+        // $region_list =  Db::name('region')->field('*')->column('area_id,area_name');
         foreach ($data as &$v) {
             $v['province_name'] = $region_list[$v['province']];
             $v['city_name']     = $region_list[$v['city']];
