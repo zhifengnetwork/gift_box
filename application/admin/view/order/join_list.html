@@ -36,34 +36,38 @@
                                     </td>
                                     <td>{:date('Y-m-d H:i:s',$vo.addtime)}</td>
                                     <td>
-                                        {if $vo.status=0}
+                                        {if condition="$vo.status eq 0"}
                                             未开奖
-                                        {elseif $vo.status=1 /}
+                                        {elseif condition="$vo.status eq 1" /}
                                             已中奖
-                                        {elseif $vo.status=2 /}
+                                        {elseif condition="$vo.status eq 2" /}
                                             未中奖    
                                         {/if}
                                     </td>
                                     <td>
-                                        {if $vo.join_status=0}
+                                        {if condition="$vo.join_status eq 0"}
                                             无
-                                        {elseif $vo.join_status=1 /}
+                                        {elseif condition="$vo.join_status eq 1" /}
                                             已填写地址
-                                        {elseif $vo.join_status=2 /}
+                                        {elseif condition="$vo.join_status eq 2" /}
                                             已发货   
-                                        {elseif $vo.join_status=3 /}
+                                        {elseif condition="$vo.join_status eq 3" /}
                                             已完成
-                                        {elseif $vo.join_status=4 /}
+                                        {elseif condition="$vo.join_status eq 4" /}
                                             已取消  
-                                        {elseif $vo.join_status=5 /}
+                                        {elseif condition="$vo.join_status eq 5" /}
                                             已转赠
-                                        {elseif $vo.join_status=6 /}
+                                        {elseif condition="$vo.join_status eq 6" /}
                                             已转动转盘 
                                         {/if}
                                     </td>
                                     <td>
-                                        <a class="btn btn-default" href="{:url('order/edit',['order_id'=>$vo.order_id])}"><i class="fa fa-list"></i> 查看订单</a>
-                                        <a class="btn btn-default" href="{:url('order/edit',['order_id'=>$vo.order_id])}"><i class="fa fa-list"></i> </a>
+                                        {if condition="$vo.status eq 0"}
+                                        <a class="btn btn-default" href="JavaScript:;" onclick="setgift({$vo.id,1})"><i class="fa fa-list"></i> 设置为中奖</a>
+                                        {/if}
+                                        {if condition="$vo.status eq 1 and $vo.join_status eq 0"}
+                                        <a class="btn btn-default" href="JavaScript:;" onclick="setgift({$vo.id,0})"><i class="fa fa-list"></i> 设置为不中奖</a>
+                                        {/if}
                                     </td>
                                 </tr>
                                 {/volist}
@@ -74,6 +78,6 @@
                     </div>
                 </div>
                 
-
+<script></script>
 
 {/block}
