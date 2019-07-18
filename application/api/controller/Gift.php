@@ -285,13 +285,19 @@ class Gift extends ApiBase
     public function get_gift_order()
     {
         $order_id = input('order_id',0);
-        $user_list = Db::name('gift_order_join')->where(['order_id'=>$order_id,'status'=>1,'parentid'=>0])->column('user_id');
+        $status = input('status',0); //获取全部参与者，1获取中奖名单（已转动转盘的）
+        $where = ['order_id'=>$order_id,'parentid'=>0];
+        if($status == 1){
+            $where['status']  = 1;
+            $where['join_status']  = ['notin',[0,4]];
+        }
+        $user_list = Db::name('gift_order_join')->where($where)->column('user_id');
         if(!$user_list){
             $this->ajaxReturn(['status' => 1 , 'msg'=>'暂未有人中奖','data'=>'无']);
         }
         //获取昵称
         $result = Db::name('member')->where('id','in',$user_list)->column('nickname');
-        $result = implode('、',$result);
+        //$result = implode('、',$result);
         $this->ajaxReturn(['status' => 1 , 'msg'=>'获取成功','data'=>$result]);
     }
 
@@ -334,22 +340,23 @@ class Gift extends ApiBase
             $joinuserid = Db::name('gift_order_join')->where(['order_id'=>$order_id,'order_type'=>2,'status'=>0,'join_status'=>0])->column('user_id'); //参与人数
             if($joinuserid){
                 $joinuserid = shuffle($joinuserid);
+                Db::startTrans();
                 foreach($giftorderid as $k=>$v){
                     if(!$joinuserid['$k'])continue;
-                    Db::startTrans();
-                    
-                    $r1 = M('Order')->where(['order_id'=>$v])->update(['lottery_time'=>0,'giving_time'=>0,'overdue_time'=>0,'gift_uid'=>$joinuserid['$k']]);    
-                    $r2 = Db::name('gift_order_join')->where(['order_id'=>$order_id,'order_type'=>2,'user_id'=>$joinuserid['$k'],'join_status'=>0])->update(['status'=>1]);
-                    
-                    if($r1 && $r2)
-                        Db::commit(); 
-                    else
-                        Db::rollback();
+                                        
+                    M('Order')->where(['order_id'=>$v])->update(['lottery_time'=>0,'giving_time'=>0,'overdue_time'=>0,'gift_uid'=>$joinuserid['$k']]);    
+                    Db::name('gift_order_join')->where(['order_id'=>$order_id,'order_type'=>2,'user_id'=>$joinuserid['$k'],'join_status'=>0])->update(['status'=>1]);
                 }
+                //其他人设置成未中奖
+                $r = Db::name('gift_order_join')->where(['order_id'=>$order_id,'order_type'=>2,'status'=>0])->update(['status'=>2]);
+                if($r)
+                    Db::commit(); 
+                else
+                    Db::rollback();
             }
         }
 
-        $res = Db::name('gift_order_join')->where(['id'=>$info['id']])->update(['join_status'=>6]);
+        //$res = Db::name('gift_order_join')->where(['id'=>$info['id']])->update(['join_status'=>6]);
 
         //再次查看是否中奖
         $info = Db::name('gift_order_join')->field('id,status,join_status')->where(['order_id'=>$order_id,'order_type'=>2,'user_id'=>$user_id])->find();

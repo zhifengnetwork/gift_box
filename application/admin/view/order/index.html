@@ -93,6 +93,7 @@
                                     <th >收货人</th>
                                     <th>手机号码</th>
                                     <th>订单金额（元）</th>
+                                    <th>订单类型</th>
                                     <th>支付方式</th>
                                     <th>订单状态</th>
                                     <th>支付状态</th>
@@ -108,11 +109,27 @@
                                     <td>{$vo.consignee}</td>
                                     <td>{$vo.mobile}</td>
                                     <td>{$vo.total_amount}</td>
+                                    <td>
+                                        <?php 
+                                            if($vo['parent_id'] > 0)
+                                                echo '群抢子订单';
+                                            elseif($vo['order_type'] == 0)
+                                                echo '犒劳自己';
+                                            elseif($vo['order_type'] == 1)
+                                                echo '赠送单人';
+                                            elseif($vo['order_type'] == 2)
+                                                echo '群抢订单';
+                                         ?>
+                                    </td>
                                     <td>{$vo.pay_name}</td>
                                     <td>{$order_status[$vo.order_status]}</td>
                                     <td>{$pay_status[$vo.pay_status]}</td>
                                     <td>{$vo.add_time|date="y-m-d H:i:s",###}</td>
                                     <td>
+                                        {if ($vo['parent_id'] == 0) && ($vo['order_type'] == 2)}
+                                        <a class="btn btn-default" href="{:url('order/join_list',['order_id'=>$vo.order_id])}"><i class="fa fa-list"></i> 查看参与名单</a>
+                                        {/if}
+
                                         <a class="btn btn-default" href="{:url('order/edit',['order_id'=>$vo.order_id])}"><i class="fa fa-list"></i> 查看订单</a>
                                         <a class="btn btn-default" href="{:url('order/edit',['order_id'=>$vo.order_id])}"><i class="fa fa-list"></i> </a>
                                     </td>

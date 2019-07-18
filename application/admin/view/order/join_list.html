@@ -1,0 +1,79 @@
+{extend name="common:base" /}
+{block name="style"}
+<style type="text/css">
+.table>thead>tr>th {
+    text-align: center;
+}
+</style>
+{/block}
+
+{block name="content"}
+<div class="ibox">
+    <div class="ibox-content">
+
+       </div>
+                <div class="ibox-content">
+                    <div class="table-responsive">
+                        <table class="table  table-bordered table-hover text-center">
+                            <thead>
+                                <tr>
+                                    <th>参与用户</th>
+                                    <th >参与时间</th>
+                                    <th>状态</th>
+                                    <th>进度</th>
+                                    <th>操作</th>
+                                </tr>
+                            </thead> 
+                            <tbody>
+                                {notempty name="list"}
+                                {volist name="list" id="vo"}
+                                <tr>
+                                    <td>
+                                        {$vo.nickname}
+                                        {notempty name="vo.avatar"}
+                                        <img src="{$vo.avatar}" style="width:60px;height:60px;border-radius:50%;" />
+                                        {/notempty}
+                                    </td>
+                                    <td>{:date('Y-m-d H:i:s',$vo.addtime)}</td>
+                                    <td>
+                                        {if $vo.status=0}
+                                            未开奖
+                                        {elseif $vo.status=1 /}
+                                            已中奖
+                                        {elseif $vo.status=2 /}
+                                            未中奖    
+                                        {/if}
+                                    </td>
+                                    <td>
+                                        {if $vo.join_status=0}
+                                            无
+                                        {elseif $vo.join_status=1 /}
+                                            已填写地址
+                                        {elseif $vo.join_status=2 /}
+                                            已发货   
+                                        {elseif $vo.join_status=3 /}
+                                            已完成
+                                        {elseif $vo.join_status=4 /}
+                                            已取消  
+                                        {elseif $vo.join_status=5 /}
+                                            已转赠
+                                        {elseif $vo.join_status=6 /}
+                                            已转动转盘 
+                                        {/if}
+                                    </td>
+                                    <td>
+                                        <a class="btn btn-default" href="{:url('order/edit',['order_id'=>$vo.order_id])}"><i class="fa fa-list"></i> 查看订单</a>
+                                        <a class="btn btn-default" href="{:url('order/edit',['order_id'=>$vo.order_id])}"><i class="fa fa-list"></i> </a>
+                                    </td>
+                                </tr>
+                                {/volist}
+                                {/notempty}
+                            </tbody>
+                        </table>
+              
+                    </div>
+                </div>
+                
+
+
+{/block}

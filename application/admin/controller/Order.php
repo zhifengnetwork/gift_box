@@ -114,6 +114,17 @@ class Order extends Common
         ]);
       
     }
+
+    //参与群抢名单
+    public function join_list(){
+        $order_id       =  input('order_id',''); 
+        $list  = M('gift_order_join')->alias('goj')->join('member m','goj.user_id=m.id','left')->field('goj.*,m.nickname,avatar')->where(['order_id'=>$order_id])->select();    
+        return $this->fetch('',[ 
+            'list'         => $list,
+            'order_id'     => $order_id,
+            'meta_title'   => '群抢参与列表',
+        ]);
+    }
     
     /**
      * 订单详情
