@@ -349,7 +349,7 @@ class Gift extends ApiBase
                 }
                 //其他人设置成未中奖
                 $r = Db::name('gift_order_join')->where(['order_id'=>$order_id,'order_type'=>2,'status'=>0])->update(['status'=>2]);
-                if($r)
+                if(false !== $r)
                     Db::commit(); 
                 else
                     Db::rollback();

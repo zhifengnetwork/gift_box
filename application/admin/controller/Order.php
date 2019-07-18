@@ -118,12 +118,62 @@ class Order extends Common
     //参与群抢名单
     public function join_list(){
         $order_id       =  input('order_id',''); 
-        $list  = M('gift_order_join')->alias('goj')->join('member m','goj.user_id=m.id','left')->field('goj.*,m.nickname,avatar')->where(['order_id'=>$order_id])->select();    
+        $list  = M('gift_order_join')->alias('goj')->join('member m','goj.user_id=m.id','left')->join('order o','goj.order_id=o.order_id','left')->field('goj.*,m.nickname,avatar')->where(['goj.order_id'=>$order_id])->whereor(['o.parent_id'=>$order_id])->select();
         return $this->fetch('',[ 
             'list'         => $list,
             'order_id'     => $order_id,
             'meta_title'   => '群抢参与列表',
         ]);
+    }
+
+    public function setgift(){
+        $id       =  input('id',''); 
+        $status   =  input('status','0');  
+        if(!$id || !$status){
+            echo json_encode(['status' => -1 , 'msg'=>'参数错误','data'=>'']);
+            return;
+        }
+
+        $info = M('gift_order_join')->find($id);
+        if($status == 1){  //设置为中奖
+            $giftorderid = M('Order')->where(['parent_id'=>$info['order_id'],'gift_uid'=>0])->column('order_id'); //需开奖的订单
+            if($giftorderid){
+                Db::startTrans();
+                $r1 = M('gift_order_join')->update(['id'=>$id,'order_id'=>$giftorderid[0],'status'=>1]);     
+                $r2 = M('Order')->update(['order_id'=>$giftorderid[0],'gift_uid'=>$info['user_id']]);
+                if((false !== $r1) && (false !== $r2)){
+                    Db::commit();     
+                    echo json_encode(['status' => 1 , 'msg'=>'设置成功！','data'=>'']);  
+                }else{
+                    Db::rollback();
+                    echo json_encode(['status' => -1 , 'msg'=>'设置失败！','data'=>'']);  
+                    return;
+                }
+            }else{
+                echo json_encode(['status' => -1 , 'msg'=>'开奖订单已全部中奖！','data'=>'']);  
+                return;
+            }
+        }elseif($status == 2){  //设置为未中奖
+            if($info['join_status'] != 0){
+                echo json_encode(['status' => -1 , 'msg'=>'已不能设置','data'=>'']);   
+                return;
+            }
+            
+            Db::startTrans();    
+            $parent_id = M('Order')->where(['order_id'=>$info['order_id']])->value('parent_id');    
+            $r1 = M('gift_order_join')->update(['id'=>$id,'order_id'=>$parent_id,'status'=>2]);      
+            $r2 = M('Order')->update(['order_id'=>$info['order_id'],'gift_uid'=>0]);  
+
+            if((false !== $r1) && (false !== $r2)){
+                Db::commit();     
+                echo json_encode(['status' => 1 , 'msg'=>'设置成功！','data'=>'']);  
+                return;
+            }else{
+                Db::rollback();
+                echo json_encode(['status' => -1 , 'msg'=>'设置失败！','data'=>'']);  
+                return;
+            }
+        }
     }
     
     /**
