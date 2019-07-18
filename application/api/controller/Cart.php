@@ -38,8 +38,7 @@ class Cart extends ApiBase
     //全选
     public function all_select()
     {
-        $user_id = 76;
-        // $user_id = $this->get_user_id();
+        $user_id = $this->get_user_id();
         if(!$user_id){
             $this->ajaxReturn(['status' => -1 , 'msg'=>'用户不存在','data'=>'']);
         }
