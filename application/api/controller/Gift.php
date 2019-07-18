@@ -66,6 +66,11 @@ class Gift extends ApiBase
             $this->ajaxReturn(['status' => -1 , 'msg'=>'该订单未赠送！','data'=>'']);
         }
 
+        $gojnum = Db::name('gift_order_join')->where(['order_id'=>$order_id,'user_id'=>$user_id,'join_status'=>['neq',4]])->count();
+        if($gojnum){
+            $this->ajaxReturn(['status' => -1 , 'msg'=>'您已参与过啦！','data'=>'']);
+        }
+
         $data = [
             'order_id'      => $order_id,
             'order_type'    => $joinid ? 3 : $order['order_type'],
@@ -290,7 +295,7 @@ class Gift extends ApiBase
         $this->ajaxReturn(['status' => 1 , 'msg'=>'获取成功','data'=>$result]);
     }
 
-    //转盘
+    //转盘-中奖情况
     public function smoke_gift()
     {
         $user_id = $this->get_user_id();
@@ -299,10 +304,35 @@ class Gift extends ApiBase
             $this->ajaxReturn(['status' => -1 , 'msg'=>'用户不存在','data'=>'']);
         }
         if(!$order_id){
-            $this->ajaxReturn(['status' => -1 , 'msg'=>'群抢id不能为空','data'=>'']);
+            $this->ajaxReturn(['status' => -1 , 'msg'=>'订单id不能为空','data'=>'']);
         }
-        $count = Db::name('gift_order_join')->where(['user_id'=>$user_id,'order_id'=>$order_id,'status'=>1])->count();
-        $this->ajaxReturn(['status' => 1 , 'msg'=>'获取成功','data'=>['status'=>$count]]);
+
+        $info = Db::name('gift_order_join')->where(['order_id'=>$order_id,'order_type'=>2,'user_id'=>$user_id])->find();
+        $this->ajaxReturn(['status' => 1 , 'msg'=>'获取成功','data'=>['status'=>$info]]);
+    }
+
+    //转动转盘
+    public function turn_the_wheel(){
+        $user_id = $this->get_user_id();
+        $order_id = input('order_id',0);
+        if(!$user_id){
+            $this->ajaxReturn(['status' => -1 , 'msg'=>'用户不存在','data'=>'']);
+        }
+        if(!$order_id){
+            $this->ajaxReturn(['status' => -1 , 'msg'=>'订单id不能为空','data'=>'']);
+        }
+
+        $info = Db::name('gift_order_join')->field('id,join_status')->where(['order_id'=>$order_id,'order_type'=>2,'user_id'=>$user_id])->find();
+        if($info['join_status'] == 4)
+            $this->ajaxReturn(['status' => -1 , 'msg'=>'此次参与已取消','data'=>'']);
+        elseif($info['join_status'] != 0)
+            $this->ajaxReturn(['status' => -1 , 'msg'=>'不能再转动转盘','data'=>'']);
+
+        $res = Db::name('gift_order_join')->where(['id'=>$info['id']])->update(['join_status'=>6]);
+        if(false !== $res){
+            $this->ajaxReturn(['status' => 1 , 'msg'=>'请求成功','data'=>'']);
+        }else
+            $this->ajaxReturn(['status' => -1 , 'msg'=>'请求失败','data'=>'']);
     }
 
 }
