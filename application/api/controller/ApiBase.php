@@ -167,7 +167,7 @@ class ApiBase extends Controller
     public function UploadFile($name,$dir)
     {
     	// 获取表单上传文件 例如上传了001.jpg
-        $files = request()->file('pic');
+        $files = request()->file($name);
         // 移动到框架应用根目录/public/uploads/ 目录下
         $arr = [];
 	    if($files && !is_array($files)){
