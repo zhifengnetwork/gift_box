@@ -7,7 +7,7 @@
         <div class="col-lg-12">
             <div class="ibox float-e-margins">
                 <div class="ibox-title">
-                    <h5>添加盒子</h5>
+                    <h5>查看盒子</h5>
                 </div>
                 <div class="ibox-content">
                     <form method="post" class="form-horizontal" id="ajaxForm" action="{:url('box/box_post')}" enctype="multipart/form-data">
@@ -15,41 +15,43 @@
                         <input type="hidden" name="voice_url" value="{$info.voice_url}">
                         <input type="hidden" name="id" value="{$info.id}">
                         <div class="form-group">
-                            <label class="col-sm-2 control-label ">选择音乐</label>
+                            <label class="col-sm-2 control-label ">制作人</label>
                             <div class="col-sm-9">
-                                <select name="music_id"  class="form-control">
-                                    <option value="">请选择音乐</option>
-                                    {volist name="music" id="vo"}
-                                        <option value="{$vo.id}" {if condition="$vo.id eq $info.music_id"}selected="true"{/if}>{$vo.name}</option>
-                                    {/volist}
-                                </select> 
+                                <input type="text" name="user_id" value="{$info.nickname|default='未选择类型'}" class="form-control"> 
                             </div>
                         </div>
                         <div class="form-group">
-                            <label class="col-sm-2 control-label ">选择类别</label>
+                            <label class="col-sm-2 control-label ">类型</label>
                             <div class="col-sm-9">
-                                <select name="cate_id"  class="form-control">
-                                    <option value="">请选择类别</option>
-                                    {volist name="cate" id="vo"}
-                                        <option value="{$vo.id}">{$vo.name}</option>
-                                    {/volist}
-                                </select> 
+                                <input type="text" name="cate_id" value="{$info.cate_name|default='未选择类型'}" class="form-control"> 
                             </div>
                         </div>
                         <div class="form-group">
-                            <label class="col-sm-2 control-label">接收用户id</label>
+                            <label class="col-sm-2 control-label ">音乐</label>
                             <div class="col-sm-9">
-                                <input type="text" name="sender_id" value="{$info.sender_id}" class="form-control">
+                                <input type="text" name="music_id" value="{$info.music_name|default='未选择音乐'}" class="form-control">
                             </div>
                         </div>
                         <div class="form-group">
-                            <label class="col-sm-2 control-label">照片/视频</label>
+                            <label class="col-sm-2 control-label ">场景</label>
+                            <div class="col-sm-9">
+                                <input type="text" name="scene_id" value="{$info.scene_name|default='未选择场景'}" class="form-control">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label ">视频</label>
+                            <div class="col-sm-9">
+                                <input type="text" name="video_id" value="{$info.video_name|default='未选择视频'}" class="form-control">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">照片</label>
                             <div class="col-sm-9">
                                 <dd class="upload_area clearfix" style="margin: 0 auto;">
                                     <ul id="imglist" class="post_imglist">
-                                        <li><a href="{$info.photo_url}" class="photo_css"><img class="wh60" id="file0" {if condition="$info.photo_url"}src="/static/images/photo.jpg"{else/} src="/static/images/default.jpg"{/if} ></a></li>
+                                        <li><a href="{$info.photo_url}" class="photo_css"><img width="150" id="file0" src="{$info.photo_url}" ></a></li>
                                     </ul>
-                                    <label for="photo_file"><div class="upload_btn"></div></label>
+                                    <!-- <label for="photo_file"><div class="upload_btn"></div></label> -->
                                 </dd>
                             </div>
                         </div>
@@ -58,25 +60,28 @@
                             <div class="col-sm-9">
                                 <dd class="upload_area clearfix" style="margin: 0 auto;">
                                     <ul id="imglist" class="post_imglist">
-                                        <li><a href="{$info.voice_url}" class="music_css" ><img class="wh60" id="file1" {if condition="$info.voice_url"}src="/static/images/music.jpg"{else/} src="/static/images/default.jpg"{/if}></a></li>
+                                        <li><a href="{$info.voice_url|default='javascript:;'}" class="music_css" ><img class="wh60" id="file1" {if condition="$info.voice_url"}src="/static/images/music.jpg"{/if}></a></li>
                                     </ul>
-                                    <label for="voice_file"><div class="upload_btn"></div></label>
+                                    <!-- <label for="voice_file"><div class="upload_btn"></div></label> -->
                                 </dd>
                             </div>
                         </div>
-
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">赠言</label>
+                            <div class="col-sm-9">
+                                <textarea name="advice" required lay-verify="required" placeholder="请输入祝福" class="layui-textarea">{$info.advice|default='未填写赠言'}</textarea>
+                            </div>
+                        </div>
                         <div class="form-group">
                             <label class="col-sm-2 control-label">祝福</label>
                             <div class="col-sm-9">
-                                <textarea name="content" required lay-verify="required" placeholder="请输入祝福" class="layui-textarea">{$info.content}</textarea>
+                                <textarea name="content" required lay-verify="required" placeholder="请输入祝福" class="layui-textarea">{$info.content|default='未填写祝福'}</textarea>
                             </div>
                         </div>
-                        
-
                         <div class="form-group">
                             <div class="col-sm-4 col-sm-offset-2">
                                 <!-- <input value="提交" type="submit" class="btn btn-primary ajax-post" target-form="form-horizontal" type="submit"> -->
-                                <button class="btn btn-white" onclick="javascript:history.back(-1);return false;">取消</button>
+                                <button class="btn btn-white" onclick="javascript:history.back(-1);return false;">返回</button>
                             </div>
                         </div>
                     </form>
@@ -144,6 +149,7 @@
             $('.photo_css').attr('href','javascript:;');
         }
     }
-    
+    $('input[type="text"]').attr('readonly','readonly');
+    $('textarea').attr('readonly','readonly');
 </script>
 {/block}

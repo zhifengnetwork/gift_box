@@ -242,30 +242,30 @@
 		</script>
 		{block name="script"}{/block}
 		<script>
-			// 图片点击放大
-			// $(function() {
-			// 	$(document).on('click', ".post_imglist", function(e) {
-			// 		if($(e.target).prop("tagName") == 'IMG') {
-			// 			var _img = $(e.target).attr("src");
-			// 			$("body").append("<div class='mask_img'><img src=''></div>");
-			// 			$(".mask_img img").attr("src", _img)
-			// 			var _width = $(".mask_img img").width()
-			// 			$(".mask_img img").css("marginLeft", -_width / 2)
-			// 			console.log(-_width / 2)
-			// 		}
-			// 	})
-			// 	$("body").delegate('.mask_img', 'click', function() {
-			// 		$(this).remove();
-			// 	})
-			// })
-			// //          顶部导航切换
-			// $('#tit a').click(function() {
-			// 	var i = $(this).index(); //下标第一种写法
-			// 	//var i = $('tit').index(this);//下标第二种写法
-			// 	$(this).addClass('select').siblings().removeClass('select');
-			// 	//          $('#con>li').eq(i).show().siblings().hide();
+			图片点击放大
+			$(function() {
+				$(document).on('click', ".post_imglist", function(e) {
+					if($(e.target).prop("tagName") == 'IMG') {
+						var _img = $(e.target).attr("src");
+						$("body").append("<div class='mask_img'><img src=''></div>");
+						$(".mask_img img").attr("src", _img)
+						var _width = $(".mask_img img").width()
+						$(".mask_img img").css("marginLeft", -_width / 2)
+						console.log(-_width / 2)
+					}
+				})
+				$("body").delegate('.mask_img', 'click', function() {
+					$(this).remove();
+				})
+			})
+			//          顶部导航切换
+			$('#tit a').click(function() {
+				var i = $(this).index(); //下标第一种写法
+				//var i = $('tit').index(this);//下标第二种写法
+				$(this).addClass('select').siblings().removeClass('select');
+				//          $('#con>li').eq(i).show().siblings().hide();
 
-			// });
+			});
 		</script>
 	
 	</body>
