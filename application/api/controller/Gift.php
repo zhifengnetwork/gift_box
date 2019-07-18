@@ -322,15 +322,39 @@ class Gift extends ApiBase
             $this->ajaxReturn(['status' => -1 , 'msg'=>'订单id不能为空','data'=>'']);
         }
 
-        $info = Db::name('gift_order_join')->field('id,join_status')->where(['order_id'=>$order_id,'order_type'=>2,'user_id'=>$user_id])->find();
+        $info = Db::name('gift_order_join')->field('id,status,join_status')->where(['order_id'=>$order_id,'order_type'=>2,'user_id'=>$user_id])->find();
         if($info['join_status'] == 4)
             $this->ajaxReturn(['status' => -1 , 'msg'=>'此次参与已取消','data'=>'']);
         elseif($info['join_status'] != 0)
             $this->ajaxReturn(['status' => -1 , 'msg'=>'不能再转动转盘','data'=>'']);
 
+        //有人转动转盘，则给此次群抢全部设置开奖用户
+        $giftorderid = M('Order')->where(['parent_id'=>$order_id,'gift_uid'=>0])->column('order_id'); //需开奖的订单
+        if($giftorderid){
+            $joinuserid = Db::name('gift_order_join')->where(['order_id'=>$order_id,'order_type'=>2,'status'=>0,'join_status'=>0])->column('user_id'); //参与人数
+            if($joinuserid){
+                $joinuserid = shuffle($joinuserid);
+                foreach($giftorderid as $k=>$v){
+                    if(!$joinuserid['$k'])continue;
+                    Db::startTrans();
+                    
+                    $r1 = M('Order')->where(['order_id'=>$v])->update(['lottery_time'=>0,'giving_time'=>0,'overdue_time'=>0,'gift_uid'=>$joinuserid['$k']]);    
+                    $r2 = Db::name('gift_order_join')->where(['order_id'=>$order_id,'order_type'=>2,'user_id'=>$joinuserid['$k'],'join_status'=>0])->update(['status'=>1]);
+                    
+                    if($r1 && $r2)
+                        Db::commit(); 
+                    else
+                        Db::rollback();
+                }
+            }
+        }
+
         $res = Db::name('gift_order_join')->where(['id'=>$info['id']])->update(['join_status'=>6]);
+
+        //再次查看是否中奖
+        $info = Db::name('gift_order_join')->field('id,status,join_status')->where(['order_id'=>$order_id,'order_type'=>2,'user_id'=>$user_id])->find();
         if(false !== $res){
-            $this->ajaxReturn(['status' => 1 , 'msg'=>'请求成功','data'=>'']);
+            $this->ajaxReturn(['status' => 1 , 'msg'=>'请求成功','data'=>$info]);
         }else
             $this->ajaxReturn(['status' => -1 , 'msg'=>'请求失败','data'=>'']);
     }
