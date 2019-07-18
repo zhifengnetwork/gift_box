@@ -172,11 +172,11 @@ class ApiBase extends Controller
         $arr = [];
 	    if($files && !is_array($files)){
             $arr[0] = $files;
-        }elseif($files)
+        }elseif($files){
             $arr = $files;
-        else
+        }else{
             return ['msg'=>'上传文件不存在','status'=>-1,'data'=>''];
-
+        }
         $data = [];
         foreach($arr as $file){
             // 移动到框架应用根目录/public/uploads/ 目录下

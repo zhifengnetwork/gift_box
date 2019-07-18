@@ -1605,6 +1605,11 @@ class Goods extends Common
     public function del_goods_attr()
     {
         $id = input('id');
+        if($id < 8){
+            $result['status'] = -1;
+            $result['msg'] = '该栏目不能删除';
+            return json($result);
+        }
         if(!$id){
             $result['status'] = 1;
             $result['msg'] = '删除成功';
