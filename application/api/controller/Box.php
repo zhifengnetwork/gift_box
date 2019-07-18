@@ -93,10 +93,6 @@ class Box extends ApiBase
      */
     public function upload_file()
     {
-        $result['msg'] = '返回数据';
-        $result['status'] = 0;
-        $result['data'] = $_POST;
-        $this->ajaxReturn($result);
     	// 获取表单上传文件 例如上传了001.jpg
         $file = request()->file('file');
 	    // 移动到框架应用根目录/public/uploads/ 目录下
