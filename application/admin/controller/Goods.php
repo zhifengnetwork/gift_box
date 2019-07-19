@@ -128,7 +128,7 @@ class Goods extends Common
                     }
                     //保存文件,   move_uploaded_file 将上传的文件移动到新位置
                     move_uploaded_file($value["tmp_name"],$filename);//将临时地址移动到指定地址
-                    $name = '\public\upload\images\\'.$name;
+                    $name = '/public/upload/images/'.$name;
                     $data_spec[$key]['img'] = ['key' => 'img', 'value' => $name];
                 }else{
                     $data_spec[$key]['img'] = ['key' => 'img', 'value' => ''];
@@ -342,7 +342,7 @@ class Goods extends Common
                     }
                     //保存文件,   move_uploaded_file 将上传的文件移动到新位置
                     move_uploaded_file($value["tmp_name"],$filename);//将临时地址移动到指定地址
-                    $name = '\public\upload\images\\'.$name;
+                    $name = '/public/upload/images/'.$name;
                     $data_spec[$key]['img'] = ['key' => 'img', 'value' => $name];
                 }else{
                     $data_spec[$key]['img'] = ['key' => 'img', 'value' => ''];
