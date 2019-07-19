@@ -34,7 +34,7 @@ class Box extends ApiBase
     public function box_cate_list()
     {
         //获取分类列表
-        $list = Db::name('box_cate')->field('id,name,picture')->order('id desc')->select();
+        $list = Db::name('box_cate')->field('id,name,picture')->order('id desc')->limit(3)->select();
         foreach($list as $key=>$val){
             $list[$key]['picture'] = $val['picture']?SITE_URL.$val['picture']:'';
         }
@@ -79,7 +79,7 @@ class Box extends ApiBase
             }
         }
         foreach($list as $k=>$v){
-            $list[$key]['picture'] = $v['picture']?SITE_URL.$v['picture']:'';
+            $list[$k]['picture'] = $v['picture']?SITE_URL.$v['picture']:'';
         }
         $data['data'] = $list;
         $data['status'] = 1;
@@ -212,16 +212,4 @@ class Box extends ApiBase
         }
     }
 
-    //获取礼盒类型
-    public function get_cate_list()
-    {
-        $list = Db::table('box_cate')->order('id desc')->limit(3)->select();
-        foreach($list as $k=>$v){
-            $list[$key]['picture'] = $v['picture']?SITE_URL.$v['picture']:'';
-        }
-        $result['status'] = 1;
-        $result['msg'] = '获取数据成功';
-        $result['data'] = $list;
-        $this->ajaxReturn($result);
-    }
 }
