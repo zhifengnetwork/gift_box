@@ -188,6 +188,8 @@ class Order extends Common
         
          //订单状态
          $this->assign('order_status', config('ORDER_STATUS'));
+         $this->assign('pay_status', config('PAY_STATUS'));
+         $this->assign('shipping_status', config('SHIPPING_STATUS'));
          //支付方式
          $this->assign('type_list',config('PAY_TYPE'));
         //物流
