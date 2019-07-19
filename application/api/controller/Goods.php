@@ -678,4 +678,64 @@ class Goods extends ApiBase
         $data['attrList'] = $attrList;
         $this->ajaxReturn(['status' => 1 , 'msg'=>'请求成功！','data'=>$data]);
     } 
+
+
+    /**
+     * 获取商品详情.
+     */
+    public function goodsinfo()
+    {
+        $goods_id = I('goods_id');
+        if(!$goods_id){
+            $this->ajaxReturn(['status' => -1 , 'msg'=>'goods_id不存在','data'=>'']);
+        }
+
+        $data = Db::table('goods')->alias('g')
+        ->join('goods_attr ga','FIND_IN_SET(ga.id,g.goods_attr)','LEFT')
+        ->field('g.*,GROUP_CONCAT(ga.name) attr_name')
+        ->where('g.is_show',1)
+        ->find($goods_id);
+
+        if (empty($data)) {
+        $this->ajaxReturn(['status' => -2 , 'msg'=>'商品不存在！']);
+        }
+
+        $attrList = Db::table('goods_spec_attr')->where(['goods_id'=>$goods_id])->field('spec_id as id')->select();
+        $attrList = array_unique($attrList,SORT_REGULAR);
+
+        foreach($attrList as $k => $v){
+            $goods_spec_list[$k] =  Db::table('goods_spec_attr')->where(['goods_id'=>$goods_id,'spec_id'=>$v['id']])->field('attr_id as item_id,attr_name as item')->select();
+            foreach($goods_spec_list[$k] as $kk => $vv){
+                $goods_spec_list[$k][$kk]['spec_name'] = Db::table('goods_spec')->where(['spec_id'=>$v['id']])->value('spec_name');
+                if($kk == 0){
+                    $goods_spec_list[$k][$kk]['isClick'] = 1;
+                }else{
+                    $goods_spec_list[$k][$kk]['isClick'] = 0;
+                }
+                $goods_spec_list[$k][$kk]['src'] = '';
+            }
+        }
+
+        $goods_sku = Db::table('goods_sku')->where(['goods_id'=>$goods_id])->field('img as name,price,inventory as store_count,sku_attr')->select();
+        foreach($goods_sku as $k => $v){
+
+            $str = preg_replace("/(\w):/",  '"$1":' ,  $v['sku_attr']);
+            $arr = json_decode($str,true);
+            $key = '';
+            foreach($arr as $kkk => $vvv){
+                $key = $key."_".$vvv;
+            }
+            $key = substr($key,1,strlen($key)-1);
+
+            $spec_goods_price[$key]['key'] = $key; 
+            $spec_goods_price[$key]['price'] = $v['price']; 
+            $spec_goods_price[$key]['store_count'] = $v['store_count']; 
+        }
+
+        $data['spec_goods_price'] = $spec_goods_price;
+        $data['goods_spec_list'] = $goods_spec_list;
+        $this->ajaxReturn(['status' => 1 , 'msg'=>'请求成功！','data'=>$data]);
+    }
+
+
 }
