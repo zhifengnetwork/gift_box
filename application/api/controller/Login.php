@@ -51,7 +51,7 @@ class Login extends ApiBase
         }else{
             
             $data['token'] = $this->create_token($data['id']);
-            $data['avatar'] = substr($data['avatar'],0,1) !='h'?SITE_URL.$data['avatar']:'';
+            $data['avatar'] = substr($data['avatar'],0,1) !='h'?SITE_URL.$data['avatar']:$data['avatar'];
             $this->ajaxReturn( ['status'=>1,'msg'=>'获取用户信息成功','data'=>$data]);
             
         }
