@@ -722,7 +722,7 @@ class Order extends ApiBase
             $this->ajaxReturn(['status' => -1 , 'msg'=>'参数错误！','data'=>'']);
         }
 
-        $order = Db::table('order')->where('order_id',$order_id)->where('user_id',$user_id)->field('order_id,order_sn,order_status,groupon_id,pay_status,shipping_status,order_amount')->find();
+        $order = Db::table('order')->where('order_id',$order_id)->where('user_id',$user_id)->whereor('parent_id',$user_id)->field('order_id,order_sn,order_status,groupon_id,pay_status,shipping_status,order_amount')->find();
         if(!$order) $this->ajaxReturn(['status' => -1 , 'msg'=>'订单不存在！','data'=>'']);
 
         if( $order['order_status'] == 1 && $order['pay_status'] == 0 && $order['shipping_status'] == 0 ){
@@ -1437,5 +1437,39 @@ class Order extends ApiBase
         $this->assign('result', $result);
         $this->ajaxReturn(['status' => 1 , 'msg'=>'请求成功！','data'=>$result]);
     }    
+
+    //撤销退款申请
+    public function undo_refund(){
+        $user_id    = $this->get_user_id();
+        if(!$user_id){
+            $this->ajaxReturn(['status' => -1 , 'msg'=>'用户不存在！','data'=>'']);
+        }    
+        $raid = I('post.raid/d',0);
+        if(!$user_id)$this->ajaxReturn(['status' => -1 , 'msg'=>'参数错误！','data'=>'']);
+        //状态，0:申请中，1:未同意，2:已同意，3:已完成，4:已撤销
+        //类型，1：仅退款，2：退款退货，3：换货
+        $info = M('refund_apply')->field('order_id,status,type')->where(['user_id'=>$user_id])->find($raid);
+        if($info['status'] != 0)
+            $this->ajaxReturn(['status' => -1 , 'msg'=>'此次申请已不可撤销！','data'=>'']);
+
+        Db::startTrans();    
+        $res1 = M('refund_apply')->where(['id'=>$raid])->update(['status' => 4]);     
+        
+        if(false !== $res1){
+            //查看当前订单商品是否已全部退货
+            $rec_ids1 = $OrderGoods->where(['order_id'=>$raid['order_id']])->column('rec_id');
+            $rec_ids2 = $RefundApply->where(['order_id'=>$raid['order_id'],'rec_id'=>['in',$rec_ids],'status'=>['notin',[1,4]]])->column('rec_id');
+            $arr = array_diff($rec_ids1,$rec_ids2);
+            $arr1 = array_diff($rec_ids1,$arr);
+
+            if(empty($arr1))M('Order')->where(['order_id'=>$raid['order_id']])->update(['order_status'=>1]);
+            Db::commit(); 
+            $this->ajaxReturn(['status' => 1 , 'msg'=>'操作成功！','data'=>'']);
+        }else{
+            Db::rollback();
+            $this->ajaxReturn(['status' => -1 , 'msg'=>'操作失败！','data'=>'']);
+        }
+        
+    }
     
 }

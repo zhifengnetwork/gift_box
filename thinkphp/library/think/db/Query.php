@@ -2463,6 +2463,10 @@ class Query
         }
     }
 
+    public function save(array $data = []){
+        return $this->update($data);
+    }
+
     /**
      * 执行查询但只返回PDOStatement对象
      * @access public
