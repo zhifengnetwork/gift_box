@@ -1412,5 +1412,30 @@ class Order extends ApiBase
         }else
         $this->ajaxReturn(['status' => -1 , 'msg'=>'设置失败！','data'=>'']);  
     }
+
+    public function express_detail()
+    {
+        $user_id    = $this->get_user_id();
+        if(!$user_id){
+            $this->ajaxReturn(['status' => -1 , 'msg'=>'用户不存在！','data'=>'']);
+        }   
+
+        $order_id = I('id/d',0);
+        if(!$order_id)$this->ajaxReturn(['status' => -1 , 'msg'=>'参数错误！','data'=>'']);
+        $orderinfo = M('Order')->where(['order_id'=>$order_id,'user_id'=>$user_id])->count();
+        if(!$orderinfo)$this->ajaxReturn(['status' => -1 , 'msg'=>'订单不存在！','data'=>'']);
+
+        $Delivery = new  \app\common\logic\DeliveryLogic;
+        $data = M('delivery_doc')->where('order_id', $order_id)->find();
+        $shipping_code = $data['shipping_code'];
+        $invoice_no = $data['invoice_no'];
+        $result = $Delivery->queryExpress($shipping_code, $invoice_no);
+        if ($result['status'] == 0) {
+            $result['result'] = $result['result']['list'];
+        }
+        $this->assign('invoice_no', $invoice_no);
+        $this->assign('result', $result);
+        $this->ajaxReturn(['status' => 1 , 'msg'=>'请求成功！','data'=>$result]);
+    }    
     
 }
