@@ -408,6 +408,7 @@ return [
         
             'return_raw'        => false,// 在处理回调时，是否直接返回原始数据，默认为true
         
-        ]
+        ],
+        "appcode" => '', //物流appcode
 
 ];
