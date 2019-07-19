@@ -198,7 +198,7 @@ class Pay extends ApiBase
         }
     }
     /**
-     * 打卡微信支付接口
+     * 打卡微信支付接口===
      */
     public function clock_wx_pay(){
 
@@ -234,7 +234,7 @@ class Pay extends ApiBase
 
     }
     /**
-     * 订单微信支付接口
+     * 订单微信支付接口====
      */
     public function order_wx_pay($order_id){
         $user_id      = $this->get_user_id();

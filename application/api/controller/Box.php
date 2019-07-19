@@ -200,7 +200,7 @@ class Box extends ApiBase
             $result['msg'] = '该盒子不存在';
             $this->ajaxReturn($result);
         }
-        $res = Db::table('box')->where('id',$id)->save($data);
+        $res = Db::table('box')->where('id',$id)->update($data);
         if($res){
             $result['status'] = 1;
             $result['msg'] = '修改成功';
