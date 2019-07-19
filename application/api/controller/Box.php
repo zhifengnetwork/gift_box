@@ -211,4 +211,14 @@ class Box extends ApiBase
             $this->ajaxReturn($result);
         }
     }
+
+    //获取礼盒类型
+    public function get_cate_list()
+    {
+        $list = Db::table('box_cate')->order('id desc')->limit(3)->select();
+        $result['status'] = 1;
+        $result['msg'] = '获取数据成功';
+        $result['data'] = $list;
+        $this->ajaxReturn($result);
+    }
 }

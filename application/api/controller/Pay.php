@@ -234,9 +234,10 @@ class Pay extends ApiBase
 
     }
     /**
-     * 订单微信支付接口====
+     * 订单微信支付接口====正解
      */
-    public function order_wx_pay($order_id){
+    public function order_wx_pay(){
+        $order_id = input('order_id',0);
         $user_id      = $this->get_user_id();
         $order_info   = Db::name('order')->where(['order_id' => $order_id])->field('order_id,groupon_id,order_sn,order_amount,pay_type,pay_status,user_id')->find();//订单信息
         $goods   = Db::name('order_goods')->where(['order_id' => $order_id])->field('goods_name')->find();//商品信息
@@ -265,7 +266,7 @@ class Pay extends ApiBase
         $rechData['return_param']          = '';
         $rechData['client_ip']          = isset($_SERVER['REMOTE_ADDR']) ? $_SERVER['REMOTE_ADDR'] : '127.0.0.1';
         $rechData['openid']       = $member['openid'];
-        $wxConfig = Config::get('wx_config');
+        $wxConfig = Config::get('wx_config'); 
         $url      = Charge::run(PayConfig::WX_CHANNEL_PUB, $wxConfig, $rechData);
         $url['order_id']=$order_id;
         $this->ajaxReturn(['status' => 1 , 'msg'=>'正确','data'=>$url]);
