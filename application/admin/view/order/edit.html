@@ -46,7 +46,11 @@
                         <tr>
                             <td class="col-lg-1 active text-right">状态</td>
                             <td class="col-lg-2">
-                                {$order_info.order_status}
+                                {$order_status[$order_info.order_status]}
+                                --
+                                {$pay_status[$order_info.pay_status]}
+                                --
+                                {$shipping_status[$order_info.shipping_status]}
                             </td>
                             <td class="col-lg-1 active text-right">下单时间</td>
                             <td class="col-lg-2">
