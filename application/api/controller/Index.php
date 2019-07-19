@@ -179,4 +179,19 @@ class Index extends ApiBase
         $this->ajaxReturn(['status' => 1, 'msg' => '获取数据成功','data'=>$getIdentification]);
     }
 
+    //手机formid
+    public function get_form_id()
+    {
+        $user_id = $this->get_user_id();
+        $formid = input('formid');
+        if(!$formid){
+            $this->ajaxReturn(['status' => -1, 'msg' => '获取formid失败','data'=>[]]);
+        }
+        $data['user_id'] = $user_id;
+        $data['formid'] = $formid;
+        $data['addtime'] = time();
+        $data['status'] = 1;
+        $this->ajaxReturn(['status' => 1, 'msg' => '获取formid成功','data'=>[]]);
+    }
+
 }
