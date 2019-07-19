@@ -216,6 +216,9 @@ class Box extends ApiBase
     public function get_cate_list()
     {
         $list = Db::table('box_cate')->order('id desc')->limit(3)->select();
+        foreach($list as $k=>$v){
+            $list[$key]['picture'] = $v['picture']?SITE_URL.$v['picture']:'';
+        }
         $result['status'] = 1;
         $result['msg'] = '获取数据成功';
         $result['data'] = $list;
