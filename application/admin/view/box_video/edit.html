@@ -75,18 +75,19 @@
                         <input type="hidden" name="id" value="{$info.id}">
                         <input type="hidden" name="video_url" value="{$info.video_url}">
                         <div class="form-group">
-                            <label class="col-sm-2 control-label"><span style="color:red;">*</span>视频名称</label>
+                            <label class="col-sm-2 control-label"><span style="color:red;">*</span>相框名称</label>
                             <div class="col-sm-9">
                                 <input type="text" name="name"  class="form-control" value="{$info.name}">
                             </div>
                         </div>
                         <div class="form-group">
-                            <label class="col-sm-2 control-label">视频上传</label>
+                            <label class="col-sm-2 control-label">相框上传</label>
                             <div class="col-sm-9">
                                 <dd class="upload_area clearfix" style="margin: 0 auto;">
                                     <ul id="imglist" class="post_imglist">
                                         <li>
-                                            <video src="{$info.video_url}" controls="controls" id="file0" style=" width: 300px !important;height: 300px !important;"></video>
+                                            <!-- <video src="{$info.video_url}" controls="controls" id="file0" style=" width: 300px !important;height: 300px !important;"></video> -->
+                                            <img src="" alt=""   id="file0" style=" max-width: 300px !important;max-height: 300px !important;">
                                         </li>
                                     </ul>
                                     <label for="file_apload"><div class="upload_btn"></div></label>
@@ -113,8 +114,8 @@
                             </div>
                         </div>
                     </form>
-                    <form method="post" class="form-horizontal" id="ajaxForm" action="{:url('box/upload_music')}" enctype="multipart/form-data">
-                        <input type="file" id="file_apload" value="" accept=".wav,.mp3,.ogg,.acc,.webm" name="voice_file" onchange="music_upload()" style="display: none">
+                    <form method="post" class="form-horizontal" id="ajaxForm" action="{:url('box/upload_photo')}" enctype="multipart/form-data">
+                        <input type="file" id="file_apload" value="" accept="image/jpg,image/jpeg,image/bmp,image/png,image/gif/*" name="photo_file" onchange="video_upload()" style="display: none">
                     </form>
                 </div>
             </div>
@@ -128,27 +129,16 @@
 <script src="__STATIC__/js/jquery.form.js" type="text/javascript"></script>
 <script type="text/javascript">
     //音乐上传
-    function music_upload(){
+    function video_upload(){
         $("#ajaxForm").ajaxSubmit(function (data) {
+            // data = eval('('+data+')');
             if(data.status == 1){
-                $('input[name="music_url"]').val(data.url);
-                $('#file0').attr('src','/static/images/music.jpg');
-                $('.music_css').attr('href',data.url);
-                tiao();
+                $('input[name="video_url"]').val(data.url);
+                $('#file0').attr('src',data.url);
             }else{
                 alert(data.msg);
             }
         });
-    }
-    //跳窗口
-    tiao();
-    function tiao(){
-        //音乐
-        if($('.music_css').attr('href') != '' && $('.music_css').attr('href') != 'javascript:;'){
-            $('.music_css').attr('target','_blank');
-        }else{
-            $('.music_css').attr('href','javascript:;');
-        }
     }
 </script>
 {/block}

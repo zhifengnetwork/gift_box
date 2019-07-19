@@ -97,13 +97,13 @@ class BoxVideo extends Common
     	if(Request::instance()->isPost()){
         	$post = input('post.');
         	if(!$post['id']){
-        		$this->error('音乐id不能为空');
+        		$this->error('相框id不能为空');
         	}
         	if(!$post['name']){
-        		$this->error('视频名称不能为空');
+        		$this->error('相框名称不能为空');
 			}
         	if(!$post['video_url']){
-        		$this->error('请上传音乐文件');
+        		$this->error('请上传相框');
         	}
         	$data['name'] = $post['name'];
         	$data['video_url'] = $post['video_url'];
