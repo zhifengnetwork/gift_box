@@ -39,7 +39,7 @@
                                 <td>{$vo.sort}</td>
                                 <td>
                                     <a class="btn btn-default delete" href="{:url('edit',['id'=>$vo.id],false)}" >编辑 </i></a>
-                                    <a class="btn btn-default delete" href="{:url('add',['pid'=>$vo.pid],false)}" >添加子分类</i></a>
+                                    <a class="btn btn-default delete" href="{:url('add',['pid'=>$vo.id],false)}" >添加子分类</i></a>
                                     <a class="btn btn-default delete" onclick="del(this,{$vo.id})" href="javascript:;" >删除 </i></a>
                                 </td>
                             </tr>
