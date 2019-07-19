@@ -191,7 +191,12 @@ class Index extends ApiBase
         $data['formid'] = $formid;
         $data['addtime'] = time();
         $data['status'] = 1;
-        $this->ajaxReturn(['status' => 1, 'msg' => '获取formid成功','data'=>[]]);
+        $res = Db::name('member_formid')->insert($data);
+        if($res){
+            $this->ajaxReturn(['status' => 1, 'msg' => '获取formid成功','data'=>[]]);
+        }else{
+            $this->ajaxReturn(['status' => -1, 'msg' => '获取formid失败','data'=>[]]);
+        }
     }
 
 }
