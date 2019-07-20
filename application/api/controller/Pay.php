@@ -237,8 +237,8 @@ class Pay extends ApiBase
      * 订单微信支付接口====正解
      */
     public function order_wx_pay(){
-        $order_id = input('order_id',0);
-        $user_id      = $this->get_user_id();
+        $order_id = input('order_id',1631);
+        $user_id      = 86;
         $order_info   = Db::name('order')->where(['order_id' => $order_id])->field('order_id,groupon_id,order_sn,order_amount,pay_type,pay_status,user_id')->find();//订单信息
         $goods   = Db::name('order_goods')->where(['order_id' => $order_id])->field('goods_name')->find();//商品信息
 
@@ -291,11 +291,11 @@ class Pay extends ApiBase
         $data['shop_name'] = '购物卡充值';
         $data['desc'] = '+'.$data['money'];
         $data['type'] = 0;//0微信支付
-        $res = Db::name('member_order')->insert($data);
+        // $res = Db::name('member_order')->insert($data);
         $data['money'] = $data['money']*100;
-        if(!$res){
-            $this->ajaxReturn(['status' => -1 , 'msg'=>'订单生成失败','data'=>'']);
-        }
+        // if(!$res){
+        //     $this->ajaxReturn(['status' => -1 , 'msg'=>'订单生成失败','data'=>'']);
+        // }
         $rechData['order_no']        =  $data['order_sn'];
         $rechData['subject']        = '购物卡充值';
         $rechData['body']            = '购物卡充值';
