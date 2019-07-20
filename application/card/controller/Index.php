@@ -11,6 +11,16 @@ class Index extends Controller
     {
         $card_id = input('card_id',0);
         $info = Db::name('box')->where('id',$card_id)->find();
+        $info['cate_url'] = '';
+        $info['music_url'] = '';
+        $info['video_url'] = '';
+        $info['scene_url'] = '';
+        if(!$card_id){
+            $info['photo_url'] = '';
+            $info['voice_url'] = '';
+            $this->assign('info',$info);
+            return $this->fetch();
+        }
         //类别
         if($info['cate_id']){
             $info['cate_url'] = Db::name('box_cate')->where('id',$info['cate_id'])->value('picture');
