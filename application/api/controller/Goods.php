@@ -723,10 +723,18 @@ class Goods extends ApiBase
             $str = preg_replace("/(\w):/",  '"$1":' ,  $v['sku_attr']);
             $arr = json_decode($str,true);
             $key = '';
+            $name = '';
             foreach($arr as $kkk => $vvv){
                 $key = $key."_".$vvv;
+                if($vvv){
+                    $name = $name."_".Db::name('goods_spec_attr')->where('attr_id',$vvv)->value('attr_name');
+                }
             }
             $key = substr($key,1,strlen($key)-1);
+            $name = substr($name,1,strlen($name)-1);
+
+
+            $spec_goods_price[$key]['name'] = $name; 
 
             $spec_goods_price[$key]['key'] = $key; 
             $spec_goods_price[$key]['img'] = $v['img']?SITE_URL.$v['img']:''; 

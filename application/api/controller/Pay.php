@@ -274,35 +274,102 @@ class Pay extends ApiBase
     /**
      * 购物卡支付
      */
-    public function vip_pay(){
-        $number = input('number');//卡号
+    public function shopping_pay(){
         $user_id      = $this->get_user_id();
         if(!$user_id){
             $this->ajaxReturn(['status' => -1 , 'msg'=>'用户不存在','data'=>'']);
         }
-
-        $card = VipCard::getByUser($user_id);
-        $member       = MemberModel::get($user_id);
-        $card_money = Sysset::getCardMoney();
-        if($card['number']!=$number||$member['id']!=$user_id){
-            $this->ajaxReturn(['status' => -2 , 'msg'=>'卡号不是你的，请重新支付','data'=>'']);
+        $openid = Db::name('member')->where('id',$user_id)->value('openid');
+        $data['money'] = (int)input('money',1);
+        if($data['money'] == 0){
+            $this->ajaxReturn(['status' => -1 , 'msg'=>'充值金额不能小于0.01','data'=>'']);
         }
-        
-        $rechData['order_no']        = $number;
+        //生成订单
+        $data['order_sn'] = date('YmdHis',time()).rand(10000,99999);
+        $data['user_id'] = $user_id;
+        $data['addtime'] = time();
+        $data['shop_name'] = '购物卡充值';
+        $data['desc'] = '+'.$data['money'];
+        $data['type'] = 0;//0微信支付
+        $res = Db::name('member_order')->insert($data);
+        $data['money'] = $data['money']*100;
+        if(!$res){
+            $this->ajaxReturn(['status' => -1 , 'msg'=>'订单生成失败','data'=>'']);
+        }
+        $rechData['order_no']        =  $data['order_sn'];
         $rechData['subject']        = '购物卡充值';
         $rechData['body']            = '购物卡充值';
         $rechData['timeout_express'] = time() + 600;
-        $rechData['amount']          = $card_money;
+        $rechData['amount']          = $data['money'];
         $rechData['product_id']          = '';
         $rechData['return_param']          = '';
         $rechData['client_ip']          = isset($_SERVER['REMOTE_ADDR']) ? $_SERVER['REMOTE_ADDR'] : '127.0.0.1';
-        $rechData['openid']       = $member['openid'];
+        $rechData['openid']       = $openid;
         $wxConfig = Config::get('wx_config');
         $url      = Charge::run(PayConfig::WX_CHANNEL_PUB, $wxConfig, $rechData);
         $url['number']=$number;
         $this->ajaxReturn(['status' => 1 , 'msg'=>'正确','data'=>$url]);
     }
 
+    /**
+     * 购物卡微信回调
+     */
+    public function wx_shopping_notify()
+    {
+        $receipt = $_REQUEST;
+        if($receipt==null){
+            $receipt = file_get_contents("php://input");
+            if($receipt == null){
+                $receipt = $GLOBALS['HTTP_RAW_POST_DATA'];
+            }
+            $this->shopping_notify($receipt);
+        }
+        // return $receipt;
+    }
+
+    /**
+     * 购物卡充值回调
+     */
+    public function shopping_notify(array $data)
+    {
+        if($result == null){
+            return;
+        }
+        if($result['result_code'] =='SUCCESS'){
+            $channel = $data['channel'];
+            //修改订单状态
+            $update = [
+                // 'seller_id'      => $data['seller_id'],
+                'transaction_id' => $data['transaction_id'],
+                'order_status'   => 1,
+                'pay_status'     => 1,
+                'pay_time'       => strtotime($data['pay_time']),
+            ];
+            Db::startTrans();
+            Db::name('order')->where(['order_sn' => $data['order_no']])->update($update);
+            $order = Db::table('order')->where(['order_sn' => $data['order_no']])->field('order_id,user_id')->find();
+            $goods_res = Db::table('order_goods')->field('goods_id,goods_name,goods_num,spec_key_name,goods_price,sku_id')->where('order_id',$order['order_id'])->select();
+            foreach($goods_res as $key=>$value){
+                $goods = Db::table('goods')->where('goods_id',$value['goods_id'])->field('less_stock_type,gift_points')->find();
+                //付款减库存
+                // if($goods['less_stock_type']==2){
+                    Db::table('goods_sku')->where('sku_id',$value['sku_id'])->setDec('inventory',$value['goods_num']);
+                    Db::table('goods_sku')->where('sku_id',$value['sku_id'])->setDec('frozen_stock',$value['goods_num']);
+                    Db::table('goods')->where('goods_id',$value['goods_id'])->setDec('stock',$value['goods_num']);
+                // }
+            }
+            // 执行业务逻辑，成功后返回true
+            return true;
+        }
+        //返回给微信的数据
+        $return['return_code'] = 'SUCCESS';
+        $return['return_msg'] = 'OK';
+        $xml_post = '<xml>
+                    <return_code>'.$return['return_code'].'</return_code>
+                    <return_msg>'.$return['return_msg'].'</return_msg>
+                    </xml>';
+        echo $xml_post;exit;
+    }
 
     /***
      * 支付宝回调
