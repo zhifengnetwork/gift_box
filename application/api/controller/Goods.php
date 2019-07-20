@@ -685,7 +685,7 @@ class Goods extends ApiBase
      */
     public function goodsinfo()
     {
-        $goods_id = I('goods_id',70);
+        $goods_id = I('goods_id');
         if(!$goods_id){
             $this->ajaxReturn(['status' => -1 , 'msg'=>'goods_id不存在','data'=>'']);
         }
@@ -716,7 +716,7 @@ class Goods extends ApiBase
             }
         }
 
-        $goods_sku = Db::table('goods_sku')->where(['goods_id'=>$goods_id])->field('img as name,price,inventory as store_count,sku_attr')->select();
+        $goods_sku = Db::table('goods_sku')->where(['goods_id'=>$goods_id])->field('sku_id,img as name,price,inventory as store_count,sku_attr')->select();
         foreach($goods_sku as $k => $v){
 
             $str = preg_replace("/(\w):/",  '"$1":' ,  $v['sku_attr']);
@@ -728,6 +728,7 @@ class Goods extends ApiBase
             $key = substr($key,1,strlen($key)-1);
 
             $spec_goods_price[$key]['key'] = $key; 
+            $spec_goods_price[$key]['sku_id'] = $v['sku_id']; 
             $spec_goods_price[$key]['price'] = $v['price']; 
             $spec_goods_price[$key]['store_count'] = $v['store_count']; 
         }
