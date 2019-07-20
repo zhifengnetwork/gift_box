@@ -270,7 +270,7 @@ class Pay extends ApiBase
         $url['order_id']=$order_id;
         $this->ajaxReturn(['status' => 1 , 'msg'=>'正确','data'=>$url]);
     }
-    
+
     /**
      * 购物卡支付
      */
@@ -285,7 +285,7 @@ class Pay extends ApiBase
             $this->ajaxReturn(['status' => -1 , 'msg'=>'充值金额不能小于0.01','data'=>'']);
         }
         //生成订单
-        $data['order_sn'] = date('YmdHis',time()).rand(10000,99999);
+        $data['order_sn'] = "C".date('YmdHis',time()).rand(10000,99999);
         $data['user_id'] = $user_id;
         $data['addtime'] = time();
         $data['shop_name'] = '购物卡充值';
@@ -296,6 +296,7 @@ class Pay extends ApiBase
         if(!$res){
             $this->ajaxReturn(['status' => -1 , 'msg'=>'订单生成失败','data'=>'']);
         }
+        20 1907201636 4393441365
         $rechData['order_no']        =  $data['order_sn'];
         $rechData['subject']        = '购物卡充值';
         $rechData['body']            = '购物卡充值';
@@ -307,7 +308,7 @@ class Pay extends ApiBase
         $rechData['openid']       = $openid;
         $wxConfig = Config::get('wx_config');
         $url      = Charge::run(PayConfig::WX_CHANNEL_PUB, $wxConfig, $rechData);
-        $url['number']=$number;
+        // $url['number']=$number;
         $this->ajaxReturn(['status' => 1 , 'msg'=>'正确','data'=>$url]);
     }
 

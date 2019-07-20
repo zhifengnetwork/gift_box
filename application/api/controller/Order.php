@@ -355,7 +355,7 @@ class Order extends ApiBase
         $goods_price = $order_amount;
         $order_amount = sprintf("%.2f",$order_amount + $shipping_price);    //商品价格+物流价格=订单金额
 
-        $orderInfoData['order_sn'] = date('YmdHis',time()) . mt_rand(10000000,99999999);
+        $orderInfoData['order_sn'] = date('YmdHis',time()) . mt_rand(100000,999999);
         $orderInfoData['user_id'] = $user_id;
         //$orderInfoData['groupon_id'] = $groupon_id;
         $orderInfoData['order_status'] = 1;         //订单状态 0:待确认,1:已确认,2:已收货,3:已取消,4:已完成,5:已作废,6:申请退款,7:已退款,8:拒绝退款

@@ -730,10 +730,12 @@ class Goods extends ApiBase
                 $arr = json_decode($str,true);
                 $key = '';
                 $name = '';
-                foreach($arr as $kkk => $vvv){
-                    $key = $key."_".$vvv;
-                    if($vvv){
-                        $name = $name."_".Db::name('goods_spec_attr')->where('attr_id',$vvv)->value('attr_name');
+                if(is_array($arr)){
+                    foreach($arr as $kkk => $vvv){
+                        $key = $key."_".$vvv;
+                        if($vvv){
+                            $name = $name."_".Db::name('goods_spec_attr')->where('attr_id',$vvv)->value('attr_name');
+                        }
                     }
                 }
                 $key = substr($key,1,strlen($key)-1);

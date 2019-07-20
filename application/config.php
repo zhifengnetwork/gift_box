@@ -390,10 +390,10 @@ return [
         ],
         'wx_config' => [
             'use_sandbox'       => false,// 是否使用 微信支付仿真测试系统
-            'app_secret'        => '2213741482697019ad96ae05496cdf4f',
-            'app_id'            => 'wxda42c05b4523e7f5',  // 公众账号ID
-            'mch_id'            => '1524920291',// 商户id
-            'md5_key'           => 'jtbcLDJarlFVHDL7aHdIgnsFOhucB09b',// md5 秘钥
+            'app_secret'        => '8e620ee791933c0228d450d02b56a57c',
+            'app_id'            => 'wxe7d1d050fd8dc078',  // 公众账号ID
+            'mch_id'            => '1537219631',// 商户id
+            'md5_key'           => 'RZapm1U53L2qBa9HA2QeJ05yF9ysQFqp',// md5 秘钥
             'app_cert_pem'      => dirname(__FILE__) . DIRECTORY_SEPARATOR . 'wx' . DIRECTORY_SEPARATOR .  'pem' . DIRECTORY_SEPARATOR . 'weixin_app_cert.pem',
             'app_key_pem'       => dirname(__FILE__) . DIRECTORY_SEPARATOR . 'wx' . DIRECTORY_SEPARATOR .  'pem' . DIRECTORY_SEPARATOR . 'weixin_app_key.pem',
             'sign_type'         => 'MD5',// MD5  HMAC-SHA256

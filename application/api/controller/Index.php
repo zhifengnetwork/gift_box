@@ -208,9 +208,9 @@ class Index extends ApiBase
         $data['page'] = 'index';//跳转地址加参数
         $data['form_id'] = '';//form_id
         //定义模板需要带的参数
-        $data['data']['keyword1'] = '您所期待的抽奖已经开始了，请尽快参与';
-        $data['data']['keyword2'] = '不要错过时间哦';
-        $data['data']['keyword3'] = '2020年10月1日 20:00:00';
+        $data['data']['keyword1']['value'] = '您所期待的抽奖已经开始了，请尽快参与';
+        $data['data']['keyword2']['value'] = '不要错过时间哦';
+        $data['data']['keyword3']['value'] = '2020年10月1日 20:00:00';
         $res = request_curl($url,$data);
         dump($res);
     }
