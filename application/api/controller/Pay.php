@@ -296,7 +296,6 @@ class Pay extends ApiBase
         if(!$res){
             $this->ajaxReturn(['status' => -1 , 'msg'=>'订单生成失败','data'=>'']);
         }
-        20 1907201636 4393441365
         $rechData['order_no']        =  $data['order_sn'];
         $rechData['subject']        = '购物卡充值';
         $rechData['body']            = '购物卡充值';
