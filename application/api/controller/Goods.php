@@ -692,14 +692,20 @@ class Goods extends ApiBase
 
         $data = Db::table('goods')->alias('g')
         ->join('goods_attr ga','FIND_IN_SET(ga.id,g.goods_attr)','LEFT')
-        ->field('g.*,GROUP_CONCAT(ga.name) attr_name')
+        ->field('g.goods_id,g.goods_name,g.price,g.goods_spec,g.desc,g.content,g.goods_attr,GROUP_CONCAT(ga.name) attr_name')
         ->where('g.is_show',1)
         ->find($goods_id);
-
-        if (empty($data)) {
-        $this->ajaxReturn(['status' => -2 , 'msg'=>'商品不存在！']);
+        //轮播图
+        $data['img'] = Db::name('goods_img')->where('goods_id',$goods_id)->column('picture');
+        if($data['img']){
+            foreach($data['img'] as $key=>$val){
+                $data['img'][$key] = $val?SITE_URL.$val:'';
+            }
         }
-
+        if (empty($data)) {
+            $this->ajaxReturn(['status' => -2 , 'msg'=>'商品不存在！']);
+        }
+    
         $attrList = Db::table('goods_spec_attr')->where(['goods_id'=>$goods_id])->field('spec_id as id')->select();
         $attrList = array_unique($attrList,SORT_REGULAR);
 
@@ -716,22 +722,34 @@ class Goods extends ApiBase
             }
         }
 
-        $goods_sku = Db::table('goods_sku')->where(['goods_id'=>$goods_id])->field('img as name,price,inventory as store_count,sku_attr')->select();
-        foreach($goods_sku as $k => $v){
+        $goods_sku = Db::table('goods_sku')->where(['goods_id'=>$goods_id])->field('sku_id,img,price,inventory as store_count,sku_attr')->select();
+        if($goods_sku){
+            foreach($goods_sku as $k => $v){
 
-            $str = preg_replace("/(\w):/",  '"$1":' ,  $v['sku_attr']);
-            $arr = json_decode($str,true);
-            $key = '';
-            foreach($arr as $kkk => $vvv){
-                $key = $key."_".$vvv;
+                $str = preg_replace("/(\w):/",  '"$1":' ,  $v['sku_attr']);
+                $arr = json_decode($str,true);
+                $key = '';
+                $name = '';
+                foreach($arr as $kkk => $vvv){
+                    $key = $key."_".$vvv;
+                    if($vvv){
+                        $name = $name."_".Db::name('goods_spec_attr')->where('attr_id',$vvv)->value('attr_name');
+                    }
+                }
+                $key = substr($key,1,strlen($key)-1);
+                $name = substr($name,1,strlen($name)-1);
+
+
+                $spec_goods_price[$key]['name'] = $name; 
+
+                $spec_goods_price[$key]['key'] = $key; 
+                $spec_goods_price[$key]['img'] = $v['img']?SITE_URL.$v['img']:''; 
+                $spec_goods_price[$key]['sku_id'] = $v['sku_id']; 
+                $spec_goods_price[$key]['price'] = $v['price']; 
+                $spec_goods_price[$key]['store_count'] = $v['store_count']; 
             }
-            $key = substr($key,1,strlen($key)-1);
-
-            $spec_goods_price[$key]['key'] = $key; 
-            $spec_goods_price[$key]['price'] = $v['price']; 
-            $spec_goods_price[$key]['store_count'] = $v['store_count']; 
+            sort($goods_spec_list);
         }
-
         $data['spec_goods_price'] = $spec_goods_price;
         $data['goods_spec_list'] = $goods_spec_list;
         $this->ajaxReturn(['status' => 1 , 'msg'=>'请求成功！','data'=>$data]);
