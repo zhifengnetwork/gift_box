@@ -685,7 +685,7 @@ class Goods extends ApiBase
      */
     public function goodsinfo()
     {
-        $goods_id = I('goods_id');
+        $goods_id = I('goods_id',70);
         if(!$goods_id){
             $this->ajaxReturn(['status' => -1 , 'msg'=>'goods_id不存在','data'=>'']);
         }
@@ -731,7 +731,7 @@ class Goods extends ApiBase
             $spec_goods_price[$key]['price'] = $v['price']; 
             $spec_goods_price[$key]['store_count'] = $v['store_count']; 
         }
-
+        sort($goods_spec_list);
         $data['spec_goods_price'] = $spec_goods_price;
         $data['goods_spec_list'] = $goods_spec_list;
         $this->ajaxReturn(['status' => 1 , 'msg'=>'请求成功！','data'=>$data]);
