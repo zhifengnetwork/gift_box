@@ -137,6 +137,7 @@
     //音乐上传
     function music_upload(){
         $("#ajaxForm").ajaxSubmit(function (data) {
+            // data = eval('('+data+')');
             if(data.status == 1){
                 $('input[name="music_url"]').val(data.url);
                 $('#file0').attr('src','/static/images/music.jpg');
@@ -147,6 +148,7 @@
             }
         });
     }
+
     //跳窗口
     tiao();
     function tiao(){
