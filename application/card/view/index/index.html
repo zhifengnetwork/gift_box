@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0,user-scalable=0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title></title>
 </head>
@@ -180,6 +180,8 @@ body,html{
     left: 0;
     overflow: hidden;
     /* transform: scale(2); */
+    overflow-y: hidden;
+    overflow-x: hidden;
     animation:box2 12.5s;
     /* 等待7秒后开始执行动画 */
     animation-delay:7s;
@@ -188,7 +190,7 @@ body,html{
 {
 0%   {opacity: 1;transform: scale(1);}
 80%  {opacity: 1;transform: scale(1);}
-100% {opacity: 0;transform: scale(2);}
+100% {opacity: 0;transform: scale(1);}
 }
 
 
@@ -650,6 +652,73 @@ body,html{
 }
 
 
+/* 音乐播放 */
+.audio{
+    position: absolute;
+    top: 1%;
+    right: 2%;
+    width: 2rem;
+    height: 2rem;
+    border-radius: 50%;
+    border: none;
+    outline: none;
+    animation:xuanzhuan 10s;
+    transform: rotate(0deg);
+}
+.audio>img{
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+}
+@keyframes xuanzhuan
+{
+0%  {transform: rotate(0deg);}
+100% {transform: rotate(360deg);}
+}
+
+#audio_btn{
+    position: absolute;
+    top: 1%;
+    right: 2%;
+    width: 2rem;
+    height: 2rem;
+    border-radius: 50%;
+    border: none;
+    outline: none;
+    /* animation:xuanzhuan 10s;
+    transform: rotate(0deg); */
+    background-image: url(/image/timg.jpg);
+    background-repeat: no-repeat;
+    background-size: contain;
+}
+
+.rotate {
+    -webkit-animation: rotating 3s linear infinite;
+    animation: rotating 3s linear infinite;
+
+    animation-play-state:running;
+    -webkit-animation-play-state:running; /* Safari 和 Chrome */
+}
+
+.rotate-pause {
+    animation-play-state:paused;
+    -webkit-animation-play-state:paused; /* Safari 和 Chrome */
+}
+
+@-webkit-keyframes rotating {
+    from { -webkit-transform: rotate(0) }
+    to { -webkit-transform: rotate(360deg) }
+}
+
+@keyframes rotating {
+    from { transform: rotate(0) }
+    to { transform: rotate(360deg) }
+}
+@-moz-keyframes rotating {
+    from { -moz-transform: rotate(0) }
+    to { -moz-transform: rotate(360deg) }
+}
+
 </style>
 <body>
     <div class="box">
@@ -771,5 +840,21 @@ body,html{
             <image class="bhua" src="/image/bhua.png" />
         </div>
     </div>
+    <div id="audio_btn" class="rotate">
+        <audio loop src="/image/zdqc.mp3" id="media" autoplay="autoplay" preload=""></audio>
+    </div>
+    
 </body>
 </html>
+<script src="http://libs.baidu.com/jquery/2.0.0/jquery.js"></script>
+<script>
+var x = document.getElementById("media"); 
+$('#audio_btn').on('click', function() {
+    $(this).toggleClass("rotate-pause");
+    if($(this).hasClass("rotate-pause")){
+        x.pause();
+    }else{
+        x.play();
+    }
+});
+</script>
