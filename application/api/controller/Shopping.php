@@ -11,10 +11,12 @@ class Shopping extends ApiBase
     //获取用户余额和购物卡号
     public function get_card_info()
     {
-        $user_id = 88;
+        $user_id =  $this->get_user_id();
         $shop_card_balance = Db::name('member')->where('id',$user_id)->value('shop_card_balance');
-        $user_id =  str_pad($user_id,5,"0",STR_PAD_LEFT);
-        dump($user_id);
+        $user_id =  'NO.'.str_pad($user_id,6,"0",STR_PAD_LEFT);
+        $data['user_no'] = $user_id;
+        $data['shop_card_balance'] = $shop_card_balance;
+        $this->ajaxReturn(['status' => 1 , 'msg'=>'请求成功！','data'=>$data]);
     }
 
 }

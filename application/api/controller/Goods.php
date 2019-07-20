@@ -695,11 +695,12 @@ class Goods extends ApiBase
         ->field('g.*,GROUP_CONCAT(ga.name) attr_name')
         ->where('g.is_show',1)
         ->find($goods_id);
-
+        $data['picture'] = Db::name('goods_img')->where('goods_id',$goods_id)->where('main',1)->value('picture');
+        $data['picture'] = $data['picture']?SITE_URL.$data['picture']:'';
         if (empty($data)) {
-        $this->ajaxReturn(['status' => -2 , 'msg'=>'商品不存在！']);
+            $this->ajaxReturn(['status' => -2 , 'msg'=>'商品不存在！']);
         }
-
+    
         $attrList = Db::table('goods_spec_attr')->where(['goods_id'=>$goods_id])->field('spec_id as id')->select();
         $attrList = array_unique($attrList,SORT_REGULAR);
 
