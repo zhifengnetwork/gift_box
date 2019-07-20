@@ -695,8 +695,13 @@ class Goods extends ApiBase
         ->field('g.goods_id,g.goods_name,g.price,g.goods_spec,g.desc,g.content,g.goods_attr,GROUP_CONCAT(ga.name) attr_name')
         ->where('g.is_show',1)
         ->find($goods_id);
-        $data['picture'] = Db::name('goods_img')->where('goods_id',$goods_id)->where('main',1)->value('picture');
-        $data['picture'] = $data['picture']?SITE_URL.$data['picture']:'';
+        //轮播图
+        $data['img'] = Db::name('goods_img')->where('goods_id',$goods_id)->column('picture');
+        if($data['img']){
+            foreach($data['img'] as $key=>$val){
+                $data['img'][$key] = $val?SITE_URL.$val:'';
+            }
+        }
         if (empty($data)) {
             $this->ajaxReturn(['status' => -2 , 'msg'=>'商品不存在！']);
         }
