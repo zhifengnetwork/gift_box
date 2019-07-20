@@ -62,13 +62,13 @@
                                         {/if}
                                     </td>
                                     <td>
-                                        {if condition="$vo.status eq 0"}
+                                        {if condition="$vo.status eq 0 and $vo.start eq 0"}
                                         <a class="btn btn-default" href="JavaScript:;" onclick="setgift({$vo.id},1)"><i class="fa fa-list"></i> 设置为<span style="color:red;">中奖</span></a>
                                         {/if}
-                                        {if condition="$vo.status eq 1 and $vo.join_status eq 0"}
+                                        {if condition="$vo.status eq 1 and $vo.join_status eq 0 and $vo.start eq 0"}
                                         <a class="btn btn-default" href="JavaScript:;" onclick="setgift({$vo.id},2)"><i class="fa fa-list"></i> 设置为<span style="color:blue;">不中奖</span></a>
                                         {/if}
-                                        {if condition="$vo.status eq 2 and $vo.join_status eq 0"}
+                                        {if condition="$vo.status eq 2 and $vo.join_status eq 0 and $vo.start eq 0"}
                                         <a class="btn btn-default" href="JavaScript:;" onclick="setgift({$vo.id},1)"><i class="fa fa-list"></i> 设置为<span style="color:red;">中奖</span></a>
                                         {/if}
                                     </td>
