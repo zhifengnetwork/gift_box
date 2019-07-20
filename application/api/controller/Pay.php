@@ -237,11 +237,10 @@ class Pay extends ApiBase
      * 订单微信支付接口====正解
      */
     public function order_wx_pay(){
-        $order_id = input('order_id',1631);
-        $user_id      = 86;
+        $order_id = input('order_id',0);
+        $user_id      = $this->get_user_id();
         $order_info   = Db::name('order')->where(['order_id' => $order_id])->field('order_id,groupon_id,order_sn,order_amount,pay_type,pay_status,user_id')->find();//订单信息
         $goods   = Db::name('order_goods')->where(['order_id' => $order_id])->field('goods_name')->find();//商品信息
-
         if(!$user_id){
             $this->ajaxReturn(['status' => -1 , 'msg'=>'用户不存在','data'=>'']);
         }
@@ -271,6 +270,7 @@ class Pay extends ApiBase
         $url['order_id']=$order_id;
         $this->ajaxReturn(['status' => 1 , 'msg'=>'正确','data'=>$url]);
     }
+    
     /**
      * 购物卡支付
      */
@@ -291,11 +291,11 @@ class Pay extends ApiBase
         $data['shop_name'] = '购物卡充值';
         $data['desc'] = '+'.$data['money'];
         $data['type'] = 0;//0微信支付
-        // $res = Db::name('member_order')->insert($data);
+        $res = Db::name('member_order')->insert($data);
         $data['money'] = $data['money']*100;
-        // if(!$res){
-        //     $this->ajaxReturn(['status' => -1 , 'msg'=>'订单生成失败','data'=>'']);
-        // }
+        if(!$res){
+            $this->ajaxReturn(['status' => -1 , 'msg'=>'订单生成失败','data'=>'']);
+        }
         $rechData['order_no']        =  $data['order_sn'];
         $rechData['subject']        = '购物卡充值';
         $rechData['body']            = '购物卡充值';
@@ -335,40 +335,36 @@ class Pay extends ApiBase
         if($result == null){
             return;
         }
+        $result = '';
         if($result['result_code'] =='SUCCESS'){
-            $channel = $data['channel'];
+            // $data['order_no']//订单号
             //修改订单状态
             $update = [
                 // 'seller_id'      => $data['seller_id'],
                 'transaction_id' => $data['transaction_id'],
-                'order_status'   => 1,
-                'pay_status'     => 1,
+                'status'   => 1,
+                // 'pay_status'     => 1,
                 'pay_time'       => strtotime($data['pay_time']),
             ];
-            Db::startTrans();
-            Db::name('order')->where(['order_sn' => $data['order_no']])->update($update);
-            $order = Db::table('order')->where(['order_sn' => $data['order_no']])->field('order_id,user_id')->find();
-            $goods_res = Db::table('order_goods')->field('goods_id,goods_name,goods_num,spec_key_name,goods_price,sku_id')->where('order_id',$order['order_id'])->select();
-            foreach($goods_res as $key=>$value){
-                $goods = Db::table('goods')->where('goods_id',$value['goods_id'])->field('less_stock_type,gift_points')->find();
-                //付款减库存
-                // if($goods['less_stock_type']==2){
-                    Db::table('goods_sku')->where('sku_id',$value['sku_id'])->setDec('inventory',$value['goods_num']);
-                    Db::table('goods_sku')->where('sku_id',$value['sku_id'])->setDec('frozen_stock',$value['goods_num']);
-                    Db::table('goods')->where('goods_id',$value['goods_id'])->setDec('stock',$value['goods_num']);
-                // }
+            //订单详情
+            $order = Db::name('member_order')->field('id,status,order_sn,user_id,money')->where('order_sn',$data['order_no'])->find();
+            if($order['status'] == 0){
+                $res = Db::name('member_order')->where('id',$order['id'])->update($update);
+                if($res){
+                    $result = Db::name('member')->where('id',$order['user_id'])->setInc('shop_card_balance',$order['money']);
+                }
             }
-            // 执行业务逻辑，成功后返回true
-            return true;
         }
-        //返回给微信的数据
-        $return['return_code'] = 'SUCCESS';
-        $return['return_msg'] = 'OK';
-        $xml_post = '<xml>
-                    <return_code>'.$return['return_code'].'</return_code>
-                    <return_msg>'.$return['return_msg'].'</return_msg>
-                    </xml>';
-        echo $xml_post;exit;
+        if($result){
+            //返回给微信的数据
+            $return['return_code'] = 'SUCCESS';
+            $return['return_msg'] = 'OK';
+            $xml_post = '<xml>
+                        <return_code>'.$return['return_code'].'</return_code>
+                        <return_msg>'.$return['return_msg'].'</return_msg>
+                        </xml>';
+            echo $xml_post;exit;
+        }
     }
 
     /***

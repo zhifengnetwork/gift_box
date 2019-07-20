@@ -19,4 +19,15 @@ class Shopping extends ApiBase
         $this->ajaxReturn(['status' => 1 , 'msg'=>'请求成功！','data'=>$data]);
     }
 
+    //获取交易明细
+    public function get_order_list()
+    {
+        $user_id =  $this->get_user_id();
+        $list = Db::name('member_order')->field('id,order_sn,shop_name,desc,addtime')->where('user_id',$user_id)->where('status',1)->select();
+        foreach($list as $key=>$val){
+            $list[$key]['addtime'] = date('Y-m-d H:i:s',$val['addtime']);
+        }
+        $this->ajaxReturn(['status' => 1 , 'msg'=>'请求成功！','data'=>$list]);
+    }
+
 }
