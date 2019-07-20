@@ -179,7 +179,7 @@ class Index extends ApiBase
         $this->ajaxReturn(['status' => 1, 'msg' => '获取数据成功','data'=>$getIdentification]);
     }
 
-    //手机formid
+    //收集formid
     public function get_form_id()
     {
         $user_id = $this->get_user_id();
@@ -197,6 +197,22 @@ class Index extends ApiBase
         }else{
             $this->ajaxReturn(['status' => -1, 'msg' => '获取formid失败','data'=>[]]);
         }
+    }
+
+    //消息推送
+    public function news_post()
+    {
+        $url = 'https://api.weixin.qq.com/cgi-bin/message/wxopen/template/send?access_token=ACCESS_TOKEN';
+        $data['touser'] = '';//openid
+        $data['template_id'] = 'O44yWTdQ-T5VQgOeDVBFRaGqu4oQ5F_N_OhjRUhQ8u8';//模板id，
+        $data['page'] = 'index';//跳转地址加参数
+        $data['form_id'] = '';//form_id
+        //定义模板需要带的参数
+        $data['data']['keyword1'] = '您所期待的抽奖已经开始了，请尽快参与';
+        $data['data']['keyword2'] = '不要错过时间哦';
+        $data['data']['keyword3'] = '2020年10月1日 20:00:00';
+        $res = request_curl($url,$data);
+        dump($res);
     }
 
 }
