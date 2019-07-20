@@ -118,7 +118,12 @@ class Order extends Common
     //参与群抢名单
     public function join_list(){
         $order_id       =  input('order_id',''); 
-        $list  = M('gift_order_join')->alias('goj')->join('member m','goj.user_id=m.id','left')->join('order o','goj.order_id=o.order_id','left')->field('goj.*,m.nickname,avatar')->where(['goj.order_id'=>$order_id])->whereor(['o.parent_id'=>$order_id])->select();
+        $list  = M('gift_order_join')->alias('goj')->join('member m','goj.user_id=m.id','left')->join('order o','goj.order_id=o.order_id','left')->field('goj.*,m.nickname,m.avatar,o.lottery_time')->where(['goj.order_id'=>$order_id])->whereor(['o.parent_id'=>$order_id])->select();
+
+        foreach($list as $k=>$v){
+            $list[$k]['start'] = (($v['lottery_time'] < time()) && ($v['lottery_time'] > 0)) ? 1 : 0;
+        }
+
         return $this->fetch('',[ 
             'list'         => $list,
             'order_id'     => $order_id,
