@@ -136,6 +136,30 @@ class Index extends ApiBase
 
     }
 
+    //根据二级栏目获取商品8个一组
+    public function getGoodsList2()
+    {
+        $goods_attr2 = input('id',0);
+        $num = input('num',8);
+        if(!$goods_attr2){
+            $this->ajaxReturn(['status' => -1, 'msg' => '请提供二级栏目id','data'=>[]]);
+        }
+        $list = Db::table('goods')->alias('g')->join('goods_img i','g.goods_id=i.goods_id','LEFT')->field('g.goods_id,g.goods_name,g.price,i.picture')->where(['goods_attr2'=>$goods_attr2,'is_del'=>0,'is_show'=>1,'i.main'=>1])->order('add_time desc')->select();
+        $list  = $this->setGoodsList($list);
+        $i = 0;
+        $new_list = array();
+        foreach($list as $key=>$val){
+            if($key/$num<$i+1){
+                $new_list[$i][] = $val;
+            }else{
+                $i++;
+                $new_list[$i][] = $val;
+            }
+        }
+        $this->ajaxReturn(['status' => 1, 'msg' => '获取数据成功','data'=>$new_list]);
+
+    }
+
     //获取常见问题
     public function getProblem()
     {
