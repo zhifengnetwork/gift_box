@@ -17,6 +17,7 @@ class Index extends Controller
         $info['scene_url'] = '';
         if(!$card_id){
             $info['photo_url'] = '';
+            $info['content'] = '';
             $info['voice_url'] = '';
             $this->assign('info',$info);
             return $this->fetch();
