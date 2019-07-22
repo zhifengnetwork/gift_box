@@ -488,6 +488,39 @@ body,html{
 100% {opacity: 1;top: 0;transform: translate(0%) scale(1);}
 }
 
+/* 头像 */
+.touxiangbox{
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    z-index: 2;
+    /* transform: scale(1); */
+   
+    
+}
+.touxiang{
+    width: 14.5rem;
+    height: 14.5rem;
+    position: absolute;
+    top: 17.5%;
+    left: 50%;
+    transform: translate(-49%);
+    border-radius: 50%;
+    background: yellow;
+    animation:touxiang 4.8s;
+    animation-delay:19.5s;
+}
+
+@keyframes touxiang
+{
+0% {opacity: 0;}
+74% {opacity: 0;transform: translate(-49%) rotate(0deg) scale(0.1);}
+75% {opacity: 1;transform: translate(-49%) rotate(0deg) scale(0.1);}
+100% {opacity: 1;transform: translate(-49%) rotate(360deg) scale(1);}
+}
+
+
 /* 头像边框 */
 .txborderbox{
     top: 0;
@@ -583,6 +616,16 @@ body,html{
 .wenzisi{
     width: 100%;
     height: 100%;
+    visibility:hidden;
+}
+.wenzispan{
+    position: absolute;
+    width: 50%;
+    text-align: center;
+    top: 70%;
+    left: 25%;
+    color: #999999;
+    font-family: Helvetica, 'Hiragino Sans GB', 'Microsoft Yahei', '微软雅黑', Arial, sans-serif;
 }
 
 @keyframes wenzisi
@@ -719,76 +762,120 @@ body,html{
     to { -moz-transform: rotate(360deg) }
 }
 
+/* 录音 */
+#audio_btn2{
+    position: absolute;
+    top: 69.5%;
+    right: 15%;
+    width: 2rem;
+    height: 2rem;
+    border-radius: 50%;
+    border: none;
+    outline: none;
+    /* animation:xuanzhuan 10s;
+    transform: rotate(0deg); */
+    background-image: url(https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1563776478397&di=6c787388b5d9ac3675c31bdbdce543dd&imgtype=0&src=http%3A%2F%2Fbpic.588ku.com%2Felement_origin_min_pic%2F18%2F01%2F02%2F665765c1f5c69383b4ec4ba83d0d891a.jpg);
+    background-repeat: no-repeat;
+    background-size: contain;
+}
+
+.rotate2 {
+    -webkit-animation: rotating2 3s linear infinite;
+    animation: rotating2 3s linear infinite;
+
+    animation-play-state:running;
+    -webkit-animation-play-state:running; /* Safari 和 Chrome */
+}
+
+.rotate-pause2 {
+    animation-play-state:paused;
+    -webkit-animation-play-state:paused; /* Safari 和 Chrome */
+}
+
+@-webkit-keyframes rotating2 {
+    from { -webkit-transform: rotate(0) }
+    to { -webkit-transform: rotate(360deg) }
+}
+
+@keyframes rotating2 {
+    from { transform: rotate(0) }
+    to { transform: rotate(360deg) }
+}
+@-moz-keyframes rotating2 {
+    from { -moz-transform: rotate(0) }
+    to { -moz-transform: rotate(360deg) }
+}
+
 </style>
 <body>
-    <div class="box">
-        <!-- 背景图1 -->
-        <div class="beijingbox xiaobox">
-            <image class="beijing" src="/image/背景.png" />
-        </div>
-        <!-- 礼盒 -->
-        <div class="lihebox xiaobox">
-            <image class="lihe" src="/image/盒子.png" />
-        </div> 
-        <!-- 碗 -->
-        <div class="wanbox xiaobox">
-            <image class="wan" src="/image/hua.png" />
-        </div>
-        <!-- 樹葉 -->
-        <div class="shuyebox xiaobox">
-            <image class="shuye" src="/image/樹葉.png" />
-        </div>
-        <!-- 信封1 -->
-        <div class="xinfengbox xiaobox">
-            <image class="xinfeng" src="/image/画板 3.png" />
-        </div>
-        <!-- 信封2 -->
-        <div class="xinfengerbox xiaobox">
-            <image class="xinfenger" src="/image/xinfenger.png" />
-        </div>
-        <!-- 信封一角 -->
-        <div class="xinfengsanbox xiaobox">
-            <image class="xinfengsan" src="/image/信封 一角.png" />
-        </div>
-    </div>
-    <div class="box2">
-        <!-- 背景2 -->
-        <div class="box2beijingbox xiaobox">
-            <image class="box2beijing" src="/image/1-bj.png" />
-        </div>
-        <!-- 外边框 -->
-        <div class="waiborderbox xiaobox">
-            <image class="waiborde" src="/image/1- 外邊 框.png" />
-        </div>
-        <!-- 内边框 -->
-        <div class="neiborderbox xiaobox">
-            <image class="neiborde" src="/image/1-里框.png" />
-        </div>
-         <!-- 右上花 -->
-         <div class="rthuabox xiaobox">
-            <image class="rthua" src="/image/1-右上 花.png" />
-        </div>
-         <!-- 文字1 -->
-         <div class="wenzibox xiaobox">
-            <image class="wenzi" src="/image/1-文字1.png" />
-        </div>
-        <!-- 中间花 -->
-        <div class="chuabox xiaobox">
-            <image class="chua" src="/image/1-中間花.png" />
-        </div>
-        <!-- 文字二 -->
-        <div class="wenzierbox xiaobox">
-            <image class="wenzier" src="/image/1-文字2.png" />
-        </div>
-         <!-- 文字三 -->
-         <div class="wenzisanbox xiaobox">
-            <image class="wenzisan" src="/image/1-文字3.png" />
-        </div>
-         <!-- 左下花 -->
-         <div class="lbhuabox xiaobox">
-            <image class="lbhua" src="/image/1-下 左花.png" />
-        </div>
-    </div>
+        <div class="box">
+                <!-- 背景图1 -->
+                <div class="beijingbox xiaobox">
+                    <image class="beijing" src="/image/背景.png" />
+                </div>
+                <!-- 礼盒 -->
+                <div class="lihebox xiaobox">
+                    <image class="lihe" src="/image/盒子.png" />
+                </div> 
+                <!-- 碗 -->
+                <div class="wanbox xiaobox">
+                    <image class="wan" src="/image/hua.png" />
+                </div>
+                <!-- 樹葉 -->
+                <div class="shuyebox xiaobox">
+                    <image class="shuye" src="/image/樹葉.png" />
+                </div>
+                <!-- 信封1 -->
+                <div class="xinfengbox xiaobox">
+                    <image class="xinfeng" src="/image/画板 3.png" />
+                </div>
+                <!-- 信封2 -->
+                <div class="xinfengerbox xiaobox">
+                    <image class="xinfenger" src="/image/xinfenger.png" />
+                </div>
+                <!-- 信封一角 -->
+                <div class="xinfengsanbox xiaobox">
+                    <image class="xinfengsan" src="/image/信封 一角.png" />
+                </div>
+            </div>
+            <div class="box2">
+                <!-- 背景2 -->
+                <div class="box2beijingbox xiaobox">
+                    <image class="box2beijing" src="/image/1-bj.png" />
+                </div>
+                <!-- 外边框 -->
+                <div class="waiborderbox xiaobox">
+                    <image class="waiborde" src="/image/1- 外邊 框.png" />
+                </div>
+                <!-- 内边框 -->
+                <div class="neiborderbox xiaobox">
+                    <image class="neiborde" src="/image/1-里框.png" />
+                </div>
+                 <!-- 右上花 -->
+                 <div class="rthuabox xiaobox">
+                    <image class="rthua" src="/image/1-右上 花.png" />
+                </div>
+                 <!-- 文字1 -->
+                 <div class="wenzibox xiaobox">
+                    <image class="wenzi" src="/image/1-文字1.png" />
+                </div>
+                <!-- 中间花 -->
+                <div class="chuabox xiaobox">
+                    <image class="chua" src="/image/1-中間花.png" />
+                </div>
+                <!-- 文字二 -->
+                <div class="wenzierbox xiaobox">
+                    <image class="wenzier" src="/image/1-文字2.png" />
+                </div>
+                 <!-- 文字三 -->
+                 <div class="wenzisanbox xiaobox">
+                    <image class="wenzisan" src="/image/1-文字3.png" />
+                </div>
+                 <!-- 左下花 -->
+                 <div class="lbhuabox xiaobox">
+                    <image class="lbhua" src="/image/1-下 左花.png" />
+                </div>
+            </div>
     <!-- 场景三 -->
     <div class="box3">
         <!-- 背景3 -->
@@ -807,6 +894,11 @@ body,html{
         <div class="syhuabox xiaobox">
             <image class="syhua" src="/image/syhua.png" />
         </div>
+        <!-- 头像 -->
+        <div class="touxiangbox xiaobox">
+                <!-- <image class="touxiang" src="/image/syhua.png" /> -->
+                <div class="touxiang"></div>
+            </div>
         <!-- 头像边框 -->
         <div class="txborderbox xiaobox">
             <image class="txborder" src="/image/txborder.png" />
@@ -826,11 +918,13 @@ body,html{
         <!-- 文字四 -->
         <div class="wenzisibox xiaobox">
             <image class="wenzisi" src="/image/wenzisi.png" />
+            <span class="wenzispan">一二三四五，上山打老虎</span>
         </div>
         <!-- 文字五 -->
-        <div class="wenziwubox xiaobox">
+        <!-- <div class="wenziwubox xiaobox">
             <image class="wenziwu" src="/image/wenziwu.png" />
-        </div>
+            <span class="wenziwu">一二三四五，上山打老虎</span>
+        </div> -->
         <!-- 文字五 -->
         <div class="wenziliubox xiaobox">
             <image class="wenziliu" src="/image/wenziliu.png" />
@@ -840,21 +934,59 @@ body,html{
             <image class="bhua" src="/image/bhua.png" />
         </div>
     </div>
+    <!-- 播放音乐 -->
     <div id="audio_btn" class="rotate">
-        <audio loop src="/image/zdqc.mp3" id="media" autoplay="autoplay" preload=""></audio>
+        <audio loop src="/image/zdqc.mp3" id="media" autoplay="autoplay"></audio>
     </div>
-    
+    <!-- 播放录音 -->
+    <div id="audio_btn2" class="rotate-pause2 rotate2">
+        <audio loop src="/image/zdqc.mp3" id="media2"></audio>
+    </div>
 </body>
 </html>
-<script src="http://libs.baidu.com/jquery/2.0.0/jquery.js"></script>
+<script src="/static/inspinia/js/jquery-2.1.1.js"></script>
+<!-- <script src="https://res.wx.qq.com/open/js/jweixin-1.0.0.js"></script>  -->
 <script>
 var x = document.getElementById("media"); 
 $('#audio_btn').on('click', function() {
     $(this).toggleClass("rotate-pause");
-    if($(this).hasClass("rotate-pause")){
-        x.pause();
-    }else{
+    if(!$(this).hasClass("rotate-pause")){
         x.play();
+    }else{
+        x.pause();
     }
 });
+
+var y = document.getElementById("media2"); 
+$('#audio_btn2').on('click', function() {
+    $(this).toggleClass("rotate-pause2");
+    if($(this).hasClass("rotate-pause2")){
+        y.pause();
+    }else{
+        
+        y.play();
+    }
+});
+
+
+//--创建页面监听，等待微信端页面加载完毕 触发音频播放
+// document.addEventListener('DOMContentLoaded', function () {
+//     function audioAutoPlay() {
+//         var audio = document.getElementById('media');
+//             audio.play();
+//         document.addEventListener("WeixinJSBridgeReady", function () {
+//             audio.play();
+//         }, false);
+//     }
+//     audioAutoPlay();
+// });
+//--创建触摸监听，当浏览器打开页面时，触摸屏幕触发事件，进行音频播放
+// document.addEventListener('touchstart', function () {
+//     function audioAutoPlay() {
+//         var audio = document.getElementById('media');
+//             audio.play();
+//     }
+//     audioAutoPlay();
+// });
 </script>
+
