@@ -37,12 +37,12 @@ class Index extends Controller
         if($info['scene_id']){
             $info['scene_url'] = Db::name('box_scene')->where('id',$info['scene_id'])->value('scene_url');
         }
-        $info['cate_url'] = $info['cate_url']?SITE_URL.$info['cate_url']:'';
-        $info['music_url'] = $info['music_url']?SITE_URL.$info['music_url']:'';
-        $info['video_url'] = $info['video_url']?SITE_URL.$info['video_url']:'';
-        $info['scene_url'] = $info['scene_url']?SITE_URL.$info['scene_url']:'';
-        $info['photo_url'] = $info['photo_url']?SITE_URL.$info['photo_url']:'';
-        $info['voice_url'] = $info['voice_url']?SITE_URL.$info['voice_url']:'';
+        $info['cate_url'] = $info['cate_url']?SITE_URL.$info['cate_url']:'';//类别
+        $info['music_url'] = $info['music_url']?SITE_URL.$info['music_url']:'';//音乐
+        $info['video_url'] = $info['video_url']?SITE_URL.$info['video_url']:'';//相框
+        $info['scene_url'] = $info['scene_url']?SITE_URL.$info['scene_url']:'';//场景
+        $info['photo_url'] = $info['photo_url']?SITE_URL.$info['photo_url']:'';//照片
+        $info['voice_url'] = $info['voice_url']?SITE_URL.$info['voice_url']:'';//录音
         $this->assign('info',$info);
         return $this->fetch();
     }
