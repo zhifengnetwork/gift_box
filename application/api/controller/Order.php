@@ -230,16 +230,19 @@ class Order extends ApiBase
             $this->ajaxReturn(['status' => -1 , 'msg'=>'请填写收票人手机！','data'=>'']);
         if(!$invoice_desc && $invoice_mobile)
             $this->ajaxReturn(['status' => -1 , 'msg'=>'请填写发票内容！','data'=>'']);
+        //7月22修改
+        if(!$order_type && !$addr_id)
+            $this->ajaxReturn(['status' => -1 , 'msg'=>'','data'=>'犒劳自己需要填写地址']);
+        if($addr_id){
+            $addrWhere = array();
+            $addrWhere['address_id'] = $addr_id;
+            $addrWhere['user_id'] = $user_id;
+            $addr_res = $AddressM->getAddressFind($addrWhere);
 
-        $addrWhere = array();
-        $addrWhere['address_id'] = $addr_id;
-        $addrWhere['user_id'] = $user_id;
-        $addr_res = $AddressM->getAddressFind($addrWhere);
-
-        if (empty($addr_res)) {
-            $this->ajaxReturn(['status' => -1 , 'msg'=>'该地址不存在！','data'=>'']);
+            if (empty($addr_res)) {
+                $this->ajaxReturn(['status' => -1 , 'msg'=>'该地址不存在！','data'=>'']);
+            }
         }
-
         //购物车商品
         $cart_where['selected']=1;
         $cart_where['user_id'] = $user_id;

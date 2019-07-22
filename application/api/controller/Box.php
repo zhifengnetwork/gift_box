@@ -176,6 +176,7 @@ class Box extends ApiBase
         $photo_url = input('post.photo_url','');
         $voice_url = input('post.voice_url','');
         $content = input('post.content','');
+        $scene_id = input('post.scene_id','');//场景
         $user_id = $this->get_user_id();
         if(!$id){
             $result['status'] = -1;
@@ -184,6 +185,9 @@ class Box extends ApiBase
         }
         if($music_id){
             $data['music_id'] = $music_id;
+        }
+        if($scene_id){
+            $data['scene_id'] = $scene_id;
         }
         if($photo_url){
             $data['photo_url'] = str_replace(SITE_URL,'',$photo_url);
