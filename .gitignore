@@ -7,3 +7,5 @@ runtime
 /public/upload
 /public/uploads
 /application/database.php
+/ueditor/php/upload
+/upload
