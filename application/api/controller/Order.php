@@ -225,7 +225,7 @@ class Order extends ApiBase
         $invoice_desc = I('post.invoice_desc/s',''); //发票内容
         $invoice_mobile = I('post.invoice_mobile/s',''); //收票人手机
         $invoice_email = I('post.invoice_email/s','');  //收票人邮箱
-
+        $box_id = I('post.box_id',0);  //礼盒id
         if($invoice_desc && !$invoice_mobile)
             $this->ajaxReturn(['status' => -1 , 'msg'=>'请填写收票人手机！','data'=>'']);
         if(!$invoice_desc && $invoice_mobile)
@@ -233,8 +233,17 @@ class Order extends ApiBase
         //7月22修改
         if(!$order_type && !$addr_id)
             $this->ajaxReturn(['status' => -1 , 'msg'=>'','data'=>'犒劳自己需要填写地址']);
+        $addrWhere = array();
+        $addr_res = array();
+        $addr_res['consignee'] = '';
+        $addr_res['province'] = '';
+        $addr_res['city'] = '';
+        $addr_res['district'] = '';
+        $addr_res['twon'] = '';
+        $addr_res['address'] = '';
+        $addr_res['mobile'] = '';
+        
         if($addr_id){
-            $addrWhere = array();
             $addrWhere['address_id'] = $addr_id;
             $addrWhere['user_id'] = $user_id;
             $addr_res = $AddressM->getAddressFind($addrWhere);
@@ -390,7 +399,7 @@ class Order extends ApiBase
         $orderInfoData['invoice_mobile'] = $invoice_mobile;
         $orderInfoData['invoice_email'] = $invoice_email;
         $orderInfoData['order_type'] = $order_type;
-        
+        $orderInfoData['box_id'] = $box_id;
         $order_id = Db::table('order')->insertGetId($orderInfoData);
 
         // 添加订单商品
