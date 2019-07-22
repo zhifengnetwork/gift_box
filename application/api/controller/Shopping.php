@@ -22,8 +22,10 @@ class Shopping extends ApiBase
     //获取交易明细
     public function get_order_list()
     {
+        $page = input('page',1);
+        $num = input('num',10);
         $user_id =  $this->get_user_id();
-        $list = Db::name('member_order')->field('id,order_sn,shop_name,desc,addtime')->where('user_id',$user_id)->where('status',1)->select();
+        $list = Db::name('member_order')->field('id,order_sn,shop_name,desc,addtime,money')->where('user_id',$user_id)->where('status',1)->page($page,$num)->select();
         foreach($list as $key=>$val){
             $list[$key]['addtime'] = date('Y-m-d H:i:s',$val['addtime']);
         }
