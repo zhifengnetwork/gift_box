@@ -292,7 +292,7 @@ class Pay extends ApiBase
         $data['desc'] = '+'.$data['money'];
         $data['type'] = 0;//0微信支付
         $res = Db::name('member_order')->insert($data);
-        $data['money'] = $data['money']*100;
+        // $data['money'] = $data['money']*100;
         if(!$res){
             $this->ajaxReturn(['status' => -1 , 'msg'=>'订单生成失败','data'=>'']);
         }
