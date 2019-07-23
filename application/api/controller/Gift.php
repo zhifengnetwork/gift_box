@@ -372,8 +372,7 @@ class Gift extends ApiBase
      */
     public function get_send_gift()
     {
-        // $user_id = $this->get_user_id();
-        $user_id = 86;
+        $user_id = $this->get_user_id();
         $type = input('type',2);
         $page = input('page',1);
         $num = input('num',100);
@@ -405,6 +404,10 @@ class Gift extends ApiBase
             foreach($order as $key=>$val){
                 if(!in_array($val['parent_id'],$parent_id)){
                     $parent_id[] = $val['parent_id'];
+                }
+                //子订单商品总价给他显示单价
+                if($val['parent_id']){
+                    $order[$key]['order_amount'] = $val['goods_price'];
                 }
             }
             foreach($order as $key=>$val){
