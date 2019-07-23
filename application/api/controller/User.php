@@ -595,6 +595,23 @@ class User extends ApiBase
         $this->ajaxReturn($res);
     }
 
+    // 获取地址详情
+    public function get_address_info()
+    {
+        $address_id = input('address_id',0);
+        if(!$address_id){
+            $this->ajaxReturn(['status' => -1 , 'msg'=>'地址id不能为空','data'=>[]]);
+        }
+        $info = Db::name('user_address')->field('address_id,province,city,district')->where('address_id',$address_id)->find();
+        if(!$info){
+            $this->ajaxReturn(['status' => -1 , 'msg'=>'地址不存在','data'=>[]]);
+        }
+        $info['province'] = Db::name('region')->where('area_id',$info['province'])->value('area_name');
+        $info['city'] = Db::name('region')->where('area_id',$info['city'])->value('area_name');
+        $info['district'] = Db::name('region')->where('area_id',$info['district'])->value('area_name');
+        $this->ajaxReturn(['status' => -1 , 'msg'=>'地址不存在','data'=>$info]);
+    }
+
 
 
 }

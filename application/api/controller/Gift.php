@@ -393,12 +393,13 @@ class Gift extends ApiBase
         }else{
             $where['o.pay_status'] = 1;
             $where['o.parent_id'] = 0;
+            $where['o.order_type'] = ['neq',0];
             $where['o.order_status']=['in',[0,1]];
             $order = Db::name('order')->alias('o')
                 ->join('order_goods og','og.order_id=o.order_id','LEFT')
-                ->join('goods_sku gs','og.goods_id=gs.goods_id','LEFT')
-                ->join('goods g','g.goods_id=og.goods_id','LEFT')
-                ->field('o.order_id,o.order_sn,o.add_time,og.goods_name,og.spec_key_name,og.goods_price,og.goods_num,o.order_amount,og.goods_id,gs.price,g.taxes,g.discount')
+                ->join('gift_order_join goj','goj.order_id=o.order_id','LEFT')
+                ->join('member m','goj.user_id=m.id','LEFT')
+                ->field('o.order_id,o.order_sn,o.add_time,og.goods_name,og.spec_key_name,og.goods_price,og.goods_num,o.order_amount,m.nickname,og.goods_id')
                 ->where($where)
                 ->page($page,$num)
                 ->select();

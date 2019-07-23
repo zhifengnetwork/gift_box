@@ -216,7 +216,7 @@ class Order extends ApiBase
         }
         $addr_id = input("address_id/d",0);
         $pay_type = input("pay_type/d",0);
-        $order_type = input("order_type/d",0); //订单类型，0犒劳自己，1：赠送单人，2：群抢
+        $order_type = input("order_type/d",2); //订单类型，0犒劳自己，1：赠送单人，2：群抢
         $user_note = input("user_note", '', '');
         // 查询地址是否存在
         $AddressM = model('UserAddr');
