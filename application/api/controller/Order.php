@@ -470,6 +470,7 @@ class Order extends ApiBase
     public function order_list()
     {
         $user_id = $this->get_user_id();
+        // $user_id = 88;
         if(!$user_id){
             $this->ajaxReturn(['status' => -1 , 'msg'=>'用户不存在','data'=>'']);
         }
@@ -560,7 +561,7 @@ class Order extends ApiBase
         }
 
         if($gift_type != 3){ 
-            $whereor = 'o1.order_type=2';
+            $whereor = 'o1.order_type=2 and o1.user_id = '.$user_id;
             if($order_type != 0)    //非群抢，非犒劳自己时，不取母ID为0
                 $whereor .= ' and o1.parent_id<>0';
             else                    //非群抢，犒劳自己时，只取母ID=0
@@ -580,6 +581,7 @@ class Order extends ApiBase
                         ->paginate($num,false,$pageParam)
                         ->toArray(); 
         }
+        // dump(Db::table('gift_order_join')->_sql());exit;
         if($order_list['data']){
             $OrderGoods = M('Order_goods');
             foreach($order_list['data'] as $key=>&$value){
