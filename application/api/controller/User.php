@@ -609,7 +609,7 @@ class User extends ApiBase
         $info['province'] = Db::name('region')->where('area_id',$info['province'])->value('area_name');
         $info['city'] = Db::name('region')->where('area_id',$info['city'])->value('area_name');
         $info['district'] = Db::name('region')->where('area_id',$info['district'])->value('area_name');
-        $this->ajaxReturn(['status' => -1 , 'msg'=>'地址不存在','data'=>$info]);
+        $this->ajaxReturn(['status' => 1 , 'msg'=>'成功','data'=>$info]);
     }
 
 
