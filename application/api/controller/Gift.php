@@ -366,4 +366,89 @@ class Gift extends ApiBase
             $this->ajaxReturn(['status' => -1 , 'msg'=>'请求失败','data'=>'']);
     }
 
+    /**
+     *  已送礼物
+     *  type 1 已领取 2未领取
+     */
+    public function get_send_gift()
+    {
+        // $user_id = $this->get_user_id();
+        $user_id = 86;
+        $type = input('type',2);
+        $page = input('page',1);
+        $num = input('num',100);
+        if($type == 1){
+            $where['o.pay_status'] = 1;
+            $where['goj.join_status'] = 1;
+            $where['goj.status'] = 1;
+            $where['o.user_id'] = $user_id;
+            $order = Db::name('order')->alias('o')
+                ->join('order_goods og','og.order_id=o.order_id','LEFT')
+                ->join('gift_order_join goj','goj.order_id=o.order_id','LEFT')
+                ->join('member m','goj.user_id=m.id','LEFT')
+                ->field('o.order_id,o.order_sn,o.add_time,og.goods_name,og.spec_key_name,og.goods_price,og.goods_num,o.order_amount,m.nickname,og.goods_id')
+                ->where($where)
+                ->page($page,$num)
+                ->select();
+        }else{
+            $where['o.pay_status'] = 1;
+            $where['o.parent_id'] = 0;
+            $where['o.order_status']=['in',[0,1]];
+            $order = Db::name('order')->alias('o')
+                ->join('order_goods og','og.order_id=o.order_id','LEFT')
+                ->join('goods_sku gs','og.goods_id=gs.goods_id','LEFT')
+                ->join('goods g','g.goods_id=og.goods_id','LEFT')
+                ->field('o.order_id,o.order_sn,o.add_time,og.goods_name,og.spec_key_name,og.goods_price,og.goods_num,o.order_amount,og.goods_id,gs.price,g.taxes,g.discount')
+                ->where($where)
+                ->page($page,$num)
+                ->select();
+            foreach($order as $key=>$val){
+                $val['tmp_sum'] = Db::name('gift_order_join')->where(['order_id'=>$val['order_id'],'status'=>1,'join_status'=>0])->count();
+                $order[$key]['goods_num'] = $order[$key]['goods_num']-$val['tmp_sum'];
+                $order[$key]['order_amount'] = $this->get_shipping($val['goods_id'],$order[$key]['goods_num'])+($val['price']-$val['discount'])*$order[$key]['goods_num']*($val['taxes']+100)/100;
+                if($order[$key]['goods_num']<=0){
+                    unset($order[$key]);
+                }
+            }
+        }
+        foreach($order as $key=>$val){
+            $order[$key]['img'] = Db::name('goods_img')->where(['goods_id'=>$val['goods_id'],'main'=>1])->value('picture');
+            $order[$key]['img'] = $order[$key]['img']?SITE_URL.$order[$key]['img']:'';
+        }
+        $this->ajaxReturn(['status' => 1 , 'msg'=>'请求成功','data'=>$order]);
+    }
+
+    //获取某个商品获取运费
+    public function get_shipping($goods_id=0,$num=1)
+    {
+        $shipping_price = '0'; //订单运费
+        $goods_res = Db::table('goods')->field('shipping_setting,shipping_price,delivery_id')->where('goods_id',$goods_id)->find();
+        if($goods_res['shipping_setting'] == 1){
+            $shipping_price = sprintf("%.2f",$shipping_price + $goods_res['shipping_price']);   //计算该订单的物流费用
+        }else if($goods_res['shipping_setting'] == 2){
+            if( !$goods_res['delivery_id'] ){
+                $deliveryWhere['is_default'] = 1;
+            }else{
+                $deliveryWhere['delivery_id'] = $goods_res['delivery_id'];
+            }
+            $delivery = Db::table('goods_delivery')->where($deliveryWhere)->find();
+            if( $delivery ){
+                if($delivery['type'] == 2){
+                    //件数
+                    $shipping_price = sprintf("%.2f",$shipping_price + $delivery['firstprice']);   //计算该订单的物流费用
+                    $number = $num - $delivery['firstweight'];
+                    if($number > 0){
+                        $number = ceil( $number / $delivery['secondweight'] );  //向上取整
+                        $xu = sprintf("%.2f",$delivery['secondprice'] * $number );   //续价
+                        $shipping_price = sprintf("%.2f",$shipping_price + $xu);   //计算该订单的物流费用
+                    }
+                }else{
+                    //重量的待处理
+                }
+            }
+
+        }
+        return $shipping_price;
+    }
+
 }

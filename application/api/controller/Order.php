@@ -1486,5 +1486,27 @@ class Order extends ApiBase
         }
         
     }
+
+    //修改发票信息
+    public function edit_invoice()
+    {
+        $order_id = input('order_id',1638);
+        $user_id = $this->get_user_id();
+        $count = Db::name('order')->where('order_id',$order_id)->where('user_id',$user_id)->count();
+        if(!$count){
+            $this->ajaxReturn(['status' => -1 , 'msg'=>'该订单不是你的订单','data'=>'']);
+        }
+        $data['invoice_title'] = I('post.invoice_title/s',''); //发票抬头
+        $data['taxpayer'] = I('post.taxpayer/s',''); //纳税人识别号
+        $data['invoice_desc'] = I('post.invoice_desc/s',''); //发票内容
+        $data['invoice_mobile'] = I('post.invoice_mobile/s',''); //收票人手机
+        $data['invoice_email'] = I('post.invoice_email/s','');  //收票人邮箱
+        $res = Db::name('order')->where('order_id',$order_id)->update($data);
+        if($res){
+            $this->ajaxReturn(['status' => 1 , 'msg'=>'操作成功！','data'=>'']);
+        }else{
+            $this->ajaxReturn(['status' => -1 , 'msg'=>'操作失败','data'=>'']);
+        }
+    }
     
 }

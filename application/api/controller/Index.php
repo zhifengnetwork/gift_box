@@ -189,6 +189,13 @@ class Index extends ApiBase
         $this->ajaxReturn(['status' => 1, 'msg' => '获取数据成功','data'=>$data]);
     }
 
+    //获取幸运话语
+    public function get_lucky()
+    {
+        $list =  Db::name('turntable_lucky')->field('status,addtime',true)->where('status',0)->order('addtime desc')->limit(5)->select();
+        $this->ajaxReturn(['status' => 1, 'msg' => '获取数据成功','data'=>$list]);
+    }
+
     //赠礼须知
     public function getGiftNotice()
     {
