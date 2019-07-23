@@ -32,6 +32,10 @@ class TestNotify implements PayNotifyInterface
             ];
             Db::startTrans();
             Db::name('order')->where(['order_sn' => $data['order_no']])->update($update);
+            //修改子订单
+            $order_id = Db::name('order')->where(['order_sn' => $data['order_no']])->value('order_id');
+            Db::name('order')->where(['parent_id' => $order_id])->update($update);
+
             $order = Db::table('order')->where(['order_sn' => $data['order_no']])->field('order_id,user_id')->find();
             $goods_res = Db::table('order_goods')->field('goods_id,goods_name,goods_num,spec_key_name,goods_price,sku_id')->where('order_id',$order['order_id'])->select();
             foreach($goods_res as $key=>$value){

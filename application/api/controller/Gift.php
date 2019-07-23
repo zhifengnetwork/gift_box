@@ -392,24 +392,28 @@ class Gift extends ApiBase
                 ->select();
         }else{
             $where['o.pay_status'] = 1;
-            $where['o.parent_id'] = 0;
+            // $where['o.parent_id'] = 0;
             $where['o.order_type'] = ['neq',0];
             $where['o.order_status']=['in',[0,1]];
             $order = Db::name('order')->alias('o')
                 ->join('order_goods og','og.order_id=o.order_id','LEFT')
-                ->join('gift_order_join goj','goj.order_id=o.order_id','LEFT')
-                ->join('member m','goj.user_id=m.id','LEFT')
-                ->field('o.order_id,o.order_sn,o.add_time,og.goods_name,og.spec_key_name,og.goods_price,og.goods_num,o.order_amount,m.nickname,og.goods_id')
+                ->field('o.order_id,o.order_sn,o.add_time,og.goods_name,og.spec_key_name,og.goods_price,og.goods_num,o.order_amount,og.goods_id,o.parent_id')
                 ->where($where)
                 ->page($page,$num)
                 ->select();
+            $parent_id = array();
             foreach($order as $key=>$val){
-                $val['tmp_sum'] = Db::name('gift_order_join')->where(['order_id'=>$val['order_id'],'status'=>1,'join_status'=>0])->count();
-                $order[$key]['goods_num'] = $order[$key]['goods_num']-$val['tmp_sum'];
-                $order[$key]['order_amount'] = $this->get_shipping($val['goods_id'],$order[$key]['goods_num'])+($val['price']-$val['discount'])*$order[$key]['goods_num']*($val['taxes']+100)/100;
-                if($order[$key]['goods_num']<=0){
+                if(!in_array($val['parent_id'],$parent_id)){
+                    $parent_id[] = $val['parent_id'];
+                }
+            }
+            foreach($order as $key=>$val){
+                if(in_array($val['order_id'],$parent_id)){
                     unset($order[$key]);
                 }
+            }
+            if($order){
+                sort($order);
             }
         }
         foreach($order as $key=>$val){

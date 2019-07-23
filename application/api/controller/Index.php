@@ -194,8 +194,8 @@ class Index extends ApiBase
     {
         $list =  Db::name('turntable_lucky')->field('status,addtime',true)->where('status',0)->order('addtime desc')->limit(5)->select();
         foreach($list as $key=>$val){
-            $tmp = mb_substr($val['content'],0,5);
-            $tmp2 = mb_substr($val['content'],5,5);
+            $tmp = mb_substr($val['content'],0,4);
+            $tmp2 = mb_substr($val['content'],4,4);
             $list[$key]['id'] = $val['id'];
             $list[$key]['level'] = $tmp;
             $list[$key]['prize'] = $tmp2;
