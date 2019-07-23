@@ -470,13 +470,13 @@ class Order extends ApiBase
     public function order_list()
     {
         $user_id = $this->get_user_id();
-        // $user_id = 88;
+        // $user_id = 86;
         if(!$user_id){
             $this->ajaxReturn(['status' => -1 , 'msg'=>'用户不存在','data'=>'']);
         }
         $order_type = input('order_type/s','0'); //订单类型，0犒劳自己，1：赠送单人，2：群抢
         $type = input('type/d',0);
-        $gift_type = input('gift_type/d',0); //0全部，1已送礼物-已领，2已送礼物-未领，3已收礼物
+        $gift_type = input('gift_type/d',1); //0全部，1已送礼物-已领，2已送礼物-未领，3已收礼物
         $page = input('page/d',1);
         $num = input('num/d',6);
         $parent_id = input('parent_id/d',0); //父单单号
