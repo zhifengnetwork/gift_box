@@ -703,7 +703,7 @@ class Order extends ApiBase
             $order['goods_total_amount']=$order['goods_total_amount']+($value['goods_num']*$value['goods_price']);
             $order['goods_res'][$key]['original_price'] = Db::table('goods')->where('goods_id',$value['goods_id'])->value('original_price');
             $order['goods_res'][$key]['img'] = Db::table('goods_img')->where('goods_id',$value['goods_id'])->where('main',1)->value('picture');
-            $order['goods_res'][$key]['img']=SITE_URL.Config('c_pub.img').$order['goods_res'][$key]['img'];
+            $order['goods_res'][$key]['img']=$order['goods_res'][$key]['img']?SITE_URL.$order['goods_res'][$key]['img']:'';
             $order['goods_res'][$key]['refund_apply_info'] = $RefundApply->where(['order_id'=>$order_id,'rec_id'=>$value['rec_id']])->find();
 
         }
