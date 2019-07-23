@@ -699,14 +699,17 @@ class Order extends ApiBase
         $order['goods_total_amount']=0;
         $order['goods_res'] = Db::table('order_goods')->field('rec_id,goods_id,goods_name,goods_num,spec_key_name,goods_price,taxes,discount')->where('order_id',$order['order_id'])->select();
         $RefundApply = M('Refund_apply');
+        $tmp_num = 0;//商品总数量
         foreach($order['goods_res'] as $key=>$value){
             $order['goods_total_amount']=$order['goods_total_amount']+($value['goods_num']*$value['goods_price']);
             $order['goods_res'][$key]['original_price'] = Db::table('goods')->where('goods_id',$value['goods_id'])->value('original_price');
             $order['goods_res'][$key]['img'] = Db::table('goods_img')->where('goods_id',$value['goods_id'])->where('main',1)->value('picture');
             $order['goods_res'][$key]['img']=$order['goods_res'][$key]['img']?SITE_URL.$order['goods_res'][$key]['img']:'';
             $order['goods_res'][$key]['refund_apply_info'] = $RefundApply->where(['order_id'=>$order_id,'rec_id'=>$value['rec_id']])->find();
+            $tmp_num += $value['goods_num'];
 
         }
+        $order['total_num'] = $tmp_num;
         $order['add_time']=date('Y-m-d H:i:s', $order['add_time']);
         $order['pay_time']=date('Y-m-d H:i:s', $order['pay_time']);
         $order['province'] = Db::table('region')->where('area_id',$order['province'])->value('area_name');
