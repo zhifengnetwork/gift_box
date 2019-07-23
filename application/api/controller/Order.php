@@ -746,17 +746,17 @@ class Order extends ApiBase
             if($status != 1) $this->ajaxReturn(['status' => -1 , 'msg'=>'参数错误！','data'=>'']);
             Db::startTrans();
             $res = Db::table('order')->update(['order_id'=>$order_id,'order_status'=>3]);
-
             $order_goods = Db::table('order_goods')->where('order_id',$order_id)->field('goods_id,sku_id,goods_num')->select();
-            foreach($order_goods as $key=>$value){
-                $goods = Db::table('goods')->where('goods_id',$value['goods_id'])->field('goods_attr,less_stock_type')->find();
-                if($goods['less_stock_type'] == 1){
-                    Db::table('goods_sku')->where('sku_id',$value['sku_id'])->setInc('inventory',$value['goods_num']);
-                    Db::table('goods')->where('goods_id',$value['goods_id'])->setInc('stock',$value['goods_num']);
-                }else if($goods['less_stock_type'] == 2){
-                    Db::table('goods_sku')->where('sku_id',$value['sku_id'])->setDec('frozen_stock',$value['goods_num']);
-                }
-            }
+            // foreach($order_goods as $key=>$value){
+            //     $goods = Db::table('goods')->where('goods_id',$value['goods_id'])->field('goods_attr,less_stock_type')->find();
+            //     if($goods['less_stock_type'] == 1){
+            //         Db::table('goods_sku')->where('sku_id',$value['sku_id'])->setInc('inventory',$value['goods_num']);
+            //         Db::table('goods')->where('goods_id',$value['goods_id'])->setInc('stock',$value['goods_num']);
+            //     }else if($goods['less_stock_type'] == 2){
+            //         Db::table('goods_sku')->where('sku_id',$value['sku_id'])->setDec('frozen_stock',$value['goods_num']);
+            //     }
+            // }
+
             if($res){
                 Db::commit();
             }else{
