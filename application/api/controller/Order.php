@@ -476,7 +476,7 @@ class Order extends ApiBase
         if(!$user_id){
             $this->ajaxReturn(['status' => -1 , 'msg'=>'用户不存在','data'=>'']);
         }
-        $pay_status = input('pay_status/d',0);//0全部1未付款2已付款
+        $pay_status = input('pay_status/d',2);//0全部1未付款2已付款
         $order_type = input('order_type/s','0'); //订单类型，0犒劳自己，1：赠送单人，2：群抢
         $type = input('type/d',0);
         $gift_type = input('gift_type/d',0); //0全部，1已送礼物-已领，2已送礼物-未领，3已收礼物
@@ -529,9 +529,9 @@ class Order extends ApiBase
             $pageParam['query']['order_status'] = 3;
         }
         if($pay_status == 1){
-            $where['pay_status'] = 0;
+            $where['o.pay_status'] = 0;
         }else if($pay_status == 2){
-            $where['pay_status'] = 1;
+            $where['o.pay_status'] = 1;
         }
         $parent_id && ($where['goj.parent_id'] = $parent_id);
         $where['o.user_id'] = $user_id;
