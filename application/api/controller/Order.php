@@ -476,7 +476,7 @@ class Order extends ApiBase
         if(!$user_id){
             $this->ajaxReturn(['status' => -1 , 'msg'=>'用户不存在','data'=>'']);
         }
-        $pay_status = input('pay_status/d',2);//0全部1未付款2已付款
+        $pay_status = input('pay_status/d',0);//0全部1未付款2已付款
         $order_type = input('order_type/s','0'); //订单类型，0犒劳自己，1：赠送单人，2：群抢
         $type = input('type/d',0);
         $gift_type = input('gift_type/d',0); //0全部，1已送礼物-已领，2已送礼物-未领，3已收礼物
@@ -626,6 +626,9 @@ class Order extends ApiBase
                 }
 
                 $value['goods_list'] = $OrderGoods->alias('og')->join('goods g','og.goods_id=g.goods_id','left')->join('goods_sku gs','og.sku_id=gs.sku_id','left')->join('refund_apply ra','og.rec_id=ra.rec_id','left')->field('og.rec_id,og.goods_id,og.goods_name,og.goods_num,og.goods_price,og.sku_id,og.spec_key_name,og.taxes,og.discount,gs.price,gs.img,g.picture,ra.status,ra.type')->where(['og.order_id'=>$value['order_id']])->select();
+                foreach($value['goods_list'] as $key=>$val){
+                    $value['goods_list'][$key]['img'] = $val['img']?SITE_URL.$val['img']:'';
+                }
             }
         }
         $this->ajaxReturn(['status' => 1 , 'msg'=>'获取成功','data'=>$order_list['data']]);
