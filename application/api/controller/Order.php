@@ -1535,5 +1535,46 @@ class Order extends ApiBase
             $this->ajaxReturn(['status' => -1 , 'msg'=>'操作失败','data'=>'']);
         }
     }
+
+    //礼品库犒劳自己
+    public function edit_order_type()
+    {
+        $user_id = $this->get_user_id();
+        $order_id = input('order_id',0);
+        $info = Db::name('order')->field('order_id,pay_status,order_type,gift_uid,order_status,overdue_time')->where('order_id',$order_id)->where('user_id',$user_id)->find();
+        if(!$info){
+            $this->ajaxReturn(['status' => -1 , 'msg'=>'订单不存在','data'=>'']);
+        }
+        if($info['pay_status'] != 1){
+            $this->ajaxReturn(['status' => -1 , 'msg'=>'该订单未支付','data'=>'']);
+        }
+        if($info['order_status'] != 0 && $info['order_status'] != 1){
+            $this->ajaxReturn(['status' => -1 , 'msg'=>'该订单已经有人领取','data'=>'']);
+        }
+        if($info['gift_uid']){
+            $this->ajaxReturn(['status' => -1 , 'msg'=>'该订单已经有人领取','data'=>'']);
+        }
+        if($info['order_type'] == 1){
+            $this->ajaxReturn(['status' => -1 , 'msg'=>'不是赠送订单不能犒劳自己','data'=>'']);
+        }
+        //判断有没有人参与
+        $gift_order_join = Db::name('gift_order_join')->where('order_id',$order_id)->find();
+        //判断有没有下级
+        if($gift_order_join){
+            $zi_gift = Db::name('gift_order_join')->where('parentid',$gift_order_join['id'])->find();
+            if($gift_order_join['addressid'] || $zi_gift['addressid']){
+                $this->ajaxReturn(['status' => -1 , 'msg'=>'该礼品已经有人领取','data'=>'']);
+            }
+            if(time() < $info['overdue_time']){
+                $this->ajaxReturn(['status' => -1 , 'msg'=>'活动未结束不能犒劳自己','data'=>'']);
+            }
+        }
+        $res = Db::name('order')->where('order_id',$order_id)->update(['order_type'=>0]);
+        if($res){
+            $this->ajaxReturn(['status' => 1 , 'msg'=>'操作成功','data'=>'']);
+        }else{
+            $this->ajaxReturn(['status' => -1 , 'msg'=>'操作失败','data'=>'']);
+        }
+    }
     
 }
