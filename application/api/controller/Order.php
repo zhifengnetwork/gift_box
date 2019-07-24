@@ -1545,6 +1545,7 @@ class Order extends ApiBase
     public function edit_order_type()
     {
         $user_id = $this->get_user_id();
+        // $user_id = 90;
         $order_id = input('order_id',0);
         $info = Db::name('order')->field('order_id,pay_status,order_type,gift_uid,order_status,overdue_time')->where('order_id',$order_id)->where('user_id',$user_id)->find();
         if(!$info){
@@ -1559,7 +1560,7 @@ class Order extends ApiBase
         if($info['gift_uid']){
             $this->ajaxReturn(['status' => -1 , 'msg'=>'该订单已经有人领取','data'=>'']);
         }
-        if($info['order_type'] == 1){
+        if($info['order_type'] == 0){
             $this->ajaxReturn(['status' => -1 , 'msg'=>'不是赠送订单不能犒劳自己','data'=>'']);
         }
         //判断有没有人参与
