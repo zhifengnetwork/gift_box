@@ -8,7 +8,7 @@
                 <div class="ibox-title">
                     <h5>{$meta_title}</h5>
                     <div class="pull-right" style="margin-top:-8px;">
-                            <a class="btn btn-info" href="{:url('box_video/add')}"><i class="fa fa-plus"></i> 添加视频</a>
+                            <a class="btn btn-info" href="{:url('box_video/add')}"><i class="fa fa-plus"></i> 添加相框</a>
                     </div>
                 </div>
                 <div class="ibox-content">
@@ -52,7 +52,7 @@
 {block name='script'}
 <script>
     function del(obj,music_id){
-        if(window.confirm('确认删除该视频吗？')){
+        if(window.confirm('确认删除该相框吗？')){
             $.post("{:url('del')}",{'music_id':music_id},function(data){
                 alert(data.msg);
                 if(data.status == 1){
