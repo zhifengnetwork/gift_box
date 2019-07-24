@@ -93,7 +93,7 @@ class Cart extends ApiBase
             $this->ajaxReturn(['status' => -1 , 'msg'=>'该商品不存在！','data'=>'']);
         }
 
-        if ($cart_number > ($sku_res['inventory']-$sku_res['frozen_stock'])) {
+        if ($cart_number > $sku_res['inventory']) {
             $this->ajaxReturn(['status' => -1 , 'msg'=>'该商品库存不足！','data'=>'']);
         }
        
