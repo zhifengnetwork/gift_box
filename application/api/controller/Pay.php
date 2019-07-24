@@ -400,13 +400,29 @@ class Pay extends ApiBase
 
         $data = file_get_contents("php://input");
         write_log($data);
+        $re = $this->xmlToArray($data);
 
+        if($re['result_code'] == 'SUCCESS'){
+            //支付成功
+            update_pay_status($re['out_trade_no'],$re);
+        }
 
+    
         $callback = new TestNotify();
         $config   = Config::get('wx_config');
         $ret      = Notify::run('wx_charge', $config, $callback);
         echo  $ret;
     }
+
+    
+    public function xmlToArray($xml)
+    {
+        $obj = simplexml_load_string($xml, 'SimpleXMLElement', LIBXML_NOCDATA);
+        $json = json_encode($obj);
+        $arr = json_decode($json, true);
+        return $arr;
+    }
+
 
     private function MakeSign($arr)
     {

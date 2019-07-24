@@ -1588,7 +1588,21 @@ class Order extends ApiBase
     public function after_sale()
     {
         $user_id = $this->get_user_id();
-        $list = Db::name('recharge_apply')->alias('ra')->join('order_goods og','ra.rec_id=og.rec_id','LEFT')->where('user_id',$user_id)->order('ra.addtime desc')->select();
+        $array = ['申请中','未同意','已同意','已完成','已撤销'];
+        $list = Db::name('refund_apply')
+            ->alias('ra')
+            ->join('order_goods og','ra.rec_id=og.rec_id','LEFT')
+            ->join('order o','ra.rec_id=og.rec_id','LEFT')
+            ->where('ra.user_id',$user_id)
+            ->field('ra.id,o.order_sn,og.goods_name,og.spec_key_name,og.goods_id,og.goods_price,og.goods_num,ra.status')
+            ->order('ra.addtime desc')
+            ->select();
+        foreach($list as $key=>$val){
+            $list[$key]['msg'] = $array[$val['status']];
+            $val['img'] = Db::name('goods_sku')->where('goods_id',$val['goods_id'])->value('img');
+            $list[$key]['img'] =  $val['img']?SITE_URL.$val['img']:'';
+        }
+        $this->ajaxReturn(['status' => 1 , 'msg'=>'获取数据成功','data'=>$list]);
     }
     
 }
