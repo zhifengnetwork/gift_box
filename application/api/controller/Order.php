@@ -768,7 +768,9 @@ class Order extends ApiBase
 
         $order = Db::table('order')->where('order_id',$order_id)->where('user_id',$user_id)->whereor('parent_id',$user_id)->field('order_id,order_sn,order_status,groupon_id,pay_status,shipping_status,order_amount')->find();
         if(!$order) $this->ajaxReturn(['status' => -1 , 'msg'=>'订单不存在！','data'=>'']);
-
+        if($order['shipping_status'] != 1 && $status == 3){
+            $this->ajaxReturn(['status' => -1 , 'msg'=>'订单未发货，不能确认收货','data'=>'']);
+        }
         if( $order['order_status'] == 1 && $order['pay_status'] == 0 && $order['shipping_status'] == 0 ){
             //取消订单
             if($status != 1) $this->ajaxReturn(['status' => -1 , 'msg'=>'参数错误！','data'=>'']);
@@ -1417,6 +1419,7 @@ class Order extends ApiBase
             $info['goods_num'] = $goods['goods_num'];
             $info['goods_price'] = $goods['goods_price'];
             $info['spec_key_name'] = $goods['spec_key_name'];
+            $info['img'] = $goods['img'];
         }
         
         $this->ajaxReturn(['status' => 1 , 'msg'=>'请求成功！','data'=>$info]);
