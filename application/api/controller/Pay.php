@@ -397,6 +397,11 @@ class Pay extends ApiBase
      * 微信支付回调
      */
     public function weixin_notify(){
+
+        $data = file_get_contents("php://input");
+        write_log($data);
+
+
         $callback = new TestNotify();
         $config   = Config::get('wx_config');
         $ret      = Notify::run('wx_charge', $config, $callback);

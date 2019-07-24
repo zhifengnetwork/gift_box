@@ -1583,5 +1583,12 @@ class Order extends ApiBase
             $this->ajaxReturn(['status' => -1 , 'msg'=>'操作失败','data'=>'']);
         }
     }
+
+    //退换/售后
+    public function after_sale()
+    {
+        $user_id = $this->get_user_id();
+        $list = Db::name('recharge_apply')->alias('ra')->join('order_goods og','ra.rec_id=og.rec_id','LEFT')->where('user_id',$user_id)->order('ra.addtime desc')->select();
+    }
     
 }
