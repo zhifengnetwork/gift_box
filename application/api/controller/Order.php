@@ -685,6 +685,11 @@ class Order extends ApiBase
             'o.user_money',//使用余额
             'o.integral',//使用积分
             'o.order_type',//订单类型，0犒劳自己，1：赠送单人，2：群抢
+            'o.invoice_title',//发票抬头
+            'o.taxpayer',//纳税人识别号
+            'o.invoice_desc',//发票内容，购物卡或者礼品卡
+            'o.invoice_mobile',//收票人手机
+            'o.invoice_email',//收票人邮箱
             
         );
         if($act == 1)$field = ['o.order_status,o.pay_status,o.shipping_status,o.pay_type'];
