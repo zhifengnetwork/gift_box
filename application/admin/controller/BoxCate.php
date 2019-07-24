@@ -99,6 +99,7 @@ class BoxCate extends Common
         }else{
             $info = getTableField('box_envelope');
         }
+        $this->assign('info',$info);
         return $this->fetch();
     }
 
