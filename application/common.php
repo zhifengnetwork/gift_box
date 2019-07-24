@@ -830,7 +830,7 @@ function update_pay_status($order_sn,$data=array())
             'transaction_id' => $data['transaction_id'],
             'order_status'   => 1,
             'pay_status'     => 1,
-            'pay_time'       => strtotime($data['pay_time']),
+            'pay_time'       => time(),
         ];
         Db::startTrans();
         Db::name('order')->where(['order_sn' => $order_sn])->update($update);
