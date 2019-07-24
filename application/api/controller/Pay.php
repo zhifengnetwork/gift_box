@@ -410,10 +410,10 @@ class Pay extends ApiBase
         }
       
 
-        $callback = new TestNotify();
-        $config   = Config::get('wx_config');
-        $ret      = Notify::run('wx_charge', $config, $callback);
-        echo  $ret;
+        // $callback = new TestNotify();
+        // $config   = Config::get('wx_config');
+        // $ret      = Notify::run('wx_charge', $config, $callback);
+        // echo  $ret;
     }
 
     
