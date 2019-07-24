@@ -400,6 +400,7 @@ class Pay extends ApiBase
 
         $data = file_get_contents("php://input");
           write_log($data);
+          write_log('5555');
         $re = $this->xmlToArray($data);
 
         if($re['result_code'] == 'SUCCESS'){
@@ -407,9 +408,7 @@ class Pay extends ApiBase
             update_pay_status($re['out_trade_no'],$re);
 
         }
-
       
-
 
         $callback = new TestNotify();
         $config   = Config::get('wx_config');
