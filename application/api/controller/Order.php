@@ -472,12 +472,13 @@ class Order extends ApiBase
     public function order_list()
     {
         $user_id = $this->get_user_id();
+        // $user_id = 90;
         if(!$user_id){
             $this->ajaxReturn(['status' => -1 , 'msg'=>'用户不存在','data'=>'']);
         }
         $order_type = input('order_type/s','0'); //订单类型，0犒劳自己，1：赠送单人，2：群抢
         $type = input('type/d',0);
-        $gift_type = input('gift_type/d',1); //0全部，1已送礼物-已领，2已送礼物-未领，3已收礼物
+        $gift_type = input('gift_type/d',0); //0全部，1已送礼物-已领，2已送礼物-未领，3已收礼物
         $page = input('page/d',1);
         $num = input('num/d',6);
         $parent_id = input('parent_id/d',0); //父单单号
@@ -526,7 +527,6 @@ class Order extends ApiBase
             $where = array('o.order_status' => 3); //已取消
             $pageParam['query']['order_status'] = 3;
         }
-
         $parent_id && ($where['goj.parent_id'] = $parent_id);
         $where['o.user_id'] = $user_id;
         $where['o.order_type'] = ['in',$order_type];
@@ -560,7 +560,6 @@ class Order extends ApiBase
             ->paginate($num,false,$pageParam)
             ->toArray();
         }
-
         if($gift_type != 3){ 
             $whereor = 'o1.order_type=2 and o1.user_id = '.$user_id;
             if($order_type != 0)    //非群抢，非犒劳自己时，不取母ID为0
@@ -575,7 +574,7 @@ class Order extends ApiBase
                         ->join('goods g','g.goods_id=og.goods_id','LEFT')
                         ->join('gift_order_join goj','o.order_id=goj.order_id','LEFT')
                         ->where($where)
-                        ->whereor($whereor)
+                        // ->whereor($whereor)
                         ->group('og.order_id')
                         ->order('o.order_id DESC')
                         ->field('o.order_id,o.add_time,o.order_sn,og.goods_name,gi.picture img,og.spec_key_name,og.goods_price,g.original_price,og.goods_num,o.order_status,o.pay_status,o.shipping_status,o.pay_type,o.parent_id,o.total_amount,o.shipping_price,o.order_type,o.lottery_time,o.giving_time,o.overdue_time,o.gift_uid')
@@ -627,6 +626,7 @@ class Order extends ApiBase
     public function order_detail()
     {
         $user_id = $this->get_user_id();
+        // $user_id = 88;
         if(!$user_id){
             $this->ajaxReturn(['status' => -1 , 'msg'=>'用户不存在','data'=>'']);
         }
