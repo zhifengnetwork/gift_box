@@ -131,6 +131,7 @@ class Order extends ApiBase
     public function immediatelyOrder()
     {
         $user_id = $this->get_user_id();
+        // $user_id = 88;
         if(!$user_id){
             $this->ajaxReturn(['status' => -1 , 'msg'=>'用户不存在','data'=>'']);
         }
@@ -764,7 +765,11 @@ class Order extends ApiBase
             //取消订单
             if($status != 1) $this->ajaxReturn(['status' => -1 , 'msg'=>'参数错误！','data'=>'']);
             Db::startTrans();
+            //取消主订单把副订单也取消了
             $res = Db::table('order')->update(['order_id'=>$order_id,'order_status'=>3]);
+            if($res){
+                Db::table('order')->where('parent_id',$order_id)->update(['order_status'=>3]);
+            }
             $order_goods = Db::table('order_goods')->where('order_id',$order_id)->field('goods_id,sku_id,goods_num')->select();
             // foreach($order_goods as $key=>$value){
             //     $goods = Db::table('goods')->where('goods_id',$value['goods_id'])->field('goods_attr,less_stock_type')->find();
