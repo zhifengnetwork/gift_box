@@ -562,10 +562,11 @@ class Order extends ApiBase
             ->join('order_goods og','og.order_id=o.order_id','LEFT')
             ->join('goods_img gi','gi.goods_id=og.goods_id and gi.main=1','LEFT')
             ->join('goods g','g.goods_id=og.goods_id','LEFT')
+            ->join('refund_apply r','o.order_id=r.order_id','LEFT')
             ->where($where)
             ->group('og.order_id')
             ->order('o.order_id DESC')
-            ->field('o.order_id,o.add_time,o.order_sn,og.goods_name,gi.picture img,og.spec_key_name,og.goods_price,g.original_price,og.goods_num,o.order_status,o.pay_status,o.shipping_status,pay_type,o.parent_id,o.total_amount,o.shipping_price,o.order_type,o.lottery_time,o.giving_time,o.overdue_time,o.gift_uid')
+            ->field('o.order_id,o.add_time,o.order_sn,og.goods_name,gi.picture img,og.spec_key_name,og.goods_price,g.original_price,og.goods_num,o.order_status,o.pay_status,o.shipping_status,pay_type,o.parent_id,o.total_amount,o.shipping_price,o.order_type,o.lottery_time,o.giving_time,o.overdue_time,o.gift_uid,r.id as refund_id')
             ->paginate($num,false,$pageParam)
             ->toArray();
         }
@@ -587,11 +588,12 @@ class Order extends ApiBase
                         ->join('goods_img gi','gi.goods_id=og.goods_id and gi.main=1','LEFT')
                         ->join('goods g','g.goods_id=og.goods_id','LEFT')
                         ->join('gift_order_join goj','o.order_id=goj.order_id','LEFT')
+                        ->join('refund_apply r','o.order_id=r.order_id','LEFT')
                         ->where($where)
                         // ->whereor($whereor)
                         ->group('og.order_id')
                         ->order('o.order_id DESC')
-                        ->field('o.order_id,o.add_time,o.order_sn,og.goods_name,gi.picture img,og.spec_key_name,og.goods_price,g.original_price,og.goods_num,o.order_status,o.pay_status,o.shipping_status,o.pay_type,o.parent_id,o.total_amount,o.shipping_price,o.order_type,o.lottery_time,o.giving_time,o.overdue_time,o.gift_uid')
+                        ->field('o.order_id,o.add_time,o.order_sn,og.goods_name,gi.picture img,og.spec_key_name,og.goods_price,g.original_price,og.goods_num,o.order_status,o.pay_status,o.shipping_status,o.pay_type,o.parent_id,o.total_amount,o.shipping_price,o.order_type,o.lottery_time,o.giving_time,o.overdue_time,o.gift_uid,r.id as refund_id')
                         ->paginate($num,false,$pageParam)
                         ->toArray(); 
         }
