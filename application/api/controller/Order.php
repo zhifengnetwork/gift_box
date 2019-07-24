@@ -148,12 +148,11 @@ class Order extends ApiBase
         if (empty($sku_res)) {
             $this->ajaxReturn(['status' => -1 , 'msg'=>'该商品不存在！','data'=>'']);
         }
-        if ($cart_number > ($sku_res['inventory']-$sku_res['frozen_stock'])) {
+        if ($cart_number > $sku_res['inventory']) {
             $this->ajaxReturn(['status' => -2 , 'msg'=>'该商品库存不足！','data'=>'']);
         }
-
         $goods = Db::table('goods')->where('goods_id',$sku_res['goods_id'])->field('single_number,most_buy_number,stock')->find();
-        if($cart_number>=$goods['stock']){
+        if($cart_number>$goods['stock']){
             $this->ajaxReturn(['status' => -2 , 'msg'=>'该商品库存不足！','data'=>'']);
         }
         $goods = Db::table('goods')->where('goods_id',$sku_res['goods_id'])->field('single_number,most_buy_number,taxes,discount')->find();
