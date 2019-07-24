@@ -818,7 +818,7 @@ function checkAttr($attrs,$attr_id,$spec_id){
     return false;
 }
 
-function update_pay_status($order_sn,$data=array())
+function update_pay_status($order_sn='',$data=array())
 {
     write_log("common line 823  ".json_encode($data).$order_sn);
 
@@ -832,7 +832,7 @@ function update_pay_status($order_sn,$data=array())
             'pay_status'     => 1,
             'pay_time'       => time(),
         ];
-        Db::startTrans();
+        // Db::startTrans();
         Db::name('order')->where(['order_sn' => $order_sn])->update($update);
         //修改子订单
         $order_id = Db::name('order')->where(['order_sn' => $order_sn])->value('order_id');
@@ -845,7 +845,6 @@ function update_pay_status($order_sn,$data=array())
             //付款减库存
             // if($goods['less_stock_type']==2){
                 Db::table('goods_sku')->where('sku_id',$value['sku_id'])->setDec('inventory',$value['goods_num']);
-                Db::table('goods_sku')->where('sku_id',$value['sku_id'])->setDec('frozen_stock',$value['goods_num']);
                 Db::table('goods')->where('goods_id',$value['goods_id'])->setDec('stock',$value['goods_num']);
             // }
         }
@@ -858,7 +857,7 @@ function update_pay_status($order_sn,$data=array())
             'transaction_id' => $data['transaction_id'],
             'status'   => 1,
             // 'pay_status'     => 1,
-            'pay_time'       => strtotime($data['pay_time']),
+            'pay_time'       => time(),
         ];
         //订单详情
         $order = Db::name('member_order')->field('id,status,order_sn,user_id,money')->where('order_sn',$order_sn)->find();
