@@ -231,8 +231,10 @@ class Order extends ApiBase
         if(!$invoice_desc && $invoice_mobile)
             $this->ajaxReturn(['status' => -1 , 'msg'=>'请填写发票内容！','data'=>'']);
         //7月22修改
-        if(!$order_type && !$addr_id)
-            $this->ajaxReturn(['status' => -1 , 'msg'=>'','data'=>'犒劳自己需要填写地址']);
+        if(!$order_type && !$addr_id){
+            $addr_id = Db::name('user_address')->where('user_id',$user_id)->where('is_default')->value('address_id');
+            // $this->ajaxReturn(['status' => -1 , 'msg'=>'','data'=>'犒劳自己需要填写地址']);
+        }
         $addrWhere = array();
         $addr_res = array();
         $addr_res['consignee'] = '';

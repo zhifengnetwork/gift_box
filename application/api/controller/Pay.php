@@ -238,6 +238,7 @@ class Pay extends ApiBase
      */
     public function order_wx_pay(){
         $order_id = input('order_id',0);
+        $address_id = input('address_id',0);//判断是否有地址
         $user_id      = $this->get_user_id();
         $order_info   = Db::name('order')->where(['order_id' => $order_id])->field('order_id,groupon_id,order_sn,order_amount,pay_type,pay_status,user_id')->find();//订单信息
         $goods   = Db::name('order_goods')->where(['order_id' => $order_id])->field('goods_name')->find();//商品信息
@@ -251,6 +252,21 @@ class Pay extends ApiBase
         }
         if($order_info['user_id'] != $user_id){
             $this->ajaxReturn(['status' => -2 , 'msg'=>'非本人订单','data'=>'']);
+        }
+        //如果传了地址就修改订单地址
+        if($address_id){
+            $addr_res = Db::name('user_address')->where(['user_id'=>$user_id,'address_id'=>$address_id])->find();
+            if(!$addr_res){
+                $this->ajaxReturn(['status' => -1 , 'msg'=>'地址不存在','data'=>'']);
+            }
+            $data['consignee'] = $addr_res['consignee'];       //收货人
+            $data['province'] = $addr_res['province'];
+            $data['city'] = $addr_res['city'];
+            $data['district'] = $addr_res['district'];
+            $data['twon'] = $addr_res['twon'];
+            $data['address'] = $addr_res['address'];
+            $data['mobile'] = $addr_res['mobile'];
+            Db::name('order')->where('order_id',$order_id)->update($data);
         }
 
         if($order_info['pay_status'] == 1){
