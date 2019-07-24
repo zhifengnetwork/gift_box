@@ -630,7 +630,7 @@ class Order extends ApiBase
         if(!$user_id){
             $this->ajaxReturn(['status' => -1 , 'msg'=>'用户不存在','data'=>'']);
         }
-        $order_id = input('order_id/d',0);
+        $order_id = input('order_id/d',2023);
         $where['o.user_id'] = $user_id;
         $where['o.order_id'] = $order_id;
 
@@ -720,7 +720,8 @@ class Order extends ApiBase
         $order['district'] = Db::table('region')->where('area_id',$order['district'])->value('area_name');
         $order['twon'] = Db::table('region')->where('area_id',$order['twon'])->value('area_name');
 
-        $order['address'] = $order['province'].$order['city'].$order['district'].$order['twon'].$order['address'];
+        $order['address'] = $order['province'].$order['city'].$order['district'];
+        // $order['address'] = $order['province'].$order['city'].$order['district'].$order['twon'].$order['address'];
         unset($order['province'],$order['city'],$order['district'],$order['twon']);
         $this->ajaxReturn(['status' => 1 , 'msg'=>'获取成功','data'=>$order]);
     }
