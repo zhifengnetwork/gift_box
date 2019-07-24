@@ -351,8 +351,8 @@ class Goods extends ApiBase
     public function get_sku_str($sku_id)
     {
         $sku_attr = Db::name('goods_sku')->where('sku_id', $sku_id)->value('sku_attr');
-        
-        $sku_attr = preg_replace("/(\w):/",  '"$1":' ,  $sku_attr);
+        //07-24 加了个*号
+        $sku_attr = preg_replace("/(\w*):/",  '"$1":' ,  $sku_attr);
         $sku_attr = json_decode($sku_attr, true);
         
         foreach($sku_attr as $key=>$value){
