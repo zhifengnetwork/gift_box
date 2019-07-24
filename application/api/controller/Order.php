@@ -527,11 +527,14 @@ class Order extends ApiBase
             $where = array('o.order_status' => 3); //已取消
             $pageParam['query']['order_status'] = 3;
         }
+        //支付状态
         if($pay_status == 1){
             $where['o.pay_status'] = 0;
         }else if($pay_status == 2){
             $where['o.pay_status'] = 1;
         }
+        //不取已取消的订单
+        $where['o.order_status'] = ['neq',3];
         $parent_id && ($where['goj.parent_id'] = $parent_id);
         $where['o.user_id'] = $user_id;
         $where['o.order_type'] = ['in',$order_type];
