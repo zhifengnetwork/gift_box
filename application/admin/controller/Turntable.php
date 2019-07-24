@@ -55,7 +55,7 @@ class Turntable extends Common
     // 俏皮话列表
     public function joke_list()
     {
-        $list = Db::table('turntable_joke')->paginate(10);
+        $list = Db::table('turntable_joke')->order('addtime desc')->paginate(10);
         $this->assign('list',$list);
         return $this->fetch();
     }
@@ -85,5 +85,62 @@ class Turntable extends Common
         }
         $this->assign('info',$info);
         return $this->fetch();
+    }
+
+    // 转盘内容列表
+    public function lucky_list()
+    {
+        $list = Db::table('turntable_lucky')->order('addtime desc')->paginate(10);
+        $this->assign('list',$list);
+        return $this->fetch();
+    }
+
+    //添加转盘内容
+    public function add_lucky()
+    {
+        if(Request::instance()->isPost()){
+            $id = input('post.id');
+            $post = input('post.');
+            if(!$post['content']){
+                $this->error('请输入内容');
+            }
+            if($id){
+                Db::name('turntable_lucky')->where('id',$id)->update($post);
+            }else{
+                $post['addtime'] = time();
+                Db::name('turntable_lucky')->insert($post);
+            }
+            $this->success('操作成功',url('lucky_list'));
+        }
+        $id = input('id');
+        if($id){
+            $info = Db::name('turntable_lucky')->where('id',$id)->find();
+        }else{
+            $info = getTableField('turntable_lucky');
+        }
+        $this->assign('info',$info);
+        return $this->fetch();
+    }
+
+    //删除俏皮话
+    public function del_joke()
+    {
+        $id =  input('id',0);
+        if(!$id){
+            $this->error('该俏皮话已删除');
+        }
+        Db::name('turntable_joke')->where('id',$id)->delete();
+        $this->success('删除成功');
+    }
+
+    //删除转盘内容
+    public function del_lucky()
+    {
+        $id =  input('id',0);
+        if(!$id){
+            $this->error('该俏皮话已删除');
+        }
+        Db::name('turntable_lucky')->where('id',$id)->delete();
+        $this->success('删除成功');
     }
 }

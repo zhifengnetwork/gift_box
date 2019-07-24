@@ -8,7 +8,7 @@
                 <div class="ibox-title">
                     <h5>{$meta_title}</h5>
                     <div class="pull-right" style="margin-top:-8px;">
-                            <a class="btn btn-info" href="{:url('add_joke')}"><i class="fa fa-plus"></i> 添加俏皮话</a>
+                            <a class="btn btn-info" href="{:url('add_lucky')}"><i class="fa fa-plus"></i> 添加内容</a>
                     </div>
                 </div>
                 <div class="ibox-content">
@@ -35,7 +35,7 @@
                                 <td>{if condition="$vo.status eq 1"}禁用{else/}启用{/if}</td>
                                 <td>{$vo.addtime|date='Y-m-d',###}</td>
                                 <td>
-                                    <a class="btn btn-default delete" href="{:url('add_joke',['id'=>$vo.id],false)}" >编辑 </i></a>
+                                    <a class="btn btn-default delete" href="{:url('add_lucky',['id'=>$vo.id],false)}" >编辑 </i></a>
                                     <a class="btn btn-default delete" onclick="del(this,{$vo.id})" href="javascript:;" >删除 </i></a>
                                 </td>
                             </tr>
@@ -54,8 +54,8 @@
 {block name='script'}
 <script>
     function del(obj,id){
-        if(window.confirm('确认删除该俏皮话吗？')){
-            $.post("{:url('del_joke')}",{'id':id},function(data){
+        if(window.confirm('确认删除吗？')){
+            $.post("{:url('del_lucky')}",{'id':id},function(data){
                 alert(data.msg);
                 if(data.status){
                     $(obj).parents('tr').remove();
