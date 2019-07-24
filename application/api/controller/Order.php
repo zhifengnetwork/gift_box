@@ -211,6 +211,7 @@ class Order extends ApiBase
     public function submitOrder()
     {
         $user_id = $this->get_user_id();
+        // $user_id = 88;
         if(!$user_id){
             $this->ajaxReturn(['status' => -1 , 'msg'=>'用户不存在','data'=>'']);
         }
@@ -232,7 +233,7 @@ class Order extends ApiBase
             $this->ajaxReturn(['status' => -1 , 'msg'=>'请填写发票内容！','data'=>'']);
         //7月22修改
         if(!$order_type && !$addr_id){
-            $addr_id = Db::name('user_address')->where('user_id',$user_id)->where('is_default')->value('address_id');
+            $addr_id = Db::name('user_address')->where('user_id',$user_id)->where('is_default',1)->value('address_id');
             // $this->ajaxReturn(['status' => -1 , 'msg'=>'','data'=>'犒劳自己需要填写地址']);
         }
         $addrWhere = array();
@@ -244,7 +245,6 @@ class Order extends ApiBase
         $addr_res['twon'] = '';
         $addr_res['address'] = '';
         $addr_res['mobile'] = '';
-        
         if($addr_id){
             $addrWhere['address_id'] = $addr_id;
             $addrWhere['user_id'] = $user_id;
