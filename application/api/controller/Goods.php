@@ -30,7 +30,7 @@ class Goods extends ApiBase
             $val['priture'] = $val['priture']?SITE_URL.$val['priture']:'';
             $new_list[$val['english']][] = $val;
         }
-        dump($new_list);
+        // dump($new_list);
         // $this->ajaxReturn(['status' => 1 , 'msg'=>'获取成功','data'=>$list]);
     }
 
