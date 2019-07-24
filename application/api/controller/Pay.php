@@ -397,20 +397,24 @@ class Pay extends ApiBase
      * 微信支付回调
      */
     public function weixin_notify(){
+
         $data = file_get_contents("php://input");
-        write_log($data);
+          write_log($data);
         $re = $this->xmlToArray($data);
 
         if($re['result_code'] == 'SUCCESS'){
             //支付成功
             update_pay_status($re['out_trade_no'],$re);
+
         }
 
-    
-        // $callback = new TestNotify();
-        // $config   = Config::get('wx_config');
-        // $ret      = Notify::run('wx_charge', $config, $callback);
-        // echo  $ret;
+      
+
+
+        $callback = new TestNotify();
+        $config   = Config::get('wx_config');
+        $ret      = Notify::run('wx_charge', $config, $callback);
+        echo  $ret;
     }
 
     
