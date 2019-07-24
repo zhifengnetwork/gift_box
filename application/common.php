@@ -818,7 +818,7 @@ function checkAttr($attrs,$attr_id,$spec_id){
     return false;
 }
 
-public function update_pay_status($order_sn,$data=array())
+function update_pay_status($order_sn,$data=array())
 {
     write_log("common line 823  ".json_encode($data));
 
