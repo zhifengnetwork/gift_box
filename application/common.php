@@ -820,7 +820,7 @@ function checkAttr($attrs,$attr_id,$spec_id){
 
 function update_pay_status($order_sn='',$data=array())
 {
-    write_log("common line 823  ".json_encode($data).$order_sn);
+    // write_log("common line 823  ".json_encode($data).$order_sn);
 
     // $channel = $data['channel'];
     if(substr($order_sn,0,1) != 'C'){

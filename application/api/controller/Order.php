@@ -1394,7 +1394,7 @@ class Order extends ApiBase
         
         $refund_apply_id = I('post.refund_apply_id/d',0); //退款ID
         $info = M('refund_apply')->field('id,order_id,rec_id,status,type,addtime,kuaidi_number,reason,msg,pic,kuaidi_com,tel,kuaidi_msg,kuaidi_pic,goods_num,price,integral,real_pay_price,prine_way')->where(['user_id'=>$user_id])->find($refund_apply_id);
-
+        
         if(!$info)
             $this->ajaxReturn(['status' => -1 , 'msg'=>'未查询到此次退款信息！','data'=>'']);
         if($info['pic']){
@@ -1409,7 +1409,16 @@ class Order extends ApiBase
                 $info['kuaidi_pic'][$k] = SITE_URL . $v;
             }
         }
-
+        if($info['rec_id']){
+            $goods = Db::name('order_goods')->field('sku_id,goods_id,goods_name,goods_num,goods_price,spec_key_name')->where('rec_id',$info['rec_id'])->find();
+            $goods['img'] = Db::name('goods_sku')->where('sku_id',$goods['sku_id'])->value('img');
+            $goods['img'] = $goods['img']?SITE_URL.$goods['img']:'';
+            $info['goods_name'] = $goods['goods_name'];
+            $info['goods_num'] = $goods['goods_num'];
+            $info['goods_price'] = $goods['goods_price'];
+            $info['spec_key_name'] = $goods['spec_key_name'];
+        }
+        
         $this->ajaxReturn(['status' => 1 , 'msg'=>'请求成功！','data'=>$info]);
     }
 
