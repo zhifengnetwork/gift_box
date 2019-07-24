@@ -228,7 +228,7 @@ class Index extends ApiBase
         $data['user_id'] = $user_id;
         $data['formid'] = $formid;
         $data['addtime'] = time();
-        $data['status'] = 1;
+        $data['status'] = 0;
         $res = Db::name('member_formid')->insert($data);
         if($res){
             $this->ajaxReturn(['status' => 1, 'msg' => '获取formid成功','data'=>[]]);
@@ -241,10 +241,10 @@ class Index extends ApiBase
     public function news_post()
     {
         $url = 'https://api.weixin.qq.com/cgi-bin/message/wxopen/template/send?access_token=ACCESS_TOKEN';
-        $data['touser'] = '';//openid
+        $data['touser'] = 'okEmL5bVhdqu3Ml2wO7DW5nFY6E0';//openid
         $data['template_id'] = 'O44yWTdQ-T5VQgOeDVBFRaGqu4oQ5F_N_OhjRUhQ8u8';//模板id，
-        $data['page'] = 'index';//跳转地址加参数
-        $data['form_id'] = '';//form_id
+        $data['page'] = '/pages/turntable/turntable?order_id=123456';//跳转地址加参数
+        $data['form_id'] = '441b7f5711544777ba33575810c3ac8d';//form_id
         //定义模板需要带的参数
         $data['data']['keyword1']['value'] = '您所期待的抽奖已经开始了，请尽快参与';
         $data['data']['keyword2']['value'] = '不要错过时间哦';

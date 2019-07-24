@@ -533,6 +533,7 @@ class Order extends ApiBase
             $where['o.pay_status'] = 0;
         }else if($pay_status == 2){
             $where['o.pay_status'] = 1;
+            $where['o.giving_time'] = 0;
         }
         //不取已取消的订单
         $where['o.order_status'] = ['neq',3];
