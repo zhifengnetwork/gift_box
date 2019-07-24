@@ -1372,7 +1372,7 @@ class Order extends ApiBase
         if($res){
             //查看当前订单商品是否已全部退货
             $rec_ids1 = $OrderGoods->where(['order_id'=>$order_id])->column('rec_id');
-            $rec_ids2 = $RefundApply->where(['order_id'=>$order_id,'rec_id'=>['in',$rec_ids],'status'=>['notin',[1,4]]])->column('rec_id');
+            $rec_ids2 = $RefundApply->where(['order_id'=>$order_id,'rec_id'=>['in',$rec_ids1],'status'=>['notin',[1,4]]])->column('rec_id');
             $arr = array_diff($rec_ids1,$rec_ids2);
 
             if(empty($arr))M('Order')->where(['order_id'=>$order_id])->update(['order_status'=>6]);
