@@ -112,6 +112,8 @@ class Order extends ApiBase
             }
             $all_num=$all_num+$value['goods_num'];
         }
+
+
         $balance = Db::name('member')->where(['id' => $user_id])->value('balance');
         $data['balance']=$balance;
         $data['order_amount']=$order_amount;
@@ -120,7 +122,7 @@ class Order extends ApiBase
         $data['order_num']=$all_num;
         $data['goods'] = array_values($data['goods']);
         $data['shipping_price'] = $shipping_price;  //该订单的物流费用
-
+       
 
         $this->ajaxReturn(['status' => 1 , 'msg'=>'成功','data'=>$data]);
     }
@@ -1607,26 +1609,59 @@ class Order extends ApiBase
     }
 
     //修改发票信息
+    /**
+     * 这里改成
+     * 每个人都有一个发票表
+     */
     public function edit_invoice()
     {
-        $order_id = input('order_id',1638);
         $user_id = $this->get_user_id();
-        $count = Db::name('order')->where('order_id',$order_id)->where('user_id',$user_id)->count();
-        if(!$count){
-            $this->ajaxReturn(['status' => -1 , 'msg'=>'该订单不是你的订单','data'=>'']);
-        }
+        // $count = Db::name('order')->where('order_id',$order_id)->where('user_id',$user_id)->count();
+        // if(!$count){
+        //     $this->ajaxReturn(['status' => -1 , 'msg'=>'该订单不是你的订单','data'=>'']);
+        // }
         $data['invoice_title'] = I('post.invoice_title/s',''); //发票抬头
         $data['taxpayer'] = I('post.taxpayer/s',''); //纳税人识别号
         $data['invoice_desc'] = I('post.invoice_desc/s',''); //发票内容
         $data['invoice_mobile'] = I('post.invoice_mobile/s',''); //收票人手机
         $data['invoice_email'] = I('post.invoice_email/s','');  //收票人邮箱
-        $res = Db::name('order')->where('order_id',$order_id)->update($data);
+
+
+        $res = Db::name('invoice')->where('user_id',$user_id)->find();
+        
         if($res){
-            $this->ajaxReturn(['status' => 1 , 'msg'=>'操作成功！','data'=>'']);
+            Db::name('invoice')->where('user_id',$user_id)->update($data);
         }else{
-            $this->ajaxReturn(['status' => 1 , 'msg'=>'数据未改变','data'=>'']);
+            $data['user_id'] = $user_id;
+            Db::name('invoice')->insert($data);
         }
+
+        $this->ajaxReturn(['status' => 1 , 'msg'=>'操作成功！','data'=>'']);
     }
+
+     //获取发票信息
+     public function get_invoice()
+     {
+        $user_id = $this->get_user_id();
+        
+        $res = Db::name('order')->where('user_id',$user_id)->find();
+        if(!$res){
+
+            $data['invoice_title'] = I('post.invoice_title/s',''); //发票抬头
+            $data['taxpayer'] = I('post.taxpayer/s',''); //纳税人识别号
+            $data['invoice_desc'] = I('post.invoice_desc/s',''); //发票内容
+            $data['invoice_mobile'] = I('post.invoice_mobile/s',''); //收票人手机
+            $data['invoice_email'] = I('post.invoice_email/s','');  //收票人邮箱
+            $data['user_id'] = $user_id;
+
+            Db::name('invoice')->insert($data);
+
+            $res = Db::name('order')->where('user_id',$user_id)->find();
+        } 
+
+        $this->ajaxReturn(['status' => 1 , 'msg'=>'数据未改变','data'=> $res]);
+         
+     }
 
     //礼品库犒劳自己操作
     public function edit_order_type()
