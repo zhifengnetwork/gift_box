@@ -211,7 +211,6 @@ class Order extends ApiBase
     public function submitOrder()
     {
         $user_id = $this->get_user_id();
-        // $user_id = 88;
         if(!$user_id){
             $this->ajaxReturn(['status' => -1 , 'msg'=>'用户不存在','data'=>'']);
         }
@@ -362,7 +361,6 @@ class Order extends ApiBase
             }
         }
         $coupon_price = 0;
-
         //$cart_ids = ltrim($cart_ids,',');
         
         Db::startTrans();
@@ -1521,7 +1519,7 @@ class Order extends ApiBase
 
         $res = M('refund_apply')->where(['id'=>$refund_apply_id])->update($data);
         if($res !== false){
-            $this->ajaxReturn(['status' => -1 , 'msg'=>'设置成功！','data'=>'']);      
+            $this->ajaxReturn(['status' => 1 , 'msg'=>'设置成功！','data'=>'']);      
         }else
         $this->ajaxReturn(['status' => -1 , 'msg'=>'设置失败！','data'=>'']);  
     }

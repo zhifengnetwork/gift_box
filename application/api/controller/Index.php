@@ -240,8 +240,14 @@ class Index extends ApiBase
         }
     }
 
-    //消息推送
-    public function news_post($appid,$form_id,$order_id)
+    /**
+     * 消息推送
+     * appid        
+     * form_id      member_form的id
+     * order_id     订单id
+     * overdue_time 活动结束时间
+     *  */
+    public function news_post($appid,$form_id,$order_id,$overdue_time)
     {
         $access_token = $this->getAccessToken();
         $url = 'https://api.weixin.qq.com/cgi-bin/message/wxopen/template/send?access_token='.$access_token;
@@ -252,7 +258,7 @@ class Index extends ApiBase
         //定义模板需要带的参数
         $data['data']['keyword1']['value'] = '您所期待的抽奖已经开始了，请尽快参与';
         $data['data']['keyword2']['value'] = '不要错过时间哦';
-        $data['data']['keyword3']['value'] = '2020年10月1日 20:00:00';
+        $data['data']['keyword3']['value'] = $overdue_time;
         $data = json_encode($data);
         $res = request_curl($url,$data);
         $result = json_decode($res, true);
