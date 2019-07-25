@@ -334,7 +334,7 @@ class Gift extends ApiBase
         if($info['join_status'] == 4)
             $this->ajaxReturn(['status' => -1 , 'msg'=>'此次参与已取消','data'=>'']);
         elseif($info['join_status'] != 0)
-            $this->ajaxReturn(['status' => -1 , 'msg'=>'不能再转动转盘','data'=>'']);
+            $this->ajaxReturn(['status' => -1 , 'msg'=>'您已经参与过此次抽奖','data'=>'']);
 
         //有人转动转盘，则给此次群抢全部设置开奖用户
         $giftorderid = M('Order')->where(['parent_id'=>$order_id,'gift_uid'=>0])->column('order_id'); //需开奖的订单
