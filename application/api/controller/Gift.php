@@ -52,9 +52,7 @@ class Gift extends ApiBase
         }elseif(($order['order_type'] == 2) && ($join_type != 2)){
             $this->ajaxReturn(['status' => -1 , 'msg'=>'参与类型不符合','data'=>'']);
         }elseif($order['giving_time'] > 0){
-            if($arr['exp'] < $order['giving_time']){
-                $this->ajaxReturn(['status' => -1 , 'msg'=>'该链接已失效','data'=>'']);
-            }elseif(($order['order_type'] == 1) && ($order['overdue_time'] < time()))
+            if(($order['order_type'] == 1) && ($order['overdue_time'] < time()))
                 $this->ajaxReturn(['status' => -1 , 'msg'=>'该订单赠送已过期啦！','data'=>'']);
             elseif(($order['order_type'] == 2) && ($order['lottery_time'] < time()))
                 $this->ajaxReturn(['status' => -1 , 'msg'=>'该群抢已经开奖啦！','data'=>'']);
