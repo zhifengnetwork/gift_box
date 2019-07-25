@@ -695,7 +695,7 @@ class Order extends ApiBase
         if(!$user_id){
             $this->ajaxReturn(['status' => -1 , 'msg'=>'用户不存在','data'=>'']);
         }
-        $order_id = input('order_id/d',2023);
+        $order_id = input('order_id/d',0);
         $where['o.user_id'] = $user_id;
         $where['o.order_id'] = $order_id;
 

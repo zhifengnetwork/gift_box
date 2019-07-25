@@ -350,14 +350,16 @@ class Gift extends ApiBase
                 }
                 //其他人设置成未中奖
                 $r = Db::name('gift_order_join')->where(['order_id'=>$order_id,'order_type'=>2,'status'=>0])->update(['status'=>2]);
-                if(false !== $r)
+                if(false !== $r){
+                    $res = Db::name('gift_order_join')->where(['id'=>$info['id']])->update(['join_status'=>6]);
                     Db::commit(); 
-                else
+                }else{
                     Db::rollback();
+                }
             }
         }
 
-        //$res = Db::name('gift_order_join')->where(['id'=>$info['id']])->update(['join_status'=>6]);
+        
 
         //再次查看是否中奖
         $info = Db::name('gift_order_join')->field('id,status,join_status')->where(['order_id'=>$order_id,'order_type'=>2,'user_id'=>$user_id])->find();
