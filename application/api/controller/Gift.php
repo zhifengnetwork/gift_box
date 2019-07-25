@@ -338,6 +338,7 @@ class Gift extends ApiBase
 
         //有人转动转盘，则给此次群抢全部设置开奖用户
         $giftorderid = M('Order')->where(['parent_id'=>$order_id,'gift_uid'=>0])->column('order_id'); //需开奖的订单
+        $res = 0;
         if($giftorderid){
             $joinuserid = Db::name('gift_order_join')->where(['order_id'=>$order_id,'order_type'=>2,'status'=>0,'join_status'=>0])->column('user_id'); //参与人数
             if($joinuserid){
@@ -362,6 +363,9 @@ class Gift extends ApiBase
         }
         //再次查看是否中奖
         $info = Db::name('gift_order_join')->field('id,status,join_status')->where(['order_id'=>$order_id,'order_type'=>2,'user_id'=>$user_id])->find();
+        if($res){
+            $info['join_status'] = 0;
+        }
         $this->ajaxReturn(['status' => 1 , 'msg'=>'请求成功','data'=>$info]);
         
     }
