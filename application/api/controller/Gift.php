@@ -361,10 +361,8 @@ class Gift extends ApiBase
 
         //再次查看是否中奖
         $info = Db::name('gift_order_join')->field('id,status,join_status')->where(['order_id'=>$order_id,'order_type'=>2,'user_id'=>$user_id])->find();
-        if(false !== $res){
-            $this->ajaxReturn(['status' => 1 , 'msg'=>'请求成功','data'=>$info]);
-        }else
-            $this->ajaxReturn(['status' => -1 , 'msg'=>'请求失败','data'=>'']);
+        $this->ajaxReturn(['status' => 1 , 'msg'=>'请求成功','data'=>$info]);
+        
     }
 
     /**
