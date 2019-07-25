@@ -71,11 +71,13 @@ class Gift extends ApiBase
 
         $data = [
             'order_id'      => $order_id,
-            'order_type'    => $joinid ? 3 : $order['order_type'],
+            'order_type'    => $order['order_type'],
+            // 'order_type'    => $joinid ? 3 : $order['order_type'],
             'addtime'       => time(),
             'status'        => ($join_type == 1) ? 1 : 0,
             'user_id'       => $user_id,
-            'parentid'      => $joinid,
+            'parentid'      => 0,
+            // 'parentid'      => $joinid,
         ];
 
         // 启动事务
