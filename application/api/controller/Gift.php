@@ -320,9 +320,8 @@ class Gift extends ApiBase
 
     //转动转盘
     public function turn_the_wheel(){
-        // $user_id = $this->get_user_id();
-        $user_id = 86;
-        $order_id = input('order_id',2519);
+        $user_id = $this->get_user_id();
+        $order_id = input('order_id',0);
         if(!$user_id){
             $this->ajaxReturn(['status' => -1 , 'msg'=>'用户不存在','data'=>'']);
         }
