@@ -470,6 +470,7 @@ class Order extends ApiBase
     public function order_list()
     {
         $user_id = $this->get_user_id();
+        // $user_id = 90;
         if(!$user_id){
             $this->ajaxReturn(['status' => -1 , 'msg'=>'用户不存在','data'=>'']);
         }
@@ -565,8 +566,8 @@ class Order extends ApiBase
             ->group('og.order_id')
             ->order('o.order_id DESC')
             ->field('o.order_id,o.add_time,o.order_sn,og.goods_name,gi.picture img,og.spec_key_name,og.goods_price,g.original_price,og.goods_num,o.order_status,o.pay_status,o.shipping_status,pay_type,o.parent_id,o.total_amount,o.shipping_price,o.order_type,o.lottery_time,o.giving_time,o.overdue_time,o.gift_uid,r.id as refund_id')
-            ->paginate($num,false,$pageParam)
-            ->toArray();
+            ->page($page,$num)
+            ->select();
         }
         if($gift_type != 3){ 
             $whereor = 'o1.order_type=2 and o1.user_id = '.$user_id;
@@ -599,6 +600,7 @@ class Order extends ApiBase
                         ->page($page,$num)
                         ->select(); 
         }
+        $order_list = $this->getOrderList($order_list);
         // dump(Db::table('gift_order_join')->_sql());exit;
         $this->ajaxReturn(['status' => 1 , 'msg'=>'获取成功','data'=>$order_list]);
     }
