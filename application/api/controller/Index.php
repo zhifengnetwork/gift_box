@@ -272,7 +272,7 @@ class Index extends ApiBase
         $expires_in = $jsoninfo["expires_in"];
         Db::name('config')->where('name','access_token')->update(['value'=>$access_token]);
         Db::name('config')->where('name','expires_in')->update(['value'=>$expires_in]);
-        return $access_token;
+        return $jsoninfo;
     }
 
 }

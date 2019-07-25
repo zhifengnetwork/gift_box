@@ -298,7 +298,7 @@ class Pay extends ApiBase
             $this->ajaxReturn(['status' => -1 , 'msg'=>'用户不存在','data'=>'']);
         }
         $openid = Db::name('member')->where('id',$user_id)->value('openid');
-        $data['money'] = (int)input('money',1);
+        $data['money'] = input('money',0);
         if($data['money'] == 0){
             $this->ajaxReturn(['status' => -1 , 'msg'=>'充值金额不能小于0.01','data'=>'']);
         }
