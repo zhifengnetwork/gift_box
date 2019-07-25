@@ -47,7 +47,7 @@ class Order extends ApiBase
                 $addr_res[$key]['address'] = $addr . $addr_res[$key]['address'];
                 unset($addr_res[$key]['p_cn'],$addr_res[$key]['c_cn'],$addr_res[$key]['d_cn'],$addr_res[$key]['s_cn']);
                 if(!$addr_list||$value['is_default']){
-                    $addr_list[]=$value;
+                    $addr_list=$value;
                 }
             }
         }
