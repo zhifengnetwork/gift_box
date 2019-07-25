@@ -578,11 +578,12 @@ class Order extends ApiBase
             }else if($pay_status == 2){
                 $whereor = $whereor.' and o1.pay_status=1 ';
             }
-            if($order_type != 0)    //非群抢，非犒劳自己时，不取母ID为0
+            if($order_type != 0){    //非群抢，非犒劳自己时，不取母ID为0
                 $whereor .= ' and o1.parent_id<>0';
-            else                    //非群抢，犒劳自己时，只取母ID=0
+            }else{
                 $whereor .= ' and o1.parent_id=0';
-
+                $where['o.pay_status'] = 1;
+            }
              $order_list = Db::table('order')->alias('o')
                         ->join('order o1','o.order_id=o1.order_id','LEFT')
                         ->join('order_goods og','og.order_id=o.order_id','LEFT')

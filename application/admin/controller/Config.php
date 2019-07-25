@@ -26,6 +26,23 @@ class Config extends Common
         $this->assign('info',$info);
         return $this->fetch();
     }
+
+    /**
+     * 退款设置
+     */
+    public function return_goods()
+    {
+        if( request()->isPost() ){
+            $post = input('post.');
+            foreach($post as $key=>$val){
+                Db::name('config')->where(['status'=>1,'module'=>2,'name'=>$key])->update(['value'=>$val]);
+            }
+            $this->success('保存成功');
+        }
+        $info = Db::name('config')->where('status',1)->where('module',2)->column('name,value');
+        $this->assign('info',$info);
+        return $this->fetch();
+    }
     
     /**
      * 基本配置
