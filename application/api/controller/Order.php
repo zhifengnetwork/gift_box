@@ -581,8 +581,11 @@ class Order extends ApiBase
             if($order_type != 0){    //非群抢，非犒劳自己时，不取母ID为0
                 $whereor .= ' and o1.parent_id<>0';
             }else{
+                //犒劳自己
                 $whereor .= ' and o1.parent_id=0';
-                $where['o.pay_status'] = 1;
+                if($pay_status == 0){
+                    $where['o.pay_status'] = 1;
+                }
             }
              $order_list = Db::table('order')->alias('o')
                         ->join('order o1','o.order_id=o1.order_id','LEFT')

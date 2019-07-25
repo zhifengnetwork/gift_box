@@ -225,54 +225,65 @@ class Index extends ApiBase
         if(!$formid){
             $this->ajaxReturn(['status' => -1, 'msg' => '获取formid失败','data'=>[]]);
         }
+        if(mb_strlen($formid,'UTF8') != 32){
+            $this->ajaxReturn(['status' => -1, 'msg' => 'formid格式错误','data'=>[]]);
+        }
         $data['user_id'] = $user_id;
         $data['formid'] = $formid;
         $data['addtime'] = time();
         $data['status'] = 0;
         $res = Db::name('member_formid')->insert($data);
         if($res){
-            $this->ajaxReturn(['status' => 1, 'msg' => '获取formid成功','data'=>[]]);
+            $this->ajaxReturn(['status' => 1, 'msg' => '保存formid成功','data'=>[]]);
         }else{
-            $this->ajaxReturn(['status' => -1, 'msg' => '获取formid失败','data'=>[]]);
+            $this->ajaxReturn(['status' => -1, 'msg' => '保存formid失败','data'=>[]]);
         }
     }
 
     //消息推送
-    public function news_post()
+    public function news_post($appid,$form_id,$order_id)
     {
         $access_token = $this->getAccessToken();
         $url = 'https://api.weixin.qq.com/cgi-bin/message/wxopen/template/send?access_token='.$access_token;
-        $data['touser'] = 'okEmL5bVhdqu3Ml2wO7DW5nFY6E0';//openid
+        $data['touser'] = $appid;//openid
         $data['template_id'] = 'O44yWTdQ-T5VQgOeDVBFRaGqu4oQ5F_N_OhjRUhQ8u8';//模板id，
-        $data['page'] = '/pages/turntable/turntable?order_id=123456';//跳转地址加参数
-        $data['form_id'] = '441b7f5711544777ba33575810c3ac8d';//form_id
-        $data['form_id'] = '441b7f5711544777ba33575810c3ac8d';//form_id
+        $data['page'] = '/pages/turntable/turntable?order_id='.$order_id;//跳转地址加参数
+        $data['form_id'] = $form_id;//form_id
         //定义模板需要带的参数
         $data['data']['keyword1']['value'] = '您所期待的抽奖已经开始了，请尽快参与';
         $data['data']['keyword2']['value'] = '不要错过时间哦';
         $data['data']['keyword3']['value'] = '2020年10月1日 20:00:00';
+        $data = json_encode($data);
         $res = request_curl($url,$data);
-        dump($res);
+        $result = json_decode($res, true);
+        if($result['errmsg'] == 'ok'){
+            return true;
+        }
     }
-
-    //获取token
+    //获取AccessToken
     public function getAccessToken(){
-        $appid = Db::name('config')->where(['name'=>'appid'])->value('value');
-        $appsecret = Db::name('config')->where(['name'=>'appsecret'])->value('value');
-        $url = "https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid={$appid}&secret={$appsecret}";
-        $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, $url);
-        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE); 
-        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, FALSE); 
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-        $output = curl_exec($ch);
-        curl_close($ch);
-        $jsoninfo = json_decode($output, true);
-        $access_token = $jsoninfo["access_token"];
-        $expires_in = $jsoninfo["expires_in"];
-        Db::name('config')->where('name','access_token')->update(['value'=>$access_token]);
-        Db::name('config')->where('name','expires_in')->update(['value'=>$expires_in]);
-        return $jsoninfo;
+        $access_token = Db::name('config')->where('name','access_token')->value('value');
+        $expires_in = Db::name('config')->where('name','expires_in')->value('value');
+        if(time() > $expires_in){
+            $appid = Db::name('config')->where(['name'=>'appid'])->value('value');
+            $appsecret = Db::name('config')->where(['name'=>'appsecret'])->value('value');
+            $url = "https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid={$appid}&secret={$appsecret}";
+            $ch = curl_init();
+            curl_setopt($ch, CURLOPT_URL, $url);
+            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE); 
+            curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, FALSE); 
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+            $output = curl_exec($ch);
+            curl_close($ch);
+            $jsoninfo = json_decode($output, true);
+            $access_token = $jsoninfo["access_token"];
+            $expires_in = time().$jsoninfo["expires_in"];
+            Db::name('config')->where('name','access_token')->update(['value'=>$access_token]);
+            Db::name('config')->where('name','expires_in')->update(['value'=>$expires_in]);
+            return $access_token;
+        }else{
+            return $access_token;
+        }
     }
 
 }
