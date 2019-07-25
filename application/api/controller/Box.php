@@ -147,6 +147,7 @@ class Box extends ApiBase
         }
         if($id){
             $info = Db::table('box')->field('id,music_id,photo_url,voice_url,content')->where('id',$id)->find();
+            $info['data']['music_name'] = Db::name('box_music')->where('id',$info['music_id'])->value('name');
         }else{
             $data['addtime'] = time();
             $data['cate_id'] = $cate_id;
@@ -160,6 +161,7 @@ class Box extends ApiBase
             $result['msg'] = '获取数据成功';
             $this->ajaxReturn($result);
         }
+        
         $info['data']['photo_url'] = $info['photo_url']?SITE_URL.$info['photo_url']:'';
         $info['data']['voice_url'] = $info['voice_url']?SITE_URL.$info['voice_url']:'';
         $info['data']['content'] = $info['content']?SITE_URL.$info['content']:'';
