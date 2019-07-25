@@ -204,7 +204,7 @@ class Goods extends ApiBase
                 $goodsRes['group_user'] = $group_list;
             }
         }
-        
+        $goodsRes['gift_notice'] = Db::name('config')->where(['name'=>'gift_notice','status'=>1])->value('value');
         $this->ajaxReturn(['status' => 1 , 'msg'=>'获取成功','data'=>$goodsRes]);
 
     }
@@ -754,6 +754,7 @@ class Goods extends ApiBase
         }
         $data['spec_goods_price'] = $spec_goods_price;
         $data['goods_spec_list'] = $goods_spec_list;
+        $data['gift_notice'] = $goodsRes['gift_notice'] = Db::name('config')->where(['name'=>'gift_notice','status'=>1])->value('value');
         $this->ajaxReturn(['status' => 1 , 'msg'=>'请求成功！','data'=>$data]);
     }
 
