@@ -1412,6 +1412,7 @@ class Order extends ApiBase
                 $info['kuaidi_pic'][$k] = SITE_URL . $v;
             }
         }
+        //商品
         if($info['rec_id']){
             $goods = Db::name('order_goods')->field('sku_id,goods_id,goods_name,goods_num,goods_price,spec_key_name')->where('rec_id',$info['rec_id'])->find();
             $goods['img'] = Db::name('goods_sku')->where('sku_id',$goods['sku_id'])->value('img');
@@ -1422,7 +1423,14 @@ class Order extends ApiBase
             $info['spec_key_name'] = $goods['spec_key_name'];
             $info['img'] = $goods['img'];
         }
-        
+        // 退货设置
+        $return  = Db::name('config')->where('status',1)->where('module',2)->column('name,value');
+        $info['return_name'] = $return['return_name'];
+        $info['return_phone'] = $return['return_phone'];
+        $info['return_address'] = $return['return_address'];
+        $info['return_desc'] = $return['return_desc'];
+        $info['return_remarks'] = $return['return_remarks'];
+        $info['return_remarks2'] = $return['return_remarks2'];
         $this->ajaxReturn(['status' => 1 , 'msg'=>'请求成功！','data'=>$info]);
     }
 
