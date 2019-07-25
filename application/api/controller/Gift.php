@@ -20,21 +20,21 @@ class Gift extends ApiBase
         $order_id = input('order_id/d',0);
         $join_type = input('join_type/d',0); //参与类型，1：领取，2：参与群抢
         
-        $pwdstr = input('pwdstr/s',''); //加密字符串
-        $arr = $this->decode_token($pwdstr);
-        if(!$arr || !$arr['exp'] || ($arr['exp'] < time())){
-            $this->ajaxReturn(['status' => -1 , 'msg'=>'该链接已失效','data'=>'']);
-        }else{  //分享回调接口，user_id化用为id-order_id
-            $resarr = explode('-',$arr['user_id']);
-            $joinid = 0;
-            if(count($resarr) == 2){
-                $joinid = $resarr[0];
-            }
-            if((count($resarr) == 1) && ($order_id != $resarr[0]))
-                $this->ajaxReturn(['status' => -1 , 'msg'=>'警告，参数错误！','data'=>'']);
-            elseif((count($resarr) == 2) && ($order_id != $resarr[1]))
-                $this->ajaxReturn(['status' => -1 , 'msg'=>'警告，参数错误！','data'=>'']);
-        }
+        // $pwdstr = input('pwdstr/s',''); //加密字符串
+        // $arr = $this->decode_token($pwdstr);
+        // if(!$arr || !$arr['exp'] || ($arr['exp'] < time())){
+        //     $this->ajaxReturn(['status' => -1 , 'msg'=>'该链接已失效','data'=>'']);
+        // }else{  //分享回调接口，user_id化用为id-order_id
+        //     $resarr = explode('-',$arr['user_id']);
+        //     $joinid = 0;
+        //     if(count($resarr) == 2){
+        //         $joinid = $resarr[0];
+        //     }
+        //     if((count($resarr) == 1) && ($order_id != $resarr[0]))
+        //         $this->ajaxReturn(['status' => -1 , 'msg'=>'警告，参数错误！','data'=>'']);
+        //     elseif((count($resarr) == 2) && ($order_id != $resarr[1]))
+        //         $this->ajaxReturn(['status' => -1 , 'msg'=>'警告，参数错误！','data'=>'']);
+        // }
 
         $order = Db::name('order')->field('order_status,shipping_status,pay_status,parent_id,order_type,lottery_time,giving_time,overdue_time,gift_uid')->where(['order_id'=>$order_id,'user_id'=>$user_id,'deleted'=>0])->find();
         if(!$order){

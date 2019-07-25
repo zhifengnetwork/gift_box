@@ -610,6 +610,7 @@ class Order extends ApiBase
         $page = input('page',1);
         $num = input('num',6);
         $user_id = $this->get_user_id();
+        // $user_id = 89;
         $pay_status = input('pay_status',2);//0全部1待付款2已付款
         $order_type = input('order_type/s','1,2'); //订单类型，0犒劳自己，1：赠送单人，2：群抢
         //支付状态
@@ -1626,7 +1627,7 @@ class Order extends ApiBase
         }
     }
 
-    //礼品库犒劳自己
+    //礼品库犒劳自己操作
     public function edit_order_type()
     {
         $user_id = $this->get_user_id();
@@ -1688,5 +1689,5 @@ class Order extends ApiBase
         }
         $this->ajaxReturn(['status' => 1 , 'msg'=>'获取数据成功','data'=>$list]);
     }
-    
+
 }

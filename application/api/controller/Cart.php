@@ -75,6 +75,7 @@ class Cart extends ApiBase
     public function addCart()
     {   
         $user_id = $this->get_user_id();
+        // $user_id = 86;
         if(!$user_id){
             $this->ajaxReturn(['status' => -1 , 'msg'=>'用户不存在','data'=>'']);
         }
@@ -103,7 +104,6 @@ class Cart extends ApiBase
         $cart_where['sku_id'] = $sku_id;
         //判断购物车有没有这件商品
         $cart_res = Db::table('cart')->where($cart_where)->field('id,goods_num')->find();
-
         if ($cart_res) {
             //购物车内该件商品总数量
             $new_number = $cart_res['goods_num'] + $cart_number;//加或减
