@@ -472,7 +472,6 @@ class Order extends ApiBase
     public function order_list()
     {
         $user_id = $this->get_user_id();
-        // $user_id = 90;
         if(!$user_id){
             $this->ajaxReturn(['status' => -1 , 'msg'=>'用户不存在','data'=>'']);
         }
@@ -599,49 +598,91 @@ class Order extends ApiBase
                         ->group('og.order_id')
                         ->order('o.order_id DESC')
                         ->field('o.order_id,o.add_time,o.order_sn,og.goods_name,gi.picture img,og.spec_key_name,og.goods_price,g.original_price,og.goods_num,o.order_status,o.pay_status,o.shipping_status,o.pay_type,o.parent_id,o.total_amount,o.shipping_price,o.order_type,o.lottery_time,o.giving_time,o.overdue_time,o.gift_uid,r.id as refund_id')
-                        ->paginate($num,false,$pageParam)
-                        ->toArray(); 
+                        ->page($page,$num)
+                        ->select(); 
         }
         // dump(Db::table('gift_order_join')->_sql());exit;
-        if($order_list['data']){
-            $OrderGoods = M('Order_goods');
-            foreach($order_list['data'] as $key=>&$value){
-                $value['add_time']=date('Y-m-d H:i:s',$value['add_time']);
-                $value['img']= $value['img'] ? (SITE_URL.$value['img']) : '';
-                $value['comment'] = 0;
-                if( $value['order_status'] == 1 && $value['pay_status'] == 0 && $value['shipping_status'] == 0 ){
-                    $value['status'] = 1;   //待付款
-                }else if( $value['order_status'] == 1 && $value['pay_status'] == 1 && $value['shipping_status'] == 0 ){
-                    $value['status'] = 2;   //待发货
-                }else if( $value['order_status'] == 1 && $value['pay_status'] == 1 && $value['shipping_status'] == 1 ){
-                    $value['status'] = 3;   //待收货
-                }else if( $value['order_status'] == 2 && $value['pay_status'] == 1 && $value['shipping_status'] == 3 ){
-                    $value['status'] = 4;   //待评价
-                    //是否评价
-                    $comment = Db::table('goods_comment')->where('order_id',$value['order_id'])->find();
-                    if($comment){
-                        $value['comment'] = 1;
-                    }else{
-                        $value['comment'] = 0;
-                    }
+        $this->ajaxReturn(['status' => 1 , 'msg'=>'获取成功','data'=>$order_list]);
+    }
 
-                }else if( $value['order_status'] == 3 && $value['pay_status'] == 0 && $value['shipping_status'] == 0 ){
-                    $value['status'] = 5;   //已取消
-                }else if( $value['order_status'] == 6 ){
-                    $value['status'] = 6;   //待退款
-                }else if( $value['order_status'] == 7 ){
-                    $value['status'] = 7;   //已退款
-                }else if( $value['order_status'] == 8 ){
-                    $value['status'] = 8;   //拒绝退款
-                }
+    //礼品库-待付款和已付款
+    public function gift_list(){
+        $page = input('page',1);
+        $num = input('num',6);
+        $user_id = $this->get_user_id();
+        $pay_status = input('pay_status',0);//0全部1待付款1已付款
+        $order_type = input('order_type/s','1,2'); //订单类型，0犒劳自己，1：赠送单人，2：群抢
+        //支付状态
+        if($pay_status == 1){
+            $where['o.pay_status'] = 0;
+        }else if($pay_status == 2){
+            $where['o.pay_status'] = 1;
+            $where['o.giving_time'] = 0;
+        }
+        $where['o.user_id'] = $user_id;
+        //不取已取消的订单
+        $where['o.order_status'] = ['neq',3];
+        $where['o.order_type'] = ['in',$order_type];//订单类型
+        $where['o.deleted'] = 0;
+        $order_list = Db::table('order')->alias('o')
+            ->join('order o1','o.order_id=o1.order_id','LEFT')
+            ->join('order_goods og','og.order_id=o.order_id','LEFT')
+            ->join('goods_img gi','gi.goods_id=og.goods_id and gi.main=1','LEFT')
+            ->join('goods g','g.goods_id=og.goods_id','LEFT')
+            ->join('gift_order_join goj','o.order_id=goj.order_id','LEFT')
+            ->join('refund_apply r','o.order_id=r.order_id','LEFT')
+            ->where($where)
+            ->group('og.order_id')
+            ->order('o.order_id DESC')
+            ->field('o.order_id,o.add_time,o.order_sn,og.goods_name,gi.picture img,og.spec_key_name,og.goods_price,g.original_price,og.goods_num,o.order_status,o.pay_status,o.shipping_status,o.pay_type,o.parent_id,o.total_amount,o.shipping_price,o.order_type,o.lottery_time,o.giving_time,o.overdue_time,o.gift_uid,r.id as refund_id')
+            ->page($page,$num)
+            ->select();
+        $order_list = $this->getOrderList($order_list);
+        $this->ajaxReturn(['status' => 1 , 'msg'=>'获取成功','data'=>$order_list]);
+    }
 
-                $value['goods_list'] = $OrderGoods->alias('og')->join('goods g','og.goods_id=g.goods_id','left')->join('goods_sku gs','og.sku_id=gs.sku_id','left')->join('refund_apply ra','og.rec_id=ra.rec_id','left')->field('og.rec_id,og.goods_id,og.goods_name,og.goods_num,og.goods_price,og.sku_id,og.spec_key_name,og.taxes,og.discount,gs.price,gs.img,g.picture,ra.status,ra.type')->where(['og.order_id'=>$value['order_id']])->select();
-                foreach($value['goods_list'] as $key=>$val){
-                    $value['goods_list'][$key]['img'] = $val['img']?SITE_URL.$val['img']:'';
+    //修饰订单
+    public function getOrderList($order_list = array())
+    {
+        if(!$order_list) {
+            return array();
+        }   
+        $OrderGoods = M('Order_goods');
+        foreach($order_list as $key=>&$value){
+            $value['add_time']=date('Y-m-d H:i:s',$value['add_time']);
+            $value['img']= $value['img'] ? (SITE_URL.$value['img']) : '';
+            $value['comment'] = 0;
+            if( $value['order_status'] == 1 && $value['pay_status'] == 0 && $value['shipping_status'] == 0 ){
+                $value['status'] = 1;   //待付款
+            }else if( $value['order_status'] == 1 && $value['pay_status'] == 1 && $value['shipping_status'] == 0 ){
+                $value['status'] = 2;   //待发货
+            }else if( $value['order_status'] == 1 && $value['pay_status'] == 1 && $value['shipping_status'] == 1 ){
+                $value['status'] = 3;   //待收货
+            }else if( $value['order_status'] == 2 && $value['pay_status'] == 1 && $value['shipping_status'] == 3 ){
+                $value['status'] = 4;   //待评价
+                //是否评价
+                $comment = Db::table('goods_comment')->where('order_id',$value['order_id'])->find();
+                if($comment){
+                    $value['comment'] = 1;
+                }else{
+                    $value['comment'] = 0;
                 }
+            }else if( $value['order_status'] == 3 && $value['pay_status'] == 0 && $value['shipping_status'] == 0 ){
+                $value['status'] = 5;   //已取消
+            }else if( $value['order_status'] == 6 ){
+                $value['status'] = 6;   //待退款
+            }else if( $value['order_status'] == 7 ){
+                $value['status'] = 7;   //已退款
+            }else if( $value['order_status'] == 8 ){
+                $value['status'] = 8;   //拒绝退款
+            }
+
+            $value['goods_list'] = $OrderGoods->alias('og')->join('goods g','og.goods_id=g.goods_id','left')->join('goods_sku gs','og.sku_id=gs.sku_id','left')->join('refund_apply ra','og.rec_id=ra.rec_id','left')->field('og.rec_id,og.goods_id,og.goods_name,og.goods_num,og.goods_price,og.sku_id,og.spec_key_name,og.taxes,og.discount,gs.price,gs.img,g.picture,ra.status,ra.type')->where(['og.order_id'=>$value['order_id']])->select();
+            foreach($value['goods_list'] as $key=>$val){
+                $value['goods_list'][$key]['img'] = $val['img']?SITE_URL.$val['img']:'';
             }
         }
-        $this->ajaxReturn(['status' => 1 , 'msg'=>'获取成功','data'=>$order_list['data']]);
+        return $order_list;
     }
 
     /**
