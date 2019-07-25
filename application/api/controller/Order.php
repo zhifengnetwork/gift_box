@@ -610,7 +610,7 @@ class Order extends ApiBase
         $page = input('page',1);
         $num = input('num',6);
         $user_id = $this->get_user_id();
-        $pay_status = input('pay_status',0);//0全部1待付款1已付款
+        $pay_status = input('pay_status',2);//0全部1待付款2已付款
         $order_type = input('order_type/s','1,2'); //订单类型，0犒劳自己，1：赠送单人，2：群抢
         //支付状态
         if($pay_status == 1){
@@ -1440,7 +1440,7 @@ class Order extends ApiBase
         }      
         
         $refund_apply_id = I('post.refund_apply_id/d',0); //退款ID
-        $info = M('refund_apply')->field('id,order_id,rec_id,status,type,addtime,kuaidi_number,reason,msg,pic,kuaidi_com,tel,kuaidi_msg,kuaidi_pic,goods_num,price,integral,real_pay_price,prine_way')->where(['user_id'=>$user_id])->find($refund_apply_id);
+        $info = M('refund_apply')->field('id,order_id,rec_id,status,type,addtime,kuaidi_number,reason,msg,pic,kuaidi_com,tel,kuaidi_msg,kuaidi_pic,goods_num,price,integral,real_pay_price,prine_way,on_time')->where(['user_id'=>$user_id])->find($refund_apply_id);
         
         if(!$info)
             $this->ajaxReturn(['status' => -1 , 'msg'=>'未查询到此次退款信息！','data'=>'']);
@@ -1475,8 +1475,27 @@ class Order extends ApiBase
         $info['return_desc'] = $return['return_desc'];
         $info['return_remarks'] = $return['return_remarks'];
         $info['return_remarks2'] = $return['return_remarks2'];
+        $info['on_time'] = $this->secToTime(time()-$info['on_time']);
         $this->ajaxReturn(['status' => 1 , 'msg'=>'请求成功！','data'=>$info]);
     }
+
+    /** 
+     *      把秒数转换为时分秒的格式 
+     *      @param Int $times 时间，单位 秒 
+     *      @return String 
+     */  
+    public function secToTime($times){  
+        $result = '0';  
+        if ($times>0) {  
+                $day = floor($times/86400);
+                $hour = floor($times/3600);  
+                $minute = floor(($times-3600 * $hour)/60);  
+                $second = floor((($times-3600 * $hour) - 60 * $minute) % 60);  
+                $result = $day.'天'.$hour.'时'.$minute.'分'.$second.'秒';  
+        }  
+        return $result;  
+    }  
+
 
     //设置退款快递 
     public function set_refund_kuaidi(){
