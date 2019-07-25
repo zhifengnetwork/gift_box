@@ -198,7 +198,8 @@ class Gift extends ApiBase
             $data['overdue_time'] = (time() + $end_time * 60);
             $pwdstr = $this->create_token($order_id,$order['overdue_time']);
         }if($order['order_type'] == 2){
-            $data['lottery_time'] = (time() + $start_time * 60);
+            $data['lottery_time'] = (time() + $end_time * 60);
+            $data['overdue_time'] = (time() + $start_time * 60);
             $pwdstr = $this->create_token($order_id,$order['overdue_time']);
         }
 
