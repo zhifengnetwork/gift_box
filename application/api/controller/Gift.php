@@ -388,6 +388,9 @@ class Gift extends ApiBase
                 ->where($where)
                 ->page($page,$num)
                 ->select();
+            foreach($order as $key=>$val){
+                $order[$key]['nickname'] = $val['nickname']?$val['nickname']:'';
+            }
         }else{
             $where['o.pay_status'] = 1;
             // $where['o.parent_id'] = 0;
