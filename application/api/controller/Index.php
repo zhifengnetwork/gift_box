@@ -240,10 +240,12 @@ class Index extends ApiBase
     //消息推送
     public function news_post()
     {
-        $url = 'https://api.weixin.qq.com/cgi-bin/message/wxopen/template/send?access_token=ACCESS_TOKEN';
+        $access_token = $this->getAccessToken();
+        $url = 'https://api.weixin.qq.com/cgi-bin/message/wxopen/template/send?access_token='.$access_token;
         $data['touser'] = 'okEmL5bVhdqu3Ml2wO7DW5nFY6E0';//openid
         $data['template_id'] = 'O44yWTdQ-T5VQgOeDVBFRaGqu4oQ5F_N_OhjRUhQ8u8';//模板id，
         $data['page'] = '/pages/turntable/turntable?order_id=123456';//跳转地址加参数
+        $data['form_id'] = '441b7f5711544777ba33575810c3ac8d';//form_id
         $data['form_id'] = '441b7f5711544777ba33575810c3ac8d';//form_id
         //定义模板需要带的参数
         $data['data']['keyword1']['value'] = '您所期待的抽奖已经开始了，请尽快参与';
@@ -251,6 +253,26 @@ class Index extends ApiBase
         $data['data']['keyword3']['value'] = '2020年10月1日 20:00:00';
         $res = request_curl($url,$data);
         dump($res);
+    }
+
+    //获取token
+    public function getAccessToken(){
+        $appid = Db::name('config')->where(['name'=>'appid'])->value('value');
+        $appsecret = Db::name('config')->where(['name'=>'appsecret'])->value('value');
+        $url = "https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid={$appid}&secret={$appsecret}";
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE); 
+        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, FALSE); 
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        $output = curl_exec($ch);
+        curl_close($ch);
+        $jsoninfo = json_decode($output, true);
+        $access_token = $jsoninfo["access_token"];
+        $expires_in = $jsoninfo["expires_in"];
+        Db::name('config')->where('name','access_token')->update(['value'=>$access_token]);
+        Db::name('config')->where('name','expires_in')->update(['value'=>$expires_in]);
+        return $access_token;
     }
 
 }

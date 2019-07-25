@@ -240,6 +240,7 @@ class Pay extends ApiBase
         $order_id = input('order_id',0);
         $address_id = input('address_id',0);//判断是否有地址
         $user_id      = $this->get_user_id();
+        $user_note = input('user_note');//备注
         $order_info   = Db::name('order')->where(['order_id' => $order_id])->field('order_id,groupon_id,order_sn,order_amount,pay_type,pay_status,user_id')->find();//订单信息
         $goods   = Db::name('order_goods')->where(['order_id' => $order_id])->field('goods_name')->find();//商品信息
         if(!$user_id){
@@ -266,6 +267,7 @@ class Pay extends ApiBase
             $data['twon'] = $addr_res['twon'];
             $data['address'] = $addr_res['address'];
             $data['mobile'] = $addr_res['mobile'];
+            $data['user_note'] = $addr_res['user_note'];//备注
             Db::name('order')->where('order_id',$order_id)->update($data);
         }
 
