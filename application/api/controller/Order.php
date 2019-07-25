@@ -1644,7 +1644,7 @@ class Order extends ApiBase
      {
         $user_id = $this->get_user_id();
         
-        $res = Db::name('order')->where('user_id',$user_id)->find();
+        $res = Db::name('invoice')->where('user_id',$user_id)->find();
         if(!$res){
 
             $data['invoice_title'] = I('post.invoice_title/s',''); //发票抬头
@@ -1656,10 +1656,10 @@ class Order extends ApiBase
 
             Db::name('invoice')->insert($data);
 
-            $res = Db::name('order')->where('user_id',$user_id)->find();
+            $res = Db::name('invoice')->where('user_id',$user_id)->find();
         } 
 
-        $this->ajaxReturn(['status' => 1 , 'msg'=>'数据未改变','data'=> $res]);
+        $this->ajaxReturn(['status' => 1 , 'msg'=>'获取成功','data'=> $res]);
          
      }
 
