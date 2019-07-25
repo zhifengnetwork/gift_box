@@ -1551,7 +1551,7 @@ class Order extends ApiBase
         if($res){
             $this->ajaxReturn(['status' => 1 , 'msg'=>'操作成功！','data'=>'']);
         }else{
-            $this->ajaxReturn(['status' => -1 , 'msg'=>'操作失败','data'=>'']);
+            $this->ajaxReturn(['status' => 1 , 'msg'=>'数据未改变','data'=>'']);
         }
     }
 
