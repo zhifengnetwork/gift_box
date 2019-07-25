@@ -66,7 +66,7 @@ class Gift extends ApiBase
 
         $gojnum = Db::name('gift_order_join')->where(['order_id'=>$order_id,'user_id'=>$user_id,'join_status'=>['neq',4]])->count();
         if($gojnum){
-            $this->ajaxReturn(['status' => -1 , 'msg'=>'您已参与过啦！','data'=>'']);
+            $this->ajaxReturn(['status' => 1 , 'msg'=>'您已参与过啦！','data'=>['type'=>1]]);
         }
 
         $data = [
@@ -95,7 +95,7 @@ class Gift extends ApiBase
         }else{
             // 回滚事务
             if($join_type == 1)Db::rollback();
-            $this->ajaxReturn(['status' => 1 , 'msg'=>'请求失败！','data'=>'']); 
+            $this->ajaxReturn(['status' => -1 , 'msg'=>'请求失败！','data'=>'']); 
         }
     }
 
