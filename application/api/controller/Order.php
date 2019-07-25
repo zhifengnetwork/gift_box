@@ -1636,7 +1636,7 @@ class Order extends ApiBase
             Db::name('invoice')->insert($data);
         }
 
-        $this->ajaxReturn(['status' => 1 , 'msg'=>'操作成功！','data'=>'']);
+        $this->ajaxReturn(['status' => 1 , 'msg'=>'操作成功！','data'=>$res['id']]);
     }
 
      //获取发票信息
