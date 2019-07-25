@@ -140,10 +140,21 @@ class Box extends ApiBase
         $advice = input('advice',0);
         $data['user_id'] = $this->get_user_id();
         $data['advice'] = $advice;//赠言
+        $user_id = $this->get_user_id();
         if(!$id && !$cate_id){
             $result['status'] = -1;
             $result['msg'] = '创建盒子需要传类别id';
             $this->ajaxReturn($result);
+        }
+        if(!$id){
+            $last_box_id = Db::name('box')->where(['user_id'=>$user_id])->order('addtime desc')->limit(1)->value('id');
+            if($last_box_id){
+            $last_box_id = Db::name('box')->where(['user_id'=>$user_id])->order('addtime desc')->limit(1)->value('id');
+                $count = Db::name('order')->where(['box_id'=>$last_box_id,'user_id'=>$user_id])->count();
+                if(!$count){
+                    $id = $last_box_id;
+                }
+            }
         }
         if($id){
             $info = Db::table('box')->field('id,music_id,photo_url,voice_url,content')->where('id',$id)->find();
