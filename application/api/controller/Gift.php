@@ -10,6 +10,13 @@ use think\Request;
 
 class Gift extends ApiBase
 {
+
+	public function create_pwdstr(){
+		$order_id = I('get.order_id/d',0);
+		$overdue_time = M('Order')->where(['order_id'=>$order_id])->value('overdue_time');
+		echo $this->create_token($order_id,$overdue_time);
+	}
+
     //领取/参与
     public function receive_join(){
         $user_id = $this->get_user_id();
