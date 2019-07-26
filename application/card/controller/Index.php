@@ -10,9 +10,15 @@ class Index extends Controller
 {
     public function index()
     {
-        $card_id = input('card_id',0);
+        $card_id = input('card_id');
+        if(!$card_id){
+            echo "<h1>card_id不存在</h1>";
+            exit;
+        }
         $info = Db::name('box')->where('id',$card_id)->find();
         if(!$info){
+            echo "<h1>礼盒不存在</h1>";
+            exit;
             $info['cate_url'] = '';
             $info['music_url'] = '';
             $info['video_url'] = '';
