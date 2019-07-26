@@ -72,10 +72,10 @@ class Team extends Controller{
             }
 
             //开奖推送
-            // $join_list = $GiftOrderJoin->where(['order_id'=>$v['order_id'],'order_type'=>2,'join_status'=>['neq',4]])->column('user_id');
-            // if($join_list){
-            //     $appid = Db::name('member')->where('id','in',$join_list)->column('id,');
-            // }
+            $join_list = $GiftOrderJoin->where(['order_id'=>$v['order_id'],'order_type'=>2,'join_status'=>['neq',4]])->column('user_id');
+            if($join_list){
+                $appid = Db::name('member')->where('id','in',$join_list)->column('id,openid');
+            }
         } 
     }    
 
@@ -116,16 +116,15 @@ class Team extends Controller{
 
     /**
      * 消息推送
-     * appid        
      * form_id      member_form的id
      * order_id     订单id
      * overdue_time 活动结束时间
      *  */
-    public function news_post($appid,$form_id,$order_id,$overdue_time)
+    public function news_post($openid,$form_id,$order_id,$overdue_time)
     {
         $access_token = $this->getAccessToken();
         $url = 'https://api.weixin.qq.com/cgi-bin/message/wxopen/template/send?access_token='.$access_token;
-        $data['touser'] = $appid;//openid
+        $data['touser'] = $openid;//openid
         $template_id = Db::name('config')->where('name','template_id')->value('value');
         $data['template_id'] = $template_id;//模板id，
         $data['page'] = '/pages/turntable/turntable?order_id='.$order_id;//跳转地址加参数
