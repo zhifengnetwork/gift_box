@@ -147,21 +147,23 @@ class Gift extends ApiBase
         }elseif($order['order_type'] == 0){
             $this->ajaxReturn(['status' => -1 , 'msg'=>'该订单不是赠送订单','data'=>'']);
         }elseif($order['giving_time'] > 0){
-            if(($order['order_type'] == 1) && ($order['overdue_time'] < time()))
+            //因无法监控微信分享是否成功，故取消以下判断
+            /* if(($order['order_type'] == 1) && ($order['overdue_time'] < time()))
                 $this->ajaxReturn(['status' => -1 , 'msg'=>'该订单已赠送过啦！','data'=>'']);
             elseif($order['order_type'] == 2)
                 $this->ajaxReturn(['status' => -1 , 'msg'=>'该订单已赠送过啦！','data'=>'']);
             elseif($order['order_type'] == 2)
                 $this->ajaxReturn(['status' => -1 , 'msg'=>'该订单已赠送过啦！','data'=>'']);
-            elseif($order['gift_uid'])
+            else */if($order['gift_uid'])
                 $this->ajaxReturn(['status' => -1 , 'msg'=>'该订单已有领取人啦！','data'=>'']);
         }elseif(($order['order_type'] == 2) && in_array($act,[2,3])){
             if($order['giving_time'] > 0){
-                if($order['lottery_time'] < time())
+                //因无法监控微信分享是否成功，故取消以下判断
+                /* if($order['lottery_time'] < time())
                     $this->ajaxReturn(['status' => -1 , 'msg'=>'该订单已赠送过啦！','data'=>'']);
                 elseif($order['overdue_time'] < time())
                     $this->ajaxReturn(['status' => -1 , 'msg'=>'该订单已赠送过啦！','data'=>'']);
-                elseif($order['gift_uid'])
+                else */if($order['gift_uid'])
                     $this->ajaxReturn(['status' => -1 , 'msg'=>'该订单已有领取人啦！','data'=>'']);
             }elseif(!$order['parent_id'])
                 $this->ajaxReturn(['status' => -1 , 'msg'=>'群抢母订单不能转赠！','data'=>'']);
@@ -331,10 +333,20 @@ class Gift extends ApiBase
         }
 
         $info = Db::name('gift_order_join')->field('id,status,join_status')->where(['order_id'=>$order_id,'order_type'=>2,'user_id'=>$user_id])->find();
-        if($info['join_status'] == 4)
+        if(!$info)
+            $this->ajaxReturn(['status' => -1 , 'msg'=>'您没有参与此次群抢','data'=>'']);
+        elseif($info['join_status'] == 4)
             $this->ajaxReturn(['status' => -1 , 'msg'=>'此次参与已取消','data'=>'']);
         elseif($info['join_status'] != 0)
             $this->ajaxReturn(['status' => -1 , 'msg'=>'您已经参与过此次抽奖','data'=>'']);
+
+        $order = Db::name('order')->field('order_status,shipping_status,pay_status,parent_id,order_type,lottery_time,giving_time,overdue_time,gift_uid')->where(['order_id'=>$order_id])->find();
+        if(!$order['lottery_time']){
+            $this->ajaxReturn(['status' => -1 , 'msg'=>'该订单已不能抽奖！','data'=>'']);
+        }elseif(!$order['lottery_time'] < time())
+            $this->ajaxReturn(['status' => -1 , 'msg'=>'该订单已不能抽奖！','data'=>'']);
+        elseif(!$order['overdue_time'] < time())
+            $this->ajaxReturn(['status' => -1 , 'msg'=>'该订单已不能抽奖！','data'=>'']);            
 
         //有人转动转盘，则给此次群抢全部设置开奖用户
         $giftorderid = M('Order')->where(['parent_id'=>$order_id,'gift_uid'=>0])->column('order_id'); //需开奖的订单
