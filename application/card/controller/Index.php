@@ -49,6 +49,10 @@ class Index extends Controller
         $info['photo_url'] = $info['photo_url']?SITE_URL.$info['photo_url']:'';//照片
         $info['voice_url'] = $info['voice_url']?SITE_URL.$info['voice_url']:'';//录音
         $this->assign('info',$info);
+
+        $url = "{url: '/pages/commodity/detalis/payment/award/award?id=459'}";
+        $this->assign('url',$url);
+
         return $this->fetch();
     }
 }
