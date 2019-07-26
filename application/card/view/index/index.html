@@ -701,6 +701,16 @@ body,html{
 100% {opacity: 1;top: 0%;transform: scale(1);}
 }
 
+.bos3_a{
+    position: fixed;
+    bottom: 10%;
+    right: 10%;
+    text-decoration:none;
+    z-index: 1001;
+    font-family: Helvetica, 'Hiragino Sans GB', 'Microsoft Yahei', '微软雅黑', Arial, sans-serif;
+}
+
+
 
 /* 音乐播放 */
 .audio{
@@ -942,6 +952,7 @@ body,html{
             <div class="bhuabox xiaobox">
             <image class="bhua" src="/image/bhua.png" />
         </div>
+        <a onclick="test()" class="bos3_a" >直接跳過></a>
     </div>
     <!-- 播放音乐 -->
     {if condition="$info.music_url"}
@@ -958,8 +969,19 @@ body,html{
 </body>
 </html>
 <script src="/static/inspinia/js/jquery-2.1.1.js"></script>
+<script type="text/javascript" src="https://res.wx.qq.com/open/js/jweixin-1.3.2.js"></script>
 <!-- <script src="https://res.wx.qq.com/open/js/jweixin-1.0.0.js"></script>  -->
 <script>
+
+function test(){
+    wx.miniProgram.reLaunch({url: '/pages/commodity/detalis/payment/award/award'})  
+    console.log(666)
+}
+
+
+
+
+
 var x = document.getElementById("media"); 
 $('#audio_btn').on('click', function() {
     $(this).toggleClass("rotate-pause");
