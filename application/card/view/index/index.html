@@ -978,49 +978,23 @@ function test(){
     
     if(isWeiXin()){
 
-        $.ajax({
-			type : "POST",
-			url:"/Card/Index/ajaxGetWxConfig?t="+Math.random(),
-			data:{'askUrl':encodeURIComponent(location.href.split('#')[0])},		
-			dataType:'JSON',
-			success: function(res)
-			{
-                console.log(res)
 
-				//微信配置
-				wx.config({
-				    debug: false, 
-				    appId: res.appId,
-				    timestamp: res.timestamp, 
-				    nonceStr: res.nonceStr, 
-				    signature: res.signature,
-				    jsApiList: ['invokeMiniProgramAPI'] // 功能列表，我们要使用JS-SDK的什么功能
-				});
+        wx.miniProgram.navigateTo({
+            url:"/pages/commodity/detalis/give/GetTheGift/GetTheGift?id={$card_id}",
+            success: function(){
+                console.log('success')
+            },
+            fail: function(){
+                console.log('fail');
+            },
+            complete:function(){
+                console.log('complete');
+            }
 
-                // wx.miniProgram.reLaunch("{$url}")
-                wx.miniProgram.navigateTo("{$url}");
-                // wx.navigateToMiniProgram({
-                //     appId: res.appId,
-                //     path: '/pages/commodity/detalis/payment/award/award?id=459',
-                //     extraData: {
-                //         foo: 'bar'
-                //     },
-                //     envVersion: 'develop',
-                //     success(res) {
-                //         alert('okok')
-                //         // 打开成功
-                //     }
-                // })
+        });
+        
 
-                alert(66600000000000000)
 
-			},
-			error:function(res){
-				console.log("wx.config error:");
-				console.log(res);
-				return false;
-			}
-		}); 
         
     }else{
         alert('请在微信打开')

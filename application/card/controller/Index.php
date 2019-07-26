@@ -57,8 +57,10 @@ class Index extends Controller
         $info['voice_url'] = $info['voice_url']?SITE_URL.$info['voice_url']:'';//录音
         $this->assign('info',$info);
 
-        $url = "{url: '/pages/commodity/detalis/payment/award/award?id=459'}";
-        $this->assign('url',$url);
+        // $url = "{url: '/pages/commodity/detalis/payment/award/award?id=459'}";
+        // $this->assign('url',$url);
+
+        $this->assign('card_id', $card_id);
 
         return $this->fetch();
     }
