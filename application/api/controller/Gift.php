@@ -144,7 +144,7 @@ class Gift extends ApiBase
         $where = ['order_id'=>$order_id,'deleted'=>0];
         if(!in_array($act,[2,3]))$where['user_id'] = $user_id;
 
-        $order = Db::name('order')->field('order_id,order_status,shipping_status,pay_status,parent_id,order_type,lottery_time,giving_time,overdue_time,gift_uid')->where($where)->find();
+        $order = Db::name('order')->field('order_id,order_status,shipping_status,pay_status,parent_id,order_type,lottery_time,giving_time,overdue_time,gift_uid,box_id')->where($where)->find();
         
         if(!$order){
             $this->ajaxReturn(['status' => -1 , 'msg'=>'订单不存在','data'=>'']);
@@ -248,7 +248,7 @@ class Gift extends ApiBase
             $address['twon'] = Db::name('region')->where('area_id',$address['twon'])->value('area_name');
         }
         if(false !== $r){
-            $this->ajaxReturn(['status' => 1 , 'msg'=>'操作成功','data'=>['pwdstr'=>$pwdstr,'goods'=>$order_goods,'address'=>$address]]);
+            $this->ajaxReturn(['status' => 1 , 'msg'=>'操作成功','data'=>['pwdstr'=>$pwdstr,'goods'=>$order_goods,'address'=>$address,'card_id'=>$order['box_id'],'type'=>$order['order_type']]]);
         }else{
             $this->ajaxReturn(['status' => -1 , 'msg'=>'操作失败','data'=>$pwdstr]);    
         }
