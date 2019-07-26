@@ -124,8 +124,8 @@ class Gift extends ApiBase
 
     //分享回调
     public function share_callback(){
-        // $user_id = $this->get_user_id();
-        $user_id = 86;
+        $user_id = $this->get_user_id();
+        // $user_id = 86;
         if(!$user_id){
             $this->ajaxReturn(['status' => -1 , 'msg'=>'用户不存在','data'=>'']);
         }
@@ -228,6 +228,8 @@ class Gift extends ApiBase
         $order_goods = Db::name('order_goods')->where('order_id',$order['order_id'])->find();
         $order_goods['img'] = Db::name('goods_sku')->where('sku_id',$order_goods['sku_id'])->value('img');
         $order_goods['img'] = $order_goods['img']?SITE_URL.$order_goods['img']:'';
+        $address = Db::name('user_address')->where('is_default',1)->find();
+        if($address)
         if(false !== $r){
             $this->ajaxReturn(['status' => 1 , 'msg'=>'操作成功','data'=>['pwdstr'=>$pwdstr,'goods'=>$order_goods]]);
         }else{
