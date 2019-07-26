@@ -29,12 +29,12 @@ class Order extends Common
         $kw                = input('kw', '');
         $paycode           = input('paycode', -1);
         $paystatus         = input('paystatus',-1);
-        $where = [];
+        $where = []; 
         if (!empty($order_id)) {
-            $where['uo.order_id']    = $order_id;
+            $where['uo.order_sn']    = array('like','%'.$order_id.'%');
         }
         if (!empty($invoice_no)) {
-            $where['d.invoice_no']   = $invoice_no;
+            $where['d.invoice_no']   = array('like','%'.$invoice_no.'%');
         }
         if($orderstatus >= 0){
             $where['uo.order_status'] = $orderstatus;
@@ -46,7 +46,7 @@ class Order extends Common
             $where['uo.pay_status'] = $paystatus;
         }
         if(!empty($kw)){
-            is_numeric($kw)?$where['uo.mobile'] = $kw:$where['a.realname'] = $kw;
+            is_numeric($kw)?$where['uo.mobile'] = array('like','%'.$kw.'%'):$where['a.realname'] = array('like','%'.$kw.'%');
         }
          // 携带参数
         $carryParameter = [
@@ -95,7 +95,6 @@ class Order extends Common
             }
             export_to_csv($str, '订单列表', $exportParam);
         }
-     
         return $this->fetch('',[ 
             'list'         => $list,
             'exportParam'  => $exportParam,
