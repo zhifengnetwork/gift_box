@@ -50,7 +50,7 @@ class Team extends Controller{
     public function lottery(){
         //获取开奖时间100秒以内，且未设置开奖用户的群抢订单
         $Order = M('Order');
-        $list = $Order->field('order_id')->where(['order_type'=>2,'lottery_time'=>['between',[time()-60,time()]],'gift_uid'=>0])->select();  
+        $list = $Order->field('order_id,overdue_time')->where(['order_type'=>2,'lottery_time'=>['between',[time()-60,time()]],'gift_uid'=>0])->select();  
 
         $GiftOrderJoin = M('gift_order_join');
         foreach($list as $v){
@@ -74,7 +74,18 @@ class Team extends Controller{
             //开奖推送
             $join_list = $GiftOrderJoin->where(['order_id'=>$v['order_id'],'order_type'=>2,'join_status'=>['neq',4]])->column('user_id');
             if($join_list){
-                $appid = Db::name('member')->where('id','in',$join_list)->column('id,openid');
+                $formid_result = array();
+                $openid_arr = Db::name('member')->where('id','in',$join_list)->column('id,openid');
+                $formid_arr = Db::name('member_formid')->where('user_id','in',$join_list)->where('status',0)->column('user_id,formid');
+                foreach($join_list as $key=>$val){
+                    $form_id = $formid_arr[$val];
+                    $openid = $openid_arr[$val];
+                    $order_id = $v['order_id'];
+                    $overdue_time = date('Y-m-d H:i:s',$v['overdue_time']);
+                    $this->news_post($openid,$form_id,$order_id,$overdue_time);
+                    $formid_result[] = $form_id;
+                }
+                Db::name('member_formid')->where('formid','in',$formid_result)->update(['status'=>1]);
             }
         } 
     }    
