@@ -284,6 +284,11 @@ class Pay extends ApiBase
         $rechData['client_ip']          = isset($_SERVER['REMOTE_ADDR']) ? $_SERVER['REMOTE_ADDR'] : '127.0.0.1';
         $rechData['openid']       = $member['openid'];
         $wxConfig = Config::get('wx_config'); 
+        $config = Db::name('config')->where('module',1)->column('name,value');
+        $wxConfig['app_id'] = $config['appid']?$config['appid']:$wxConfig['app_id'];
+        $wxConfig['app_secret'] = $config['appsecret']?$config['appsecret']:$wxConfig['app_secret'];
+        $wxConfig['mch_id'] = $config['mch_id']?$config['mch_id']:$wxConfig['mch_id'];
+        $wxConfig['md5_key'] = $config['md5_key']?$config['md5_key']:$wxConfig['md5_key'];
         $url      = Charge::run(PayConfig::WX_CHANNEL_PUB, $wxConfig, $rechData);
         $url['order_id']=$order_id;
         $this->ajaxReturn(['status' => 1 , 'msg'=>'正确','data'=>$url]);
@@ -294,6 +299,7 @@ class Pay extends ApiBase
      */
     public function shopping_pay(){
         $user_id      = $this->get_user_id();
+        // $user_id      = 91;
         if(!$user_id){
             $this->ajaxReturn(['status' => -1 , 'msg'=>'用户不存在','data'=>'']);
         }
@@ -324,6 +330,11 @@ class Pay extends ApiBase
         $rechData['client_ip']          = isset($_SERVER['REMOTE_ADDR']) ? $_SERVER['REMOTE_ADDR'] : '127.0.0.1';
         $rechData['openid']       = $openid;
         $wxConfig = Config::get('wx_config');
+        $config = Db::name('config')->where('module',1)->column('name,value');
+        $wxConfig['app_id'] = $config['appid']?$config['appid']:$wxConfig['app_id'];
+        $wxConfig['app_secret'] = $config['appsecret']?$config['appsecret']:$wxConfig['app_secret'];
+        $wxConfig['mch_id'] = $config['mch_id']?$config['mch_id']:$wxConfig['mch_id'];
+        $wxConfig['md5_key'] = $config['md5_key']?$config['md5_key']:$wxConfig['md5_key'];
         $url      = Charge::run(PayConfig::WX_CHANNEL_PUB, $wxConfig, $rechData);
         // $url['number']=$number;
         $this->ajaxReturn(['status' => 1 , 'msg'=>'正确','data'=>$url]);
