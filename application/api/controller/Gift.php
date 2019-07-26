@@ -20,21 +20,21 @@ class Gift extends ApiBase
         $order_id = input('order_id/d',0);
         $join_type = input('join_type/d',0); //参与类型，1：领取，2：参与群抢
         
-        // $pwdstr = input('pwdstr/s',''); //加密字符串
-        // $arr = $this->decode_token($pwdstr);
-        // if(!$arr || !$arr['exp'] || ($arr['exp'] < time())){
-        //     $this->ajaxReturn(['status' => -1 , 'msg'=>'该链接已失效','data'=>'']);
-        // }else{  //分享回调接口，user_id化用为id-order_id
-        //     $resarr = explode('-',$arr['user_id']);
-        //     $joinid = 0;
-        //     if(count($resarr) == 2){
-        //         $joinid = $resarr[0];
-        //     }
-        //     if((count($resarr) == 1) && ($order_id != $resarr[0]))
-        //         $this->ajaxReturn(['status' => -1 , 'msg'=>'警告，参数错误！','data'=>'']);
-        //     elseif((count($resarr) == 2) && ($order_id != $resarr[1]))
-        //         $this->ajaxReturn(['status' => -1 , 'msg'=>'警告，参数错误！','data'=>'']);
-        // }
+        $pwdstr = input('pwdstr/s',''); //加密字符串
+        $arr = $this->decode_token($pwdstr);
+        if(!$arr || !$arr['exp'] || ($arr['exp'] < time())){
+            $this->ajaxReturn(['status' => -1 , 'msg'=>'该链接已失效','data'=>'']);
+        }else{  //分享回调接口，user_id化用为id-order_id
+            $resarr = explode('-',$arr['user_id']);
+            $joinid = 0;
+            if(count($resarr) == 2){
+                $joinid = $resarr[0];
+            }
+            if((count($resarr) == 1) && ($order_id != $resarr[0]))
+                $this->ajaxReturn(['status' => -1 , 'msg'=>'警告，参数错误！','data'=>'']);
+            elseif((count($resarr) == 2) && ($order_id != $resarr[1]))
+                $this->ajaxReturn(['status' => -1 , 'msg'=>'警告，参数错误！','data'=>'']);
+        }
 
         $order = Db::name('order')->field('order_status,shipping_status,pay_status,parent_id,order_type,lottery_time,giving_time,overdue_time,gift_uid')->where(['order_id'=>$order_id,'user_id'=>$user_id,'deleted'=>0])->find();
         if(!$order){
@@ -71,13 +71,13 @@ class Gift extends ApiBase
 
         $data = [
             'order_id'      => $order_id,
-            'order_type'    => $order['order_type'],
-            // 'order_type'    => $joinid ? 3 : $order['order_type'],
+            // 'order_type'    => $order['order_type'],
+            'order_type'    => $joinid ? 3 : $order['order_type'],
             'addtime'       => time(),
             'status'        => ($join_type == 1) ? 1 : 0,
             'user_id'       => $user_id,
-            'parentid'      => 0,
-            // 'parentid'      => $joinid,
+            // 'parentid'      => 0,
+            'parentid'      => $joinid,
         ];
 
         // 启动事务
@@ -125,6 +125,7 @@ class Gift extends ApiBase
     //分享回调
     public function share_callback(){
         $user_id = $this->get_user_id();
+        $address_id = input('address_id/d',0);
         // $user_id = 86;
         if(!$user_id){
             $this->ajaxReturn(['status' => -1 , 'msg'=>'用户不存在','data'=>'']);
@@ -202,8 +203,8 @@ class Gift extends ApiBase
             $data['overdue_time'] = (time() + $end_time * 60);
             $pwdstr = $this->create_token($order_id,$order['overdue_time']);
         }if($order['order_type'] == 2){
-            $data['lottery_time'] = (time() + $end_time * 60);
-            $data['overdue_time'] = (time() + $start_time * 60);
+            $data['lottery_time'] = (time() + $start_time * 60);
+            $data['overdue_time'] = (time() + $end_time * 60);
             $pwdstr = $this->create_token($order_id,$order['overdue_time']);
         }
 
@@ -228,7 +229,11 @@ class Gift extends ApiBase
         $order_goods = Db::name('order_goods')->where('order_id',$order['order_id'])->find();
         $order_goods['img'] = Db::name('goods_sku')->where('sku_id',$order_goods['sku_id'])->value('img');
         $order_goods['img'] = $order_goods['img']?SITE_URL.$order_goods['img']:'';
-        $address = Db::name('user_address')->where('user_id',$user_id)->where('is_default',1)->find();
+        if($address_id){
+            $address = Db::name('user_address')->where('address_id',$address_id)->find();
+        }else{
+            $address = Db::name('user_address')->where('user_id',$user_id)->where('is_default',1)->find();
+        }
         if($address){
             $address['province'] = Db::name('region')->where('area_id',$address['province'])->value('area_name');
             $address['city'] = Db::name('region')->where('area_id',$address['city'])->value('area_name');
