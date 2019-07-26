@@ -635,7 +635,7 @@ class Order extends ApiBase
             $where['o.pay_status'] = 0;
         }else if($pay_status == 2){
             $where['o.pay_status'] = 1;
-            $where['o.giving_time'] = 0;
+            // $where['o.giving_time'] = 0;
         }
         $where['o.user_id'] = $user_id;
         $where['o.parent_id'] = 0;//不取子订单
