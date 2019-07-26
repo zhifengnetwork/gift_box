@@ -980,7 +980,7 @@ function test(){
 
         $.ajax({
 			type : "POST",
-			url:"/index.php?m=Card&c=Index&a=ajaxGetWxConfig&t="+Math.random(),
+			url:"/Card/Index/ajaxGetWxConfig?t="+Math.random(),
 			data:{'askUrl':encodeURIComponent(location.href.split('#')[0])},		
 			dataType:'JSON',
 			success: function(res)
