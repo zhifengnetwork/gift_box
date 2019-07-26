@@ -1,6 +1,7 @@
 <?php
 namespace app\card\controller;
 
+use app\common\logic\wechat\WechatUtil;
 use think\Controller;
 use think\Request;
 use think\Db;
@@ -49,6 +50,38 @@ class Index extends Controller
         $info['photo_url'] = $info['photo_url']?SITE_URL.$info['photo_url']:'';//照片
         $info['voice_url'] = $info['voice_url']?SITE_URL.$info['voice_url']:'';//录音
         $this->assign('info',$info);
+
+        $url = "{url: '/pages/commodity/detalis/payment/award/award?id=459'}";
+        $this->assign('url',$url);
+
         return $this->fetch();
+    }
+
+
+     //微信Jssdk 操作类 用分享朋友圈 JS
+     public function ajaxGetWxConfig()
+     {
+         $askUrl = input('askUrl');//分享URL
+         $askUrl = urldecode($askUrl);
+ 
+         $config['appid'] = M('config')->where(['name'=>'appid'])->value('value');
+         $config['appsecret'] = M('config')->where(['name'=>'appsecret'])->value('value');
+            $config['web_expires'] =  M('config')->where(['name'=>'web_expires'])->value('value');
+            $config['web_access_token'] = M('config')->where(['name'=>'web_access_token'])->value('value');
+
+
+         $wechat = new WechatUtil($config);
+
+         $signPackage = $wechat->getSignPackage($askUrl);
+ 
+         $this->ajaxReturn($signPackage);
+     }
+
+
+     public function ajaxReturn($data = [],$type = 'json'){
+        header('Content-Type:application/json; charset=utf-8');
+        /*$data   = !empty($data) ? $data : ['status' => 1, 'msg' => '操作成功'];
+        exit(json_encode($data,JSON_UNESCAPED_UNICODE));*/
+        exit(json_encode($data));
     }
 }
