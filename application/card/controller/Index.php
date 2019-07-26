@@ -64,11 +64,12 @@ class Index extends Controller
          $askUrl = input('askUrl');//分享URL
          $askUrl = urldecode($askUrl);
  
-         $wechat = new WechatUtil;
+         $config['appid'] = M('config')->where(['name'=>'appid'])->value('value');
+         $config['appsecret'] = M('config')->where(['name'=>'appsecret'])->value('value');
+
+         $wechat = new WechatUtil($config);
+
          $signPackage = $wechat->getSignPackage($askUrl);
-
-
-      
  
          $this->ajaxReturn($signPackage);
      }

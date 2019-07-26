@@ -58,14 +58,18 @@ class WechatUtil extends WxCommon
         $appsecret = $wechat['appsecret'];
         $url = "https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid={$appid}&secret={$appsecret}";
         $return = $this->requestAndCheck($url, 'GET');
-        if (!isset($return['access_token'])) {
-            $this->config['web_expires'] = 0;
-            Db::name('wx_user')->where('id', $wechat['id'])->save(['web_expires' => 0]);
-            return false;
-        }
 
-        $web_expires = time() + 7000; // 提前200秒过期
-        Db::name('wx_user')->where('id', $wechat['id'])->save(['web_access_token'=>$return['access_token'], 'web_expires'=>$web_expires]);
+
+        // if (!isset($return['access_token'])) {
+        //     $this->config['web_expires'] = 0;
+        //     Db::name('wx_user')->where('id', $wechat['id'])->save(['web_expires' => 0]);
+        //     return false;
+        // }
+
+        // $web_expires = time() + 7000; // 提前200秒过期
+        // Db::name('wx_user')->where('id', $wechat['id'])->save(['web_access_token'=>$return['access_token'], 'web_expires'=>$web_expires]);
+
+        
         $this->config['web_access_token'] = $return['access_token'];
         $this->config['web_expires'] = $web_expires;
 
