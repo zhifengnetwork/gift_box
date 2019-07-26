@@ -157,8 +157,8 @@ class Box extends ApiBase
             }
         }
         if($id){
-            $info = Db::table('box')->field('id,music_id,photo_url,voice_url,content')->where('id',$id)->find();
-            $info['data']['music_name'] = Db::name('box_music')->where('id',$info['music_id'])->value('name');
+            $box_info = Db::table('box')->field('id,music_id,photo_url,voice_url,content')->where('id',$id)->find();
+            $box_info['music_name'] = Db::name('box_music')->where('id',$info['music_id'])->value('name');
         }else{
             $data['addtime'] = time();
             $data['cate_id'] = $cate_id;
@@ -172,10 +172,10 @@ class Box extends ApiBase
             $result['msg'] = '获取数据成功';
             $this->ajaxReturn($result);
         }
-        
-        $info['data']['photo_url'] = $info['photo_url']?SITE_URL.$info['photo_url']:'';
-        $info['data']['voice_url'] = $info['voice_url']?SITE_URL.$info['voice_url']:'';
-        $info['data']['content'] = $info['content']?SITE_URL.$info['content']:'';
+        $info['data'] = $box_info;
+        $info['data']['photo_url'] = $box_info['photo_url']?SITE_URL.$box_info['photo_url']:'';
+        $info['data']['voice_url'] = $box_info['voice_url']?SITE_URL.$box_info['voice_url']:'';
+        $info['data']['content'] = $box_info['content']?SITE_URL.$box_info['content']:'';
         $info['data']['id'] = $id;
         $info['status'] = 1;
         $info['msg'] = '获取数据成功';
