@@ -85,7 +85,7 @@ class Cart extends Model
         if($cart_list){
             foreach($cart_list as $key=>$value){
                 $value['img']= Db::table('goods_img')->where('goods_id',$value['goods_id'])->where('main',1)->value('picture');
-                $value['img']=SITE_URL.Config('c_pub.img').$value['img'];
+                $value['img']=SITE_URL.$value['img'];
                 $arr[]=$value;
             }
         }
