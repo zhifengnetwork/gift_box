@@ -25,7 +25,10 @@ class Index extends ApiBase
         }
     
         //热门推荐8大分类
-        $hot_category = Db::table('goods_attr')->field('id,name,english')->where('id','>',7)->where('pid',0)->order('sort')->limit(8)->select();
+        $hot_category = Db::table('goods_attr')->field('id,name,english,icon')->where('id','>',7)->where('pid',0)->order('sort')->limit(8)->select();
+        foreach($hot_category as $key=>$val){
+            $hot_category[$key]['icon'] = $val['icon']?SITE_URL.$val['icon']:'';
+        }
         //获取首页栏目
         $goods_attr = Db::table('goods_attr')->field('id,name,english')->where('id','<',8)->order('id')->where('pid',0)->select();
         
@@ -252,7 +255,8 @@ class Index extends ApiBase
         $access_token = $this->getAccessToken();
         $url = 'https://api.weixin.qq.com/cgi-bin/message/wxopen/template/send?access_token='.$access_token;
         $data['touser'] = $appid;//openid
-        $data['template_id'] = 'O44yWTdQ-T5VQgOeDVBFRaGqu4oQ5F_N_OhjRUhQ8u8';//模板id，
+        $template_id = Db::name('config')->where('name','template_id')->value('value');
+        $data['template_id'] = $template_id;//模板id，
         $data['page'] = '/pages/turntable/turntable?order_id='.$order_id;//跳转地址加参数
         $data['form_id'] = $form_id;//form_id
         //定义模板需要带的参数

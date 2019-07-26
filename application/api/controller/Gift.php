@@ -124,13 +124,13 @@ class Gift extends ApiBase
 
     //分享回调
     public function share_callback(){
-        // $user_id = $this->get_user_id();
-        $user_id = 86;
+        $user_id = $this->get_user_id();
+        // $user_id = 86;
         if(!$user_id){
             $this->ajaxReturn(['status' => -1 , 'msg'=>'用户不存在','data'=>'']);
         }
 
-        $order_id = input('order_id/d',2698);
+        $order_id = input('order_id/d',0);
         $act = input('act/d',0);  //操作，0回调，1：检测是否可分享，2：转赠检测，3：转赠回调
         
         $where = ['order_id'=>$order_id,'deleted'=>0];
@@ -228,8 +228,15 @@ class Gift extends ApiBase
         $order_goods = Db::name('order_goods')->where('order_id',$order['order_id'])->find();
         $order_goods['img'] = Db::name('goods_sku')->where('sku_id',$order_goods['sku_id'])->value('img');
         $order_goods['img'] = $order_goods['img']?SITE_URL.$order_goods['img']:'';
+        $address = Db::name('user_address')->where('user_id',$user_id)->where('is_default',1)->find();
+        if($address){
+            $address['province'] = Db::name('region')->where('area_id',$address['province'])->value('area_name');
+            $address['city'] = Db::name('region')->where('area_id',$address['city'])->value('area_name');
+            $address['district'] = Db::name('region')->where('area_id',$address['district'])->value('area_name');
+            $address['twon'] = Db::name('region')->where('area_id',$address['twon'])->value('area_name');
+        }
         if(false !== $r){
-            $this->ajaxReturn(['status' => 1 , 'msg'=>'操作成功','data'=>['pwdstr'=>$pwdstr,'goods'=>$order_goods]]);
+            $this->ajaxReturn(['status' => 1 , 'msg'=>'操作成功','data'=>['pwdstr'=>$pwdstr,'goods'=>$order_goods,'address'=>$address]]);
         }else{
             $this->ajaxReturn(['status' => -1 , 'msg'=>'操作失败','data'=>$pwdstr]);    
         }
