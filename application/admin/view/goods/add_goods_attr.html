@@ -74,6 +74,7 @@
                     <form method="post" class="form-horizontal" action="">
                         <input type="hidden" name="id" value="{$info.id}">
                         <input type="hidden" name="priture" value="{$info.priture}">
+                        <input type="hidden" name="icon" value="{$info.icon}">
                         <div class="form-group">
                             <label class="col-sm-2 control-label"><span style="color:red;">*</span>栏目名称</label>
                             <div class="col-sm-9">
@@ -113,7 +114,7 @@
                             <div class="col-sm-9">
                                 <dd class="upload_area clearfix" style="margin: 0 auto;">
                                     <ul id="imglist" class="post_imglist">
-                                        <li><img class="wh60" id="image_src2" src="{$info.icon|default='/static/images/default.jpg'}"></li>
+                                        <li><img style="width: 150px;height:40px;margin-top:10px;" class="wh60" id="image_src2" src="{$info.icon|default='/static/images/default.jpg'}"></li>
                                     </ul>
                                     <label for="image_file2"><div class="upload_btn"></div></label>
                                 </dd>
