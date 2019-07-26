@@ -130,7 +130,7 @@ class Gift extends ApiBase
             $this->ajaxReturn(['status' => -1 , 'msg'=>'用户不存在','data'=>'']);
         }
 
-        $order_id = input('order_id/d',2698);
+        $order_id = input('order_id/d',0);
         $act = input('act/d',0);  //操作，0回调，1：检测是否可分享，2：转赠检测，3：转赠回调
         
         $where = ['order_id'=>$order_id,'deleted'=>0];
