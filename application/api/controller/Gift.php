@@ -229,9 +229,14 @@ class Gift extends ApiBase
         $order_goods['img'] = Db::name('goods_sku')->where('sku_id',$order_goods['sku_id'])->value('img');
         $order_goods['img'] = $order_goods['img']?SITE_URL.$order_goods['img']:'';
         $address = Db::name('user_address')->where('is_default',1)->find();
-        if($address)
+        if($address){
+            $address['province'] = Db::name('region')->where('area_id',$address['province'])->value('area_name');
+            $address['city'] = Db::name('region')->where('area_id',$address['city'])->value('area_name');
+            $address['district'] = Db::name('region')->where('area_id',$address['district'])->value('area_name');
+            $address['twon'] = Db::name('region')->where('area_id',$address['twon'])->value('area_name');
+        }
         if(false !== $r){
-            $this->ajaxReturn(['status' => 1 , 'msg'=>'操作成功','data'=>['pwdstr'=>$pwdstr,'goods'=>$order_goods]]);
+            $this->ajaxReturn(['status' => 1 , 'msg'=>'操作成功','data'=>['pwdstr'=>$pwdstr,'goods'=>$order_goods,'address'=>$address]]);
         }else{
             $this->ajaxReturn(['status' => -1 , 'msg'=>'操作失败','data'=>$pwdstr]);    
         }
