@@ -176,6 +176,7 @@ class Box extends ApiBase
         $info['data']['photo_url'] = $info['photo_url']?SITE_URL.$info['photo_url']:'';
         $info['data']['voice_url'] = $info['voice_url']?SITE_URL.$info['voice_url']:'';
         $info['data']['content'] = $info['content']?SITE_URL.$info['content']:'';
+        $info['data']['id'] = $id;
         $info['status'] = 1;
         $info['msg'] = '获取数据成功';
         $this->ajaxReturn($info);
