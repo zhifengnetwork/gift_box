@@ -705,6 +705,39 @@ class Order extends ApiBase
         return $order_list;
     }
 
+	public function get_order_info(){
+        $user_id = $this->get_user_id();
+        if(!$user_id){
+            $this->ajaxReturn(['status' => -1 , 'msg'=>'用户不存在','data'=>'']);
+        }
+		$order_id = input('order_id/d',0);
+		$info = M('Order_goods')->field('goods_id,goods_name,sku_id')->where(['order_id'=>$order_id])->find();
+		if(!$info){
+            $this->ajaxReturn(['status' => -1 , 'msg'=>'订单不存在','data'=>'']);
+        }
+		
+		if($info['sku_id']){
+			$info['img'] = M('goods_sku')->where(['sku_id'=>$info['sku_id']])->value('img');
+		}
+
+		if(!isset($info['img'])){
+			$info['img'] = M('goods')->where(['goods_id'=>$info['goods_id']])->value('picture');
+		}
+
+		$info['img'] = $info['img'] ? SITE_URL.$info['img'] : '';
+
+		$address = M('user_address')->where(['user_id'=>$user_id])->order('is_default desc')->limit('0,1')->find();
+		if($address){
+			$address['province_name'] = $address['province'] ? M('region')->where(['area_id'=>$address['province']])->value('area_name') : '';
+			$address['city_name'] = $address['city'] ? M('region')->where(['area_id'=>$address['city']])->value('area_name') : '';
+			$address['district_name'] = $address['district'] ? M('region')->where(['area_id'=>$address['district']])->value('area_name') : '';
+			$address['twon_name'] = $address['twon'] ? M('region')->where(['area_id'=>$address['twon']])->value('area_name') : '';
+		}
+
+		$this->ajaxReturn(['status' => 1 , 'msg'=>'请求成功','data'=>['order'=>$info,'address'=>$address] ]);
+		
+	}
+
     /**
     * 订单详情
     */

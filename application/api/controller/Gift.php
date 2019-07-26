@@ -231,24 +231,9 @@ class Gift extends ApiBase
                 Db::rollback();
                 $this->ajaxReturn(['status' => -1 , 'msg'=>'操作失败','data'=>$pwdstr]);    
             }
-        }else
-            $r = M('Order')->where(['order_id'=>$order_id])->whereor(['parent_id'=>$order_id])->update($data);
-        $order_goods = Db::name('order_goods')->where('order_id',$order['order_id'])->find();
-        $order_goods['img'] = Db::name('goods_sku')->where('sku_id',$order_goods['sku_id'])->value('img');
-        $order_goods['img'] = $order_goods['img']?SITE_URL.$order_goods['img']:'';
-        if($address_id){
-            $address = Db::name('user_address')->where('address_id',$address_id)->find();
-        }else{
-            $address = Db::name('user_address')->where('user_id',$user_id)->where('is_default',1)->find();
-        }
-        if($address){
-            $address['province'] = Db::name('region')->where('area_id',$address['province'])->value('area_name');
-            $address['city'] = Db::name('region')->where('area_id',$address['city'])->value('area_name');
-            $address['district'] = Db::name('region')->where('area_id',$address['district'])->value('area_name');
-            $address['twon'] = Db::name('region')->where('area_id',$address['twon'])->value('area_name');
         }
         if(false !== $r){
-            $this->ajaxReturn(['status' => 1 , 'msg'=>'操作成功','data'=>['pwdstr'=>$pwdstr,'goods'=>$order_goods,'address'=>$address,'card_id'=>$order['box_id'],'type'=>$order['order_type']]]);
+            $this->ajaxReturn(['status' => 1 , 'msg'=>'操作成功','data'=>['pwdstr'=>$pwdstr,'card_id'=>$order['box_id'],'type'=>$order['order_type']]]);
         }else{
             $this->ajaxReturn(['status' => -1 , 'msg'=>'操作失败','data'=>$pwdstr]);    
         }
@@ -344,8 +329,8 @@ class Gift extends ApiBase
 
     //转动转盘
     public function turn_the_wheel(){
-        $user_id = 86;//$this->get_user_id();
-        $order_id = 2835;//input('order_id',0);
+        $user_id = $this->get_user_id();//$this->get_user_id();
+        $order_id = input('order_id',0);//input('order_id',0);
         if(!$user_id){
             $this->ajaxReturn(['status' => -1 , 'msg'=>'用户不存在','data'=>'']);
         }
@@ -362,8 +347,6 @@ class Gift extends ApiBase
             $this->ajaxReturn(['status' => -1 , 'msg'=>'您已经参与过此次抽奖','data'=>'']);
 
         $order = Db::name('order')->field('order_status,shipping_status,pay_status,parent_id,order_type,lottery_time,giving_time,overdue_time,gift_uid')->where(['order_id'=>$order_id])->find();
-		echo $order['lottery_time'] , '<br />';
-		echo time();
         if(!$order['lottery_time']){
             $this->ajaxReturn(['status' => -1 , 'msg'=>'该订单已不能抽奖！','data'=>'']);
         }elseif($order['lottery_time'] > time())
