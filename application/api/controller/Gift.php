@@ -124,13 +124,13 @@ class Gift extends ApiBase
 
     //分享回调
     public function share_callback(){
-        $user_id = $this->get_user_id();
-        // $user_id = 86;
+        // $user_id = $this->get_user_id();
+        $user_id = 86;
         if(!$user_id){
             $this->ajaxReturn(['status' => -1 , 'msg'=>'用户不存在','data'=>'']);
         }
 
-        $order_id = input('order_id/d',0);
+        $order_id = input('order_id/d',2698);
         $act = input('act/d',0);  //操作，0回调，1：检测是否可分享，2：转赠检测，3：转赠回调
         
         $where = ['order_id'=>$order_id,'deleted'=>0];
@@ -225,7 +225,9 @@ class Gift extends ApiBase
             }
         }else
             $r = M('Order')->where(['order_id'=>$order_id])->whereor(['parent_id'=>$order_id])->update($data);
-        $order_goods = Db::name('order_goods')->where('order_id',$order['order_id'])->fund();
+        $order_goods = Db::name('order_goods')->where('order_id',$order['order_id'])->find();
+        $order_goods['img'] = Db::name('goods_sku')->where('sku_id',$order_goods['sku_id'])->value('img');
+        $order_goods['img'] = $order_goods['img']?SITE_URL.$order_goods['img']:'';
         if(false !== $r){
             $this->ajaxReturn(['status' => 1 , 'msg'=>'操作成功','data'=>['pwdstr'=>$pwdstr,'goods'=>$order_goods]]);
         }else{
