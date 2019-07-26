@@ -708,9 +708,16 @@ body,html{
     text-decoration:none;
     z-index: 1001;
     font-family: Helvetica, 'Hiragino Sans GB', 'Microsoft Yahei', '微软雅黑', Arial, sans-serif;
+    animation:bhua 30s;
+    /* animation-delay:30.5s; */
 }
 
-
+@keyframes bhua
+{
+0%  {opacity: 0;}
+75% {opacity: 0;}
+100% {opacity: 1;}
+}
 
 /* 音乐播放 */
 .audio{
@@ -822,6 +829,68 @@ body,html{
     from { -moz-transform: rotate(0) }
     to { -moz-transform: rotate(360deg) }
 }
+
+#mask-kk{
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1002;
+    background: #666;
+    opacity: 0.7;
+    display: none;
+}
+.popup-kk{
+    position: absolute;
+    left: 50%;
+    top:50%;
+    transform: translate(-50%,-50%);
+    width: 18rem;
+    height: 18rem;
+    background: #fff;
+    z-index: 1003;
+    display: none;
+    border-radius:5px;
+}
+.span1{
+    position: absolute;
+    top: 70%;
+    font-size: 1rem;
+    line-height: 2rem;
+    margin-left: 2rem;
+}
+.span2{
+    position: absolute;
+    top: 80%;
+    font-size: 1rem;
+    line-height: 2rem;
+    margin-left: 2rem;
+}
+
+.close {
+    position: absolute;
+    left: 50%;
+    transform: translate(-50%);
+    cursor: pointer;
+    font-size: 2rem;
+    bottom: -20%;
+    width: 2rem;
+    height: 2rem;
+    border-radius: 50%;
+    color: white;
+    line-height: 2rem;
+    text-align: center;
+    background: url('/image/close.jpg');
+    z-index:1006;
+    background-size: 100% 100%
+
+}
+
+
+
+
+
 
 </style>
 <body>
@@ -952,8 +1021,17 @@ body,html{
             <div class="bhuabox xiaobox">
             <image class="bhua" src="/image/bhua.png" />
         </div>
-        <a onclick="test()" class="bos3_a" >直接跳過></a>
     </div>
+
+    <a onclick="test()" class="bos3_a" >直接跳過></a>
+        <div id="mask-kk"></div>     
+        <div class="popup-kk">
+            <span class="span1">1233</span>
+            <span class="span2">123</span>
+        <span class="close"></span>
+         </div>
+
+
     <!-- 播放音乐 -->
     {if condition="$info.music_url"}
     <div id="audio_btn" class="rotate">
@@ -971,16 +1049,59 @@ body,html{
 <script src="/static/inspinia/js/jquery-2.1.1.js"></script>
 <script type="text/javascript" src="https://res.wx.qq.com/open/js/jweixin-1.3.2.js"></script>
 <!-- <script src="https://res.wx.qq.com/open/js/jweixin-1.0.0.js"></script>  -->
+
 <script>
 
 function test(){
-    // wx.miniProgram.reLaunch({url: '/pages/commodity/detalis/payment/award/award?id=459'})  
-    // console.log(wx.miniProgram)
+    
+    if(isWeiXin()){
+
+        if("{$type}" == '1'){
+            var url = "/pages/commodity/detalis/give/GetTheGift/GetTheGift?id={$card_id}"
+        }else{
+           var url =  '/pages/turntable/turntable?id={$card_id}&order_type={$type}&order_id={$order_id}&pwdstr={$pwdstr}';
+        }
+
+        wx.miniProgram.navigateTo({
+            url:url,
+            success: function(){
+                console.log('success')
+            },
+            fail: function(){
+                console.log('fail');
+            },
+            complete:function(){
+                console.log('complete');
+            }
+
+        });
+        
+        
+    }else{
+        alert('请在微信打开')
+    }
+   
+    $("#mask-kk").show();
+    $(".popup-kk").show();
+}
+$(".close").click(function(){
+   
+    $("#mask-kk").hide();
+    $(".popup-kk").hide();
+})
+function isWeiXin(){
+    var ua = window.navigator.userAgent.toLowerCase();
+    if(ua.match(/MicroMessenger/i) == 'micromessenger'){
+        return true;
+    }else{
+        return false;
+    }
 }
 
+</script>
 
 
-
+<script>
 
 var x = document.getElementById("media"); 
 $('#audio_btn').on('click', function() {

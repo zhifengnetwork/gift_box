@@ -50,7 +50,7 @@ class Team extends Controller{
     public function lottery(){
         //获取开奖时间100秒以内，且未设置开奖用户的群抢订单
         $Order = M('Order');
-        $list = $Order->field('order_id')->where(['order_type'=>2,'lottery_time'=>['between',[time()-100,time()]],'gift_uid'=>0])->select();  
+        $list = $Order->field('order_id,overdue_time')->where(['order_type'=>2,'lottery_time'=>['between',[time()-60,time()]],'gift_uid'=>0])->select();  
 
         $GiftOrderJoin = M('gift_order_join');
         foreach($list as $v){
@@ -72,7 +72,21 @@ class Team extends Controller{
             }
 
             //开奖推送
-            //$GiftOrderJoin->
+            $join_list = $GiftOrderJoin->where(['order_id'=>$v['order_id'],'order_type'=>2,'join_status'=>['neq',4]])->column('user_id');
+            if($join_list){
+                $formid_result = array();
+                $openid_arr = Db::name('member')->where('id','in',$join_list)->column('id,openid');
+                $formid_arr = Db::name('member_formid')->where('user_id','in',$join_list)->where('status',0)->column('user_id,formid');
+                foreach($join_list as $key=>$val){
+                    $form_id = $formid_arr[$val];
+                    $openid = $openid_arr[$val];
+                    $order_id = $v['order_id'];
+                    $overdue_time = date('Y-m-d H:i:s',$v['overdue_time']);
+                    $this->news_post($openid,$form_id,$order_id,$overdue_time);
+                    $formid_result[] = $form_id;
+                }
+                Db::name('member_formid')->where('formid','in',$formid_result)->update(['status'=>1]);
+            }
         } 
     }    
 
@@ -110,5 +124,58 @@ class Team extends Controller{
             Db::rollback();
         } 
     }        
+
+    /**
+     * 消息推送
+     * form_id      member_form的id
+     * order_id     订单id
+     * overdue_time 活动结束时间
+     *  */
+    public function news_post($openid,$form_id,$order_id,$overdue_time)
+    {
+        $access_token = $this->getAccessToken();
+        $url = 'https://api.weixin.qq.com/cgi-bin/message/wxopen/template/send?access_token='.$access_token;
+        $data['touser'] = $openid;//openid
+        $template_id = Db::name('config')->where('name','template_id')->value('value');
+        $data['template_id'] = $template_id;//模板id，
+        $data['page'] = '/pages/turntable/turntable?order_id='.$order_id;//跳转地址加参数
+        $data['form_id'] = $form_id;//form_id
+        //定义模板需要带的参数
+        $data['data']['keyword1']['value'] = '您所期待的抽奖已经开始了，请尽快参与';
+        $data['data']['keyword2']['value'] = '不要错过时间哦';
+        $data['data']['keyword3']['value'] = $overdue_time;
+        $data = json_encode($data);
+        $res = request_curl($url,$data);
+        $result = json_decode($res, true);
+        if($result['errmsg'] == 'ok'){
+            return true;
+        }
+    }
+
+    //获取AccessToken
+    public function getAccessToken(){
+        $access_token = Db::name('config')->where('name','access_token')->value('value');
+        $expires_in = Db::name('config')->where('name','expires_in')->value('value');
+        if(time() > $expires_in){
+            $appid = Db::name('config')->where(['name'=>'appid'])->value('value');
+            $appsecret = Db::name('config')->where(['name'=>'appsecret'])->value('value');
+            $url = "https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid={$appid}&secret={$appsecret}";
+            $ch = curl_init();
+            curl_setopt($ch, CURLOPT_URL, $url);
+            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE); 
+            curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, FALSE); 
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+            $output = curl_exec($ch);
+            curl_close($ch);
+            $jsoninfo = json_decode($output, true);
+            $access_token = $jsoninfo["access_token"];
+            $expires_in = time().$jsoninfo["expires_in"];
+            Db::name('config')->where('name','access_token')->update(['value'=>$access_token]);
+            Db::name('config')->where('name','expires_in')->update(['value'=>$expires_in]);
+            return $access_token;
+        }else{
+            return $access_token;
+        }
+    }
 
 }

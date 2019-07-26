@@ -625,9 +625,9 @@ class Order extends ApiBase
     //礼品库-待付款和已付款
     public function gift_list(){
         $page = input('page',1);
-        $num = input('num',6);
+        $num = input('num',100);
         $user_id = $this->get_user_id();
-        // $user_id = 89;
+        // $user_id = 91;
         $pay_status = input('pay_status',2);//0全部1待付款2已付款
         $order_type = input('order_type/s','1,2'); //订单类型，0犒劳自己，1：赠送单人，2：群抢
         //支付状态
@@ -635,8 +635,10 @@ class Order extends ApiBase
             $where['o.pay_status'] = 0;
         }else if($pay_status == 2){
             $where['o.pay_status'] = 1;
-            $where['o.giving_time'] = 0;
+            // $where['o.giving_time'] = 0;
         }
+        $where['o.user_id'] = $user_id;
+        $where['o.parent_id'] = 0;//不取子订单
         $where['o.user_id'] = $user_id;
         //不取已取消的订单
         $where['o.order_status'] = ['neq',3];

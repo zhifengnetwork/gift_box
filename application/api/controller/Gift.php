@@ -10,6 +10,13 @@ use think\Request;
 
 class Gift extends ApiBase
 {
+
+	public function create_pwdstr(){
+		$order_id = I('get.order_id/d',0);
+		$overdue_time = M('Order')->where(['order_id'=>$order_id])->value('overdue_time');
+		echo $this->create_token($order_id,$overdue_time);
+	}
+
     //领取/参与
     public function receive_join(){
         $user_id = $this->get_user_id();
@@ -20,21 +27,21 @@ class Gift extends ApiBase
         $order_id = input('order_id/d',0);
         $join_type = input('join_type/d',0); //参与类型，1：领取，2：参与群抢
         
-        // $pwdstr = input('pwdstr/s',''); //加密字符串
-        // $arr = $this->decode_token($pwdstr);
-        // if(!$arr || !$arr['exp'] || ($arr['exp'] < time())){
-        //     $this->ajaxReturn(['status' => -1 , 'msg'=>'该链接已失效','data'=>'']);
-        // }else{  //分享回调接口，user_id化用为id-order_id
-        //     $resarr = explode('-',$arr['user_id']);
-        //     $joinid = 0;
-        //     if(count($resarr) == 2){
-        //         $joinid = $resarr[0];
-        //     }
-        //     if((count($resarr) == 1) && ($order_id != $resarr[0]))
-        //         $this->ajaxReturn(['status' => -1 , 'msg'=>'警告，参数错误！','data'=>'']);
-        //     elseif((count($resarr) == 2) && ($order_id != $resarr[1]))
-        //         $this->ajaxReturn(['status' => -1 , 'msg'=>'警告，参数错误！','data'=>'']);
-        // }
+        $pwdstr = input('pwdstr/s',''); //加密字符串
+        $arr = $this->decode_token($pwdstr);
+        if(!$arr || !$arr['exp'] || ($arr['exp'] < time())){
+            $this->ajaxReturn(['status' => -1 , 'msg'=>'该链接已失效','data'=>'']);
+        }else{  //分享回调接口，user_id化用为id-order_id
+            $resarr = explode('-',$arr['user_id']);
+            $joinid = 0;
+            if(count($resarr) == 2){
+                $joinid = $resarr[0];
+            }
+            if((count($resarr) == 1) && ($order_id != $resarr[0]))
+                $this->ajaxReturn(['status' => -1 , 'msg'=>'警告，参数错误！','data'=>'']);
+            elseif((count($resarr) == 2) && ($order_id != $resarr[1]))
+                $this->ajaxReturn(['status' => -1 , 'msg'=>'警告，参数错误！','data'=>'']);
+        }
 
         $order = Db::name('order')->field('order_status,shipping_status,pay_status,parent_id,order_type,lottery_time,giving_time,overdue_time,gift_uid')->where(['order_id'=>$order_id,'user_id'=>$user_id,'deleted'=>0])->find();
         if(!$order){
@@ -71,13 +78,13 @@ class Gift extends ApiBase
 
         $data = [
             'order_id'      => $order_id,
-            'order_type'    => $order['order_type'],
-            // 'order_type'    => $joinid ? 3 : $order['order_type'],
+            // 'order_type'    => $order['order_type'],
+            'order_type'    => $joinid ? 3 : $order['order_type'],
             'addtime'       => time(),
             'status'        => ($join_type == 1) ? 1 : 0,
             'user_id'       => $user_id,
-            'parentid'      => 0,
-            // 'parentid'      => $joinid,
+            // 'parentid'      => 0,
+            'parentid'      => $joinid,
         ];
 
         // 启动事务
@@ -125,6 +132,7 @@ class Gift extends ApiBase
     //分享回调
     public function share_callback(){
         $user_id = $this->get_user_id();
+        $address_id = input('address_id/d',0);
         // $user_id = 86;
         if(!$user_id){
             $this->ajaxReturn(['status' => -1 , 'msg'=>'用户不存在','data'=>'']);
@@ -136,7 +144,7 @@ class Gift extends ApiBase
         $where = ['order_id'=>$order_id,'deleted'=>0];
         if(!in_array($act,[2,3]))$where['user_id'] = $user_id;
 
-        $order = Db::name('order')->field('order_id,order_status,shipping_status,pay_status,parent_id,order_type,lottery_time,giving_time,overdue_time,gift_uid')->where($where)->find();
+        $order = Db::name('order')->field('order_id,order_status,shipping_status,pay_status,parent_id,order_type,lottery_time,giving_time,overdue_time,gift_uid,box_id')->where($where)->find();
         
         if(!$order){
             $this->ajaxReturn(['status' => -1 , 'msg'=>'订单不存在','data'=>'']);
@@ -202,8 +210,8 @@ class Gift extends ApiBase
             $data['overdue_time'] = (time() + $end_time * 60);
             $pwdstr = $this->create_token($order_id,$order['overdue_time']);
         }if($order['order_type'] == 2){
-            $data['lottery_time'] = (time() + $end_time * 60);
-            $data['overdue_time'] = (time() + $start_time * 60);
+            $data['lottery_time'] = (time() + $start_time * 60);
+            $data['overdue_time'] = (time() + $end_time * 60);
             $pwdstr = $this->create_token($order_id,$order['overdue_time']);
         }
 
@@ -228,7 +236,11 @@ class Gift extends ApiBase
         $order_goods = Db::name('order_goods')->where('order_id',$order['order_id'])->find();
         $order_goods['img'] = Db::name('goods_sku')->where('sku_id',$order_goods['sku_id'])->value('img');
         $order_goods['img'] = $order_goods['img']?SITE_URL.$order_goods['img']:'';
-        $address = Db::name('user_address')->where('user_id',$user_id)->where('is_default',1)->find();
+        if($address_id){
+            $address = Db::name('user_address')->where('address_id',$address_id)->find();
+        }else{
+            $address = Db::name('user_address')->where('user_id',$user_id)->where('is_default',1)->find();
+        }
         if($address){
             $address['province'] = Db::name('region')->where('area_id',$address['province'])->value('area_name');
             $address['city'] = Db::name('region')->where('area_id',$address['city'])->value('area_name');
@@ -236,7 +248,7 @@ class Gift extends ApiBase
             $address['twon'] = Db::name('region')->where('area_id',$address['twon'])->value('area_name');
         }
         if(false !== $r){
-            $this->ajaxReturn(['status' => 1 , 'msg'=>'操作成功','data'=>['pwdstr'=>$pwdstr,'goods'=>$order_goods,'address'=>$address]]);
+            $this->ajaxReturn(['status' => 1 , 'msg'=>'操作成功','data'=>['pwdstr'=>$pwdstr,'goods'=>$order_goods,'address'=>$address,'card_id'=>$order['box_id'],'type'=>$order['order_type']]]);
         }else{
             $this->ajaxReturn(['status' => -1 , 'msg'=>'操作失败','data'=>$pwdstr]);    
         }
@@ -332,8 +344,8 @@ class Gift extends ApiBase
 
     //转动转盘
     public function turn_the_wheel(){
-        $user_id = $this->get_user_id();
-        $order_id = input('order_id',0);
+        $user_id = 86;//$this->get_user_id();
+        $order_id = 2835;//input('order_id',0);
         if(!$user_id){
             $this->ajaxReturn(['status' => -1 , 'msg'=>'用户不存在','data'=>'']);
         }
@@ -350,11 +362,13 @@ class Gift extends ApiBase
             $this->ajaxReturn(['status' => -1 , 'msg'=>'您已经参与过此次抽奖','data'=>'']);
 
         $order = Db::name('order')->field('order_status,shipping_status,pay_status,parent_id,order_type,lottery_time,giving_time,overdue_time,gift_uid')->where(['order_id'=>$order_id])->find();
+		echo $order['lottery_time'] , '<br />';
+		echo time();
         if(!$order['lottery_time']){
             $this->ajaxReturn(['status' => -1 , 'msg'=>'该订单已不能抽奖！','data'=>'']);
-        }elseif(!$order['lottery_time'] < time())
-            $this->ajaxReturn(['status' => -1 , 'msg'=>'该订单已不能抽奖！','data'=>'']);
-        elseif(!$order['overdue_time'] < time())
+        }elseif($order['lottery_time'] > time())
+            $this->ajaxReturn(['status' => -1 , 'msg'=>'开奖时间未到！','data'=>'']);
+        elseif($order['overdue_time'] < time())
             $this->ajaxReturn(['status' => -1 , 'msg'=>'该订单已不能抽奖！','data'=>'']);            
 
         //有人转动转盘，则给此次群抢全部设置开奖用户
@@ -419,7 +433,7 @@ class Gift extends ApiBase
             }
         }else{
             $where['o.pay_status'] = 1;
-            // $where['o.parent_id'] = 0;
+            $where['o.parent_id'] = 0;
             $where['o.order_type'] = ['neq',0];
             $where['o.order_status']=['in',[0,1]];
             $order = Db::name('order')->alias('o')
@@ -428,24 +442,23 @@ class Gift extends ApiBase
                 ->where($where)
                 ->page($page,$num)
                 ->select();
-            $parent_id = array();
-            foreach($order as $key=>$val){
-                if(!in_array($val['parent_id'],$parent_id)){
-                    $parent_id[] = $val['parent_id'];
-                }
-                //子订单商品总价给他显示单价
-                if($val['parent_id']){
-                    $order[$key]['order_amount'] = $val['goods_price'];
-                }
-            }
-            foreach($order as $key=>$val){
-                if(in_array($val['order_id'],$parent_id)){
-                    unset($order[$key]);
-                }
-            }
-            if($order){
-                sort($order);
-            }
+            // foreach($order as $key=>$val){
+            //     if(!in_array($val['parent_id'],$parent_id)){
+            //         $parent_id[] = $val['parent_id'];
+            //     }
+            //     //子订单商品总价给他显示单价
+            //     if($val['parent_id']){
+            //         $order[$key]['order_amount'] = $val['goods_price'];
+            //     }
+            // }
+            // foreach($order as $key=>$val){
+            //     if(in_array($val['order_id'],$parent_id)){
+            //         unset($order[$key]);
+            //     }
+            // }
+            // if($order){
+            //     sort($order);
+            // }
         }
         foreach($order as $key=>$val){
             $order[$key]['img'] = Db::name('goods_img')->where(['goods_id'=>$val['goods_id'],'main'=>1])->value('picture');

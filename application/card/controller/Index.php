@@ -1,17 +1,31 @@
 <?php
 namespace app\card\controller;
 
+use app\common\logic\wechat\WechatUtil;
 use think\Controller;
 use think\Request;
 use think\Db;
 
 class Index extends Controller
 {
+    /**
+     * card_id=' + id + '&type=' + type + '&order_id=' + order_id + '&pwdstr=' + pwdstr
+     */
     public function index()
     {
-        $card_id = input('card_id',0);
+        $card_id = input('card_id');
+        $type = input('type');
+        $order_id = input('order_id');
+        $pwdstr = input('pwdstr');
+
+        if(!$card_id){
+            echo "<h1>card_id不存在</h1>";
+            exit;
+        }
         $info = Db::name('box')->where('id',$card_id)->find();
         if(!$info){
+            echo "<h1>礼盒不存在</h1>";
+            exit;
             $info['cate_url'] = '';
             $info['music_url'] = '';
             $info['video_url'] = '';
@@ -49,6 +63,43 @@ class Index extends Controller
         $info['photo_url'] = $info['photo_url']?SITE_URL.$info['photo_url']:'';//照片
         $info['voice_url'] = $info['voice_url']?SITE_URL.$info['voice_url']:'';//录音
         $this->assign('info',$info);
+
+        // $url = "{url: '/pages/commodity/detalis/payment/award/award?id=459'}";
+        // $this->assign('url',$url);
+
+        $this->assign('card_id', $card_id);
+        $this->assign('type', $type);
+        $this->assign('order_id', $order_id);
+        $this->assign('pwdstr', $pwdstr);
+
         return $this->fetch();
+    }
+
+
+     //微信Jssdk 操作类 用分享朋友圈 JS
+     public function ajaxGetWxConfig()
+     {
+         $askUrl = input('askUrl');//分享URL
+         $askUrl = urldecode($askUrl);
+ 
+         $config['appid'] = M('config')->where(['name'=>'appid'])->value('value');
+         $config['appsecret'] = M('config')->where(['name'=>'appsecret'])->value('value');
+            $config['web_expires'] =  M('config')->where(['name'=>'web_expires'])->value('value');
+            $config['web_access_token'] = M('config')->where(['name'=>'web_access_token'])->value('value');
+
+
+         $wechat = new WechatUtil($config);
+
+         $signPackage = $wechat->getSignPackage($askUrl);
+ 
+         $this->ajaxReturn($signPackage);
+     }
+
+
+     public function ajaxReturn($data = [],$type = 'json'){
+        header('Content-Type:application/json; charset=utf-8');
+        /*$data   = !empty($data) ? $data : ['status' => 1, 'msg' => '操作成功'];
+        exit(json_encode($data,JSON_UNESCAPED_UNICODE));*/
+        exit(json_encode($data));
     }
 }
