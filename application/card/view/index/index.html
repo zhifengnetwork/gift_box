@@ -976,12 +976,54 @@ body,html{
 
 function test(){
     
-    alert(459000000000)
+    if(isWeiXin()){
 
-    wx.miniProgram.reLaunch("{$url}")
+        $.ajax({
+			type : "POST",
+			url:"/index.php?m=Card&c=Index&a=ajaxGetWxConfig&t="+Math.random(),
+			data:{'askUrl':encodeURIComponent(location.href.split('#')[0])},		
+			dataType:'JSON',
+			success: function(res)
+			{
+                console.log(res)
 
-    alert(66600000000000000)
+				//微信配置
+				wx.config({
+				    debug: false, 
+				    appId: res.appId,
+				    timestamp: res.timestamp, 
+				    nonceStr: res.nonceStr, 
+				    signature: res.signature,
+				    jsApiList: ['invokeMiniProgramAPI'] // 功能列表，我们要使用JS-SDK的什么功能
+				});
+
+                wx.miniProgram.reLaunch("{$url}")
+
+                alert(66600000000000000)
+
+			},
+			error:function(res){
+				console.log("wx.config error:");
+				console.log(res);
+				return false;
+			}
+		}); 
+        
+    }else{
+        alert('请在微信打开')
+    }
+
+  
     
+}
+
+function isWeiXin(){
+    var ua = window.navigator.userAgent.toLowerCase();
+    if(ua.match(/MicroMessenger/i) == 'micromessenger'){
+        return true;
+    }else{
+        return false;
+    }
 }
 
 </script>

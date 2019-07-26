@@ -1,6 +1,7 @@
 <?php
 namespace app\card\controller;
 
+use app\common\logic\wechat\WechatUtil;
 use think\Controller;
 use think\Request;
 use think\Db;
@@ -54,5 +55,29 @@ class Index extends Controller
         $this->assign('url',$url);
 
         return $this->fetch();
+    }
+
+
+     //微信Jssdk 操作类 用分享朋友圈 JS
+     public function ajaxGetWxConfig()
+     {
+         $askUrl = input('askUrl');//分享URL
+         $askUrl = urldecode($askUrl);
+ 
+         $wechat = new WechatUtil;
+         $signPackage = $wechat->getSignPackage($askUrl);
+
+
+      
+ 
+         $this->ajaxReturn($signPackage);
+     }
+
+
+     public function ajaxReturn($data = [],$type = 'json'){
+        header('Content-Type:application/json; charset=utf-8');
+        /*$data   = !empty($data) ? $data : ['status' => 1, 'msg' => '操作成功'];
+        exit(json_encode($data,JSON_UNESCAPED_UNICODE));*/
+        exit(json_encode($data));
     }
 }
