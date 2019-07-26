@@ -255,7 +255,8 @@ class Index extends ApiBase
         $access_token = $this->getAccessToken();
         $url = 'https://api.weixin.qq.com/cgi-bin/message/wxopen/template/send?access_token='.$access_token;
         $data['touser'] = $appid;//openid
-        $data['template_id'] = 'O44yWTdQ-T5VQgOeDVBFRaGqu4oQ5F_N_OhjRUhQ8u8';//模板id，
+        $template_id = Db::name('config')->where('name','template_id')->value('value');
+        $data['template_id'] = $template_id;//模板id，
         $data['page'] = '/pages/turntable/turntable?order_id='.$order_id;//跳转地址加参数
         $data['form_id'] = $form_id;//form_id
         //定义模板需要带的参数
