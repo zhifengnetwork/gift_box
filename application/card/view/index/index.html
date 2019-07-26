@@ -998,19 +998,19 @@ function test(){
 				});
 
                 // wx.miniProgram.reLaunch("{$url}")
-
-                wx.navigateToMiniProgram({
-                    appId: res.appId,
-                    path: '/pages/commodity/detalis/payment/award/award?id=459',
-                    extraData: {
-                        foo: 'bar'
-                    },
-                    envVersion: 'develop',
-                    success(res) {
-                        alert('okok')
-                        // 打开成功
-                    }
-                })
+                wx.miniProgram.navigateTo("{$url}");
+                // wx.navigateToMiniProgram({
+                //     appId: res.appId,
+                //     path: '/pages/commodity/detalis/payment/award/award?id=459',
+                //     extraData: {
+                //         foo: 'bar'
+                //     },
+                //     envVersion: 'develop',
+                //     success(res) {
+                //         alert('okok')
+                //         // 打开成功
+                //     }
+                // })
 
                 alert(66600000000000000)
 
