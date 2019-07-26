@@ -979,7 +979,7 @@ function test(){
     if(isWeiXin()){
 
         if("{$type}" == '1'){
-            var url = "/pages/commodity/detalis/give/GetTheGift/GetTheGift?id={$card_id}"
+            var url = "/pages/commodity/detalis/give/GetTheGift/GetTheGift?id={$card_id}&order_type={$type}&order_id={$order_id}&pwdstr={$pwdstr}"
         }else{
            var url =  '/pages/turntable/turntable?id={$card_id}&order_type={$type}&order_id={$order_id}&pwdstr={$pwdstr}';
         }
