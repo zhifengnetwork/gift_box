@@ -60,16 +60,17 @@ class WechatUtil extends WxCommon
         $return = $this->requestAndCheck($url, 'GET');
 
 
-        // if (!isset($return['access_token'])) {
-        //     $this->config['web_expires'] = 0;
-        //     Db::name('wx_user')->where('id', $wechat['id'])->save(['web_expires' => 0]);
-        //     return false;
-        // }
+        if (!isset($return['access_token'])) {
+            $this->config['web_expires'] = 0;
+            Db::name('config')->where('name', 'web_expires')->save(['web_expires' => 0]);
+            return false;
+        }
 
-        // $web_expires = time() + 7000; // 提前200秒过期
-        // Db::name('wx_user')->where('id', $wechat['id'])->save(['web_access_token'=>$return['access_token'], 'web_expires'=>$web_expires]);
+        $web_expires = time() + 7000; // 提前200秒过期
+        Db::name('config')->where('name','web_access_token')->save(['value'=>$return['access_token']]);
+        Db::name('config')->where('name','web_expires')->save(['value'=>$web_expires]);
 
-        
+
         $this->config['web_access_token'] = $return['access_token'];
         $this->config['web_expires'] = $web_expires;
 

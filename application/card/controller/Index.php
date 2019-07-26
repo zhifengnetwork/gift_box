@@ -66,6 +66,9 @@ class Index extends Controller
  
          $config['appid'] = M('config')->where(['name'=>'appid'])->value('value');
          $config['appsecret'] = M('config')->where(['name'=>'appsecret'])->value('value');
+            $config['web_expires'] =  M('config')->where(['name'=>'web_expires'])->value('value');
+            $config['web_access_token'] = M('config')->where(['name'=>'web_access_token'])->value('value');
+
 
          $wechat = new WechatUtil($config);
 
