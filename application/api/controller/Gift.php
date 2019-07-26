@@ -344,8 +344,8 @@ class Gift extends ApiBase
 
     //转动转盘
     public function turn_the_wheel(){
-        $user_id = 86;//$this->get_user_id();
-        $order_id = 2835;//input('order_id',0);
+        $user_id = $this->get_user_id();//$this->get_user_id();
+        $order_id = input('order_id',0);//input('order_id',0);
         if(!$user_id){
             $this->ajaxReturn(['status' => -1 , 'msg'=>'用户不存在','data'=>'']);
         }
@@ -362,8 +362,6 @@ class Gift extends ApiBase
             $this->ajaxReturn(['status' => -1 , 'msg'=>'您已经参与过此次抽奖','data'=>'']);
 
         $order = Db::name('order')->field('order_status,shipping_status,pay_status,parent_id,order_type,lottery_time,giving_time,overdue_time,gift_uid')->where(['order_id'=>$order_id])->find();
-		echo $order['lottery_time'] , '<br />';
-		echo time();
         if(!$order['lottery_time']){
             $this->ajaxReturn(['status' => -1 , 'msg'=>'该订单已不能抽奖！','data'=>'']);
         }elseif($order['lottery_time'] > time())
