@@ -433,7 +433,7 @@ class Gift extends ApiBase
             }
         }else{
             $where['o.pay_status'] = 1;
-            // $where['o.parent_id'] = 0;
+            $where['o.parent_id'] = 0;
             $where['o.order_type'] = ['neq',0];
             $where['o.order_status']=['in',[0,1]];
             $order = Db::name('order')->alias('o')
@@ -442,24 +442,23 @@ class Gift extends ApiBase
                 ->where($where)
                 ->page($page,$num)
                 ->select();
-            $parent_id = array();
-            foreach($order as $key=>$val){
-                if(!in_array($val['parent_id'],$parent_id)){
-                    $parent_id[] = $val['parent_id'];
-                }
-                //子订单商品总价给他显示单价
-                if($val['parent_id']){
-                    $order[$key]['order_amount'] = $val['goods_price'];
-                }
-            }
-            foreach($order as $key=>$val){
-                if(in_array($val['order_id'],$parent_id)){
-                    unset($order[$key]);
-                }
-            }
-            if($order){
-                sort($order);
-            }
+            // foreach($order as $key=>$val){
+            //     if(!in_array($val['parent_id'],$parent_id)){
+            //         $parent_id[] = $val['parent_id'];
+            //     }
+            //     //子订单商品总价给他显示单价
+            //     if($val['parent_id']){
+            //         $order[$key]['order_amount'] = $val['goods_price'];
+            //     }
+            // }
+            // foreach($order as $key=>$val){
+            //     if(in_array($val['order_id'],$parent_id)){
+            //         unset($order[$key]);
+            //     }
+            // }
+            // if($order){
+            //     sort($order);
+            // }
         }
         foreach($order as $key=>$val){
             $order[$key]['img'] = Db::name('goods_img')->where(['goods_id'=>$val['goods_id'],'main'=>1])->value('picture');
