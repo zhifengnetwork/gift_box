@@ -23,7 +23,7 @@ class Order extends ApiBase
         }
         //购物车商品
         $address_id = input('address_id/d',0);
-
+       
 		//$cart_where['id'] = array('in',$idStr);
         $cart_where['selected']=1;
         $cart_where['user_id'] = $user_id;
@@ -222,11 +222,25 @@ class Order extends ApiBase
         $user_note = input("user_note", '', '');
         // 查询地址是否存在
         $AddressM = model('UserAddr');
+
         $invoice_title = I('post.invoice_title/s',''); //发票抬头
         $taxpayer = I('post.taxpayer/s',''); //纳税人识别号
         $invoice_desc = I('post.invoice_desc/s',''); //发票内容
         $invoice_mobile = I('post.invoice_mobile/s',''); //收票人手机
         $invoice_email = I('post.invoice_email/s','');  //收票人邮箱
+
+        //有可能传invoice_id
+        $invoice_id = I('invoice_id');
+        if($invoice_id){
+            $invoice_array = M('invoice')->where(['user_id'=>$user_id])->find();
+
+            $invoice_title = $invoice_array['invoice_title']; //发票抬头
+            $taxpayer = $invoice_array['taxpayer']; //纳税人识别号
+            $invoice_desc = $invoice_array['invoice_desc']; //发票内容
+            $invoice_mobile = $invoice_array['invoice_mobile']; //收票人手机
+            $invoice_email = $invoice_array['invoice_email'];  //收票人邮箱
+        }
+
         $box_id = I('post.box_id',0);  //礼盒id
         if($invoice_desc && !$invoice_mobile)
             $this->ajaxReturn(['status' => -1 , 'msg'=>'请填写收票人手机！','data'=>'']);
