@@ -231,24 +231,9 @@ class Gift extends ApiBase
                 Db::rollback();
                 $this->ajaxReturn(['status' => -1 , 'msg'=>'操作失败','data'=>$pwdstr]);    
             }
-        }else
-            $r = M('Order')->where(['order_id'=>$order_id])->whereor(['parent_id'=>$order_id])->update($data);
-        $order_goods = Db::name('order_goods')->where('order_id',$order['order_id'])->find();
-        $order_goods['img'] = Db::name('goods_sku')->where('sku_id',$order_goods['sku_id'])->value('img');
-        $order_goods['img'] = $order_goods['img']?SITE_URL.$order_goods['img']:'';
-        if($address_id){
-            $address = Db::name('user_address')->where('address_id',$address_id)->find();
-        }else{
-            $address = Db::name('user_address')->where('user_id',$user_id)->where('is_default',1)->find();
-        }
-        if($address){
-            $address['province'] = Db::name('region')->where('area_id',$address['province'])->value('area_name');
-            $address['city'] = Db::name('region')->where('area_id',$address['city'])->value('area_name');
-            $address['district'] = Db::name('region')->where('area_id',$address['district'])->value('area_name');
-            $address['twon'] = Db::name('region')->where('area_id',$address['twon'])->value('area_name');
         }
         if(false !== $r){
-            $this->ajaxReturn(['status' => 1 , 'msg'=>'操作成功','data'=>['pwdstr'=>$pwdstr,'goods'=>$order_goods,'address'=>$address,'card_id'=>$order['box_id'],'type'=>$order['order_type']]]);
+            $this->ajaxReturn(['status' => 1 , 'msg'=>'操作成功','data'=>['pwdstr'=>$pwdstr,'card_id'=>$order['box_id'],'type'=>$order['order_type']]]);
         }else{
             $this->ajaxReturn(['status' => -1 , 'msg'=>'操作失败','data'=>$pwdstr]);    
         }
