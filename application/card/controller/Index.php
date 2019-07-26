@@ -8,22 +8,15 @@ use think\Db;
 
 class Index extends Controller
 {
+    /**
+     * card_id=' + id + '&type=' + type + '&order_id=' + order_id + '&pwdstr=' + pwdstr
+     */
     public function index()
     {
         $card_id = input('card_id');
         $type = input('type');
-
+        $order_id = input('order_id');
         $pwdstr = input('pwdstr');
-
-      
-    //       // if (app.globalData.give.order_type == 1) {
-    // url = '/pages/card/go?id=' + app.globalData.makecard + '&type=' + app.globalData.give.order_type +
-    // '&order_id=' + app.globalData.give.order_id + '&pwdstr=' + this.data.pwdstr
-    // // } else {
-    // //   url = '/pages/turntable/turntable?order_id=' + this.data.order_id;
-    // // }
-
-
 
         if(!$card_id){
             echo "<h1>card_id不存在</h1>";
@@ -75,6 +68,9 @@ class Index extends Controller
         // $this->assign('url',$url);
 
         $this->assign('card_id', $card_id);
+        $this->assign('type', $type);
+        $this->assign('order_id', $order_id);
+        $this->assign('pwdstr', $pwdstr);
 
         return $this->fetch();
     }
