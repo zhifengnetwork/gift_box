@@ -79,9 +79,8 @@ class Index extends Controller
         if($type == '2' && $order_id){
             $lottery_time = M('order')->where(['order_id'=>$order_id])->value('lottery_time');
             $lottery_time = date('Y-m-d H:i:s',$lottery_time);
-            $this->assign('lottery_time', $lottery_time);
         }
-
+        $this->assign('lottery_time', $lottery_time);
 
 
         return $this->fetch();
