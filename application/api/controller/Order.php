@@ -705,12 +705,17 @@ class Order extends ApiBase
         return $order_list;
     }
 
+    /**
+     * 不用token
+     * 只是查订单信息
+     */
 	public function get_order_info(){
-        $user_id = $this->get_user_id();
-        if(!$user_id){
-            $this->ajaxReturn(['status' => -1 , 'msg'=>'用户不存在','data'=>'']);
+      
+        $order_id = input('order_id');
+        if(!$order_id){
+            $this->ajaxReturn(['status' => -1 , 'msg'=>'order_id不存在','data'=>'']);
         }
-		$order_id = input('order_id/d',0);
+
 		$info = M('Order_goods')->field('goods_id,goods_name,sku_id')->where(['order_id'=>$order_id])->find();
 		if(!$info){
             $this->ajaxReturn(['status' => -1 , 'msg'=>'订单不存在','data'=>'']);
