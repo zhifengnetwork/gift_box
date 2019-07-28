@@ -1024,13 +1024,16 @@ body,html{
     </div>
 
     <a onclick="test()" class="bos3_a" >直接跳過></a>
-        <div id="mask-kk"></div>     
-        <div class="popup-kk">
-            <span class="span1">1233</span>
-            <span class="span2">123</span>
+    
+    
+    <!-- 抽奖时间 -->
+    <div id="mask-kk"></div>     
+    <div class="popup-kk">
+        <span class="span1">開獎時間：</span>
+        <span class="span2">{$lottery_time}</span>
         <span class="close"></span>
-         </div>
-
+    </div>
+    
 
     <!-- 播放音乐 -->
     {if condition="$info.music_url"}
@@ -1058,32 +1061,50 @@ function test(){
 
         if("{$type}" == '1'){
             var url = "/pages/commodity/detalis/give/GetTheGift/GetTheGift?id={$card_id}&order_type={$type}&order_id={$order_id}&pwdstr={$pwdstr}"
+            // 礼盒
+            gominiprogram(url);
+
         }else{
-           var url =  '/pages/turntable/turntable?id={$card_id}&order_type={$type}&order_id={$order_id}&pwdstr={$pwdstr}';
+
+            $("#mask-kk").show();
+            $(".popup-kk").show();
+
+           //var url =  '/pages/turntable/turntable?id={$card_id}&order_type={$type}&order_id={$order_id}&pwdstr={$pwdstr}';
+
+            //转盘
+            //开奖时间到了吗
+
+            //gominiprogram(url);
+
         }
 
-        wx.miniProgram.navigateTo({
-            url:url,
-            success: function(){
-                console.log('success')
-            },
-            fail: function(){
-                console.log('fail');
-            },
-            complete:function(){
-                console.log('complete');
-            }
-
-        });
+        
         
         
     }else{
         alert('请在微信打开')
     }
    
-    $("#mask-kk").show();
-    $(".popup-kk").show();
+    
 }
+
+function gominiprogram(url){
+
+    wx.miniProgram.navigateTo({
+        url:url,
+        success: function(){
+            console.log('success')
+        },
+        fail: function(){
+            console.log('fail');
+        },
+        complete:function(){
+            console.log('complete');
+        }
+    });
+
+}
+
 $(".close").click(function(){
    
     $("#mask-kk").hide();
