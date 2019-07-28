@@ -230,4 +230,15 @@ class Box extends ApiBase
         }
     }
 
+
+    /**
+     * 小程序 分享 记录
+     */
+    public function share_log(){
+        $url = I('url');
+        $ur = urldecode($url);
+        write_log($content);
+        $this->ajaxReturn(['status' => 1 , 'msg'=>'log记录成功','data'=>'']);
+    }
+
 }
