@@ -18,6 +18,8 @@ class Index extends Controller
         $order_id = input('order_id');
         $pwdstr = input('pwdstr');
 
+        write_log(SITE_URL.'/card?card_id='.$card_id.'&type='.$type.'&order_id='.$order_id.'&pwdstr='.$pwdstr);
+
         if(!$card_id){
             echo "<h1>card_id不存在</h1>";
             $protocol = ((!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] != 'off') || $_SERVER['SERVER_PORT'] == 443) ? "https://": "http://";
