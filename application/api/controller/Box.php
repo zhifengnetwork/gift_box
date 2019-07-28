@@ -218,6 +218,14 @@ class Box extends ApiBase
             $result['msg'] = '该盒子不存在';
             $this->ajaxReturn($result);
         }
+        
+        //如果留言为空
+        if(!isset($data)){
+            $result['status'] = 1;
+            $result['msg'] = '数据未改变';
+            $this->ajaxReturn($result);
+        }
+
         $res = Db::table('box')->where('id',$id)->update($data);
         if($res){
             $result['status'] = 1;

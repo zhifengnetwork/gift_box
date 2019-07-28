@@ -7,6 +7,7 @@ use think\Request;
 use think\Session;
 use think\captcha\Captcha;
 use app\common\util\jwt\JWT;
+use app\common\model\Member as MemberModel;
 
 class Jifen extends ApiBase
 {
