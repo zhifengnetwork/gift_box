@@ -229,6 +229,7 @@ class Gift extends ApiBase
             }else{
                 // 回滚事务
                 Db::rollback();
+                $r = false;
                 $this->ajaxReturn(['status' => -1 , 'msg'=>'操作失败','data'=>$pwdstr]);    
             }
         }
