@@ -131,6 +131,7 @@ class Gift extends ApiBase
 
     //分享回调
     public function share_callback(){
+        $r = true;
         $user_id = $this->get_user_id();
         $address_id = input('address_id/d',0);
         // $user_id = 86;
