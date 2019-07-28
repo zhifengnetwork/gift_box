@@ -236,7 +236,7 @@ class Box extends ApiBase
      */
     public function share_log(){
         $url = I('url');
-        $ur = urldecode($url);
+        $content = urldecode($url);
         write_log($content);
         $this->ajaxReturn(['status' => 1 , 'msg'=>'log记录成功','data'=>'']);
     }
