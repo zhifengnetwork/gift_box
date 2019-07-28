@@ -731,7 +731,7 @@ class Order extends ApiBase
 
 		$info['img'] = $info['img'] ? SITE_URL.$info['img'] : '';
 
-		$address = M('user_address')->where(['user_id'=>$order['user_id']])->order('is_default desc')->limit('0,1')->find();
+		$address = M('user_address')->where(['user_id'=>$info['user_id']])->order('is_default desc')->limit('0,1')->find();
 		if($address){
 			$address['province_name'] = $address['province'] ? M('region')->where(['area_id'=>$address['province']])->value('area_name') : '';
 			$address['city_name'] = $address['city'] ? M('region')->where(['area_id'=>$address['city']])->value('area_name') : '';
