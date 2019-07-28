@@ -20,6 +20,9 @@ class Index extends Controller
 
         if(!$card_id){
             echo "<h1>card_id不存在</h1>";
+            $protocol = ((!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] != 'off') || $_SERVER['SERVER_PORT'] == 443) ? "https://": "http://";
+            $nowurl = $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
+            echo $nowurl;//输出完整的url
             exit;
         }
         $info = Db::name('box')->where('id',$card_id)->find();
