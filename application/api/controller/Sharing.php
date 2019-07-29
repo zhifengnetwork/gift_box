@@ -113,6 +113,9 @@ class Sharing extends ApiBase
         $list = Db::name('sharing_comment')->where('sharing_id',$sharing_id)->order('addtime desc')->page($page,$num)->select();
         foreach($list as $key=>$val){
             $list[$key]['nickname'] = Db::name('member')->where('id',$val['user_id'])->value('nickname');
+            $list[$key]['addtime'] = date('Y-m-d H:i:s',$val['addtime']);
+            $list[$key]['avatar'] = Db::name('member')->where('id',$val['user_id'])->value('avatar');
+            $list[$key]['avatar']=substr($list[$key]['avatar'],0,1) != 'h'?SITE_URL.$list[$key]['avatar']:$list[$key]['avatar'];
         }
         $this->ajaxReturn(['status' => 1 , 'msg'=>'成功','data'=>$list]);
     }
