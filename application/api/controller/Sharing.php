@@ -20,14 +20,16 @@ class Sharing extends ApiBase
             }
         }
         $data['title'] = input('title');
+        $data['type'] = input('type');
         $data['content'] = input('content');
         $data['user_id'] = $user_id;
         $data['lat'] = input('lat');
         $data['lon'] = input('lon');
         $data['priture'] = input('priture');
         $data['topic_id'] = input('topic_id');
-        // $data['topic_id'] = input('topic_id');
         $data['topic_id'] = str_replace(SITE_URL,'',$data['topic_id']);
+        $data['cover'] = input('cover');
+        $data['cover'] = str_replace(SITE_URL,'',$data['cover']);
         $data['addtime'] = time();
         if($id){
             $res = Db::name('sharing_circle')->where('id',$id)->update($data);
@@ -62,6 +64,7 @@ class Sharing extends ApiBase
         $page = input('page',1);
         $num = input('num',10);
         $topic_id = input('topic_id',0);//0推荐 -1附近
+        $where['sc.status'] = 1;
         if($topic_id == '-1'){
             $where['sc.is_rec'] = 1;//待完善
         }else if($topic_id){
@@ -76,5 +79,32 @@ class Sharing extends ApiBase
         }
         $this->ajaxReturn(['status' => 1 , 'msg'=>'成功','data'=>$list]);
     }
+
+    //分享详情
+    public function Sharing_info()
+    {
+        $id = input('id',0);
+        $info = Db::name('sharing_circle')->field('lat,lon,status',true)->where('id',$id)->find();
+        if(!$info){
+            $this->ajaxReturn(['status' => -1 , 'msg'=>'享物圈不存在','data'=>'']);
+        }
+        $user = Db::name('member')->field('avatar,nickname')->where('id',$info['user_id'])->find();
+        $info['avatar'] = substr($user['avatar'],0,1) != 'h'?SITE_URL.$user['avatar']:$user['avatar'];
+        $info['nickname'] = $user['nickname'];
+        $info['addtime'] = date('Y-m-d H:i:s',time());
+        $info['priture'] = explode(',',$info['priture']);
+        $info['cover'] = $info['cover']?SITE_URL.$info['cover']:'';
+        foreach($info['priture'] as $key=>$val){
+            $info['priture'][$key] = SITE_URL.$val;
+        }
+        $info['comment'] = Db::name('sharing_comment')->where('sharing_id',$id)->order('addtime desc')->limit(3)->select();
+        foreach($info['comment'] as $key=>$val){
+            $info['comment'][$key]['nickname'] = Db::name('member')->where('id',$val['user_id'])->value('nickname');
+        }
+        $this->ajaxReturn(['status' => 1 , 'msg'=>'成功','data'=>$info]);
+    }
+
+    //评论列表
+    
 
 }

@@ -1059,6 +1059,24 @@ body,html{
 <script>
     var x = document.getElementById("media"); 
     var y = document.getElementById("media2"); 
+
+
+document.addEventListener("visibilitychange", () => { 
+    if(document.hidden) {
+    // 页面被挂起,暂停播放
+        console.log("页面被挂起,暂停播放")
+        x.pause();
+        y.pause();        
+     }else {
+    // 页面呼出
+                   
+     }
+});
+
+
+
+
+
 function test(){
 
     console.log(66)
@@ -1111,6 +1129,8 @@ function gominiprogram(url){
     });
 
 }
+
+
 
 $(".close").click(function(){
    
