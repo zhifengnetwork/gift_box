@@ -20,7 +20,6 @@ class Team extends Controller{
     {
         $this->lottery();   //群抢开奖
         $this->setGiving();   ///检测过期时间
-        M('A')->add(['msg'=>date('Y-m-d H:i:s',time())]);
     }
 
     //检测赠送过期时间，每分钟执行一次
@@ -45,7 +44,6 @@ class Team extends Controller{
 
     //群抢开奖，每分钟执行一次
     public function lottery(){
-        M('A')->add(['msg'=>date('Y-m-d H:i:s')]);
         //获取开奖时间100秒以内，且未设置开奖用户的群抢订单
         $Order = M('Order');
         $list = $Order->field('order_id,overdue_time')->where(['order_type'=>2,'lottery_time'=>['between',[time()-120,time()]],'gift_uid'=>0])->select();  
