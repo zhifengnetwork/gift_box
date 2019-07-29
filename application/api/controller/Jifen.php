@@ -66,7 +66,7 @@ class Jifen extends ApiBase
         $data['card_num'] = $card_num;
         $data['order_id'] = $order_id;
         $data['addtime'] = time();
-        $data['status'] = 1;
+        $data['status'] = 0;
         Db::name('order')->where(['order_id' => $order_id])->update(['pay_status'=>5,'transaction_id'=>'jifen']);
         $res = Db::name('order_examine')->insert($data);
         if($res){

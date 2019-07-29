@@ -1,0 +1,83 @@
+{extend name="common:base" /}
+{block name="style"}
+<style type="text/css">
+.table>thead>tr>th {
+    text-align: center;
+}
+</style>
+{/block}
+
+{block name="content"}
+<div class="ibox">
+    <div class="ibox-content">
+            <div class="row">
+               <form  method="get" action="{:url()}">
+                    <div class="col-sm-2">
+                        <div class="form-group">
+                            <label class="control-label" for="status">审核状态</label>
+                            <select name="orderstatus" class="form-control" style="width:180px;">
+                                
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="col-sm-2">
+                            <div class="form-group">
+                                <label class="control-label" for="order_id">订单号</label>
+                                <input type="text" placeholder="订单号" name="order_sn" value="{$order_sn}" class="form-control">
+                            </div>
+                    </div>
+                    <div class="col-sm-1">
+                        <div class="form-group">
+                            <label class="control-label" for="status">　</label>
+                            <div>
+                                <button class="btn btn-primary">查询</button>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+           </div>
+       </div>
+                <div class="ibox-content">
+                    <div class="table-responsive">
+                        <table class="table  table-bordered table-hover text-center">
+                            <thead>
+                                <tr>
+                                    <th class="col-lg-2">订单号</th>
+                                    <th >会员卡号</th>
+                                    <th>会员姓名</th>
+                                    <th>订单金额（元）</th>
+                                    <th>订单状态</th>
+                                    <th>审核状态</th>
+                                    <th>提交审核时间</th>
+                                    <!-- <th>审核时间</th> -->
+                                    <th>操作</th>
+                                </tr>
+                            </thead> 
+                            <tbody>
+                                {notempty name="list"}
+                                {volist name="list" id="vo"}
+                                <tr>
+                                    <td>{$vo.order_sn}</td>
+                                    <td>{$vo.card_num}</td>
+                                    <td>{$vo.card_name}</td>
+                                    <td>{$vo.order_amount}</td>
+                                    <td>{$vo.pay_status}</td>
+                                    <td>{$status[$vo['status']]}</td>
+                                    <td>{$vo.addtime|date="Y-m-d H:i:s",###}</td>
+                                    <!-- <td>{$vo.examine_time|date="Y-m-d H:i:s",###}</td> -->
+                                    <td>
+                                        <a class="btn btn-default" href="{:url('order/edit',['order_id'=>$vo.id])}"><i class="fa fa-list"></i> 审核</a>
+                                    </td>
+                                </tr>
+                                {/volist}
+                                {/notempty}
+                            </tbody>
+                        </table>
+                        {$list->render()}
+                    </div>
+                </div>
+                
+
+
+{/block}

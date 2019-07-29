@@ -640,7 +640,19 @@ class Order extends Common
    //积分支付订单
    public function jifen()
    {
-    //    $order_
-       return $this->fetch();
+        $status = input('status',0);
+        $order_sn = input('order_sn','');
+        if($status){
+           $where['oe.status'] = $status;
+        }
+        if($order_sn){
+            $where['o.order_sn'] = array('like','%'.$order_sn.'%');
+        }
+        $status = ['未审核','审核通过','审核不通过'];
+        $order_list = Db::name('order')->alias('o')->field('o.order_sn,o.order_id,oe.id,o.pay_status,oe.addtime,oe.examine_time,oe.status,o.order_amount,oe.card_num,oe.card_name')->join('order_examine oe','oe.order_id=o.order_id')->paginate(10);
+        $this->assign('list',$order_list);
+        $this->assign('status',$status);
+        $this->assign('order_sn',$order_sn);
+        return $this->fetch();
    }
 }
