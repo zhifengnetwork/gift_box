@@ -44,33 +44,14 @@ class Team extends Controller{
     }
 
     //群抢开奖，每分钟执行一次
-    /* $wx_content = "订单支付成功！\n\n订单：{$order_sn}\n支付时间：{$time}\n商户：凡露希环球直供\n金额：{$order['total_amount']}\n\n【凡露希环球直供】欢迎您的再次购物！";
-    $wechat = new \app\common\logic\wechat\WechatUtil();
-    $wechat->sendMsg($userinfo['openid'], 'text', $wx_content);   */  
     public function lottery(){
+        M('A')->add(['msg'=>date('Y-m-d H:i:s')]);
         //获取开奖时间100秒以内，且未设置开奖用户的群抢订单
         $Order = M('Order');
         $list = $Order->field('order_id,overdue_time')->where(['order_type'=>2,'lottery_time'=>['between',[time()-120,time()]],'gift_uid'=>0])->select();  
 
         $GiftOrderJoin = M('gift_order_join');
         foreach($list as $v){
-            // $num = $GiftOrderJoin->where(['order_id'=>$v['order_id'],'order_type'=>2,'join_status'=>['neq',4]])->count();
-            // if($num == 0){  //无人参与
-            //     $Order->where(['order_id'=>$v['order_id']])->update(['lottery_time'=>0,'giving_time'=>0,'overdue_time'=>0]);
-            // }elseif($num == 1){  //只有一人参与
-            //     $info = $GiftOrderJoin->field('id,user_id')->where(['order_id'=>$v['order_id'],'order_type'=>2,'join_status'=>['neq',4]])->find();
-            //     $this->set_gift_time1($Order,$GiftOrderJoin,$v,$info);
-            // }elseif($num > 1){  //多人参与
-            //     //查看有无内定
-            //     $info = $GiftOrderJoin->field('id,user_id')->where(['order_id'=>$v['order_id'],'order_type'=>2,'status'=>1,'join_status'=>['neq',4]])->find();
-            //     if(!$info){
-            //         //随机取一条
-            //         $n = rand(1,$num);  
-            //         $info = $GiftOrderJoin->field('id,user_id')->where(['order_id'=>$v['order_id'],'order_type'=>2,'join_status'=>['neq',4]])->limit($n-1,1)->find();
-            //     }
-            //     $this->set_gift_time1($Order,$GiftOrderJoin,$v,$info);
-            // }
-
             //开奖推送
             $join_list = $GiftOrderJoin->where(['order_id'=>$v['order_id'],'order_type'=>2,'join_status'=>['neq',4]])->column('user_id');
             if($join_list){
