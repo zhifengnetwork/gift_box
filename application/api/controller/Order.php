@@ -736,7 +736,8 @@ class Order extends ApiBase
             //有地址
             $address = M('user_address')->where(['address_id'=>$address_id])->find();
         }else{
-            $address = M('user_address')->where(['user_id'=>$info['user_id']])->order('is_default desc')->limit('0,1')->find();
+            //$address = M('user_address')->where(['user_id'=>$info['user_id']])->order('is_default desc')->limit('0,1')->find();
+            $address = [];
         }
 
 		if($address){
