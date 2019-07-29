@@ -133,8 +133,6 @@ class Gift extends ApiBase
     public function share_callback(){
         $r = true;
         $user_id = $this->get_user_id();
-        $address_id = input('address_id/d',0);
-        // $user_id = 86;
         if(!$user_id){
             $this->ajaxReturn(['status' => -1 , 'msg'=>'用户不存在','data'=>'']);
         }
@@ -216,13 +214,19 @@ class Gift extends ApiBase
             $pwdstr = $this->create_token($order_id,$order['overdue_time']);
         }
 
-        if($act == 3){
+        if($act == 0){
+            $data['lottery_time'] = (time() + $start_time * 60);
+            $data['overdue_time'] = (time() + $end_time * 60);
+            $r = M('Order')->where(['order_id'=>$order_id])->update($data);
+        }elseif($act == 3){
             // 启动事务
             Db::startTrans();
 
             $res = M('gift_order_join')->field('id')->where(['id'=>$joininfo['id']])->update(['join_status'=>5]);
             if($res !== false){
                 $data['order_type'] = 1;
+                $data['lottery_time'] = (time() + $start_time * 60);
+                $data['overdue_time'] = (time() + $end_time * 60);
                 $r = M('Order')->where(['order_id'=>$order_id])->update($data);
                 // 提交事务
                 Db::commit(); 
