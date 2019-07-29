@@ -18,7 +18,7 @@ class Team extends Controller{
      */
     public function run()
     {
-        //$this->lottery();   //群抢开奖
+        $this->lottery();   //群抢开奖
         $this->setGiving();   ///检测过期时间
         M('A')->add(['msg'=>date('Y-m-d H:i:s',time())]);
     }
@@ -44,10 +44,8 @@ class Team extends Controller{
     }
 
     //群抢开奖，每分钟执行一次
-    /* $wx_content = "订单支付成功！\n\n订单：{$order_sn}\n支付时间：{$time}\n商户：凡露希环球直供\n金额：{$order['total_amount']}\n\n【凡露希环球直供】欢迎您的再次购物！";
-    $wechat = new \app\common\logic\wechat\WechatUtil();
-    $wechat->sendMsg($userinfo['openid'], 'text', $wx_content);   */  
     public function lottery(){
+        M('A')->add(['msg'=>date('Y-m-d H:i:s')]);
         //获取开奖时间100秒以内，且未设置开奖用户的群抢订单
         $Order = M('Order');
         $list = $Order->field('order_id,overdue_time')->where(['order_type'=>2,'lottery_time'=>['between',[time()-120,time()]],'gift_uid'=>0])->select();  
