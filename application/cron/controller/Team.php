@@ -53,7 +53,7 @@ class Team extends Controller{
         $list = $Order->field('order_id,overdue_time')->where(['order_type'=>2,'lottery_time'=>['between',[time()-60,time()]],'gift_uid'=>0])->select();  
 
         $GiftOrderJoin = M('gift_order_join');
-        foreach($list as $v){
+        foreach($list as $v){/*
             $num = $GiftOrderJoin->where(['order_id'=>$v['order_id'],'order_type'=>2,'join_status'=>['neq',4]])->count();
             if($num == 0){  //无人参与
                 $Order->where(['order_id'=>$v['order_id']])->update(['lottery_time'=>0,'giving_time'=>0,'overdue_time'=>0]);
@@ -69,7 +69,7 @@ class Team extends Controller{
                     $info = $GiftOrderJoin->field('id,user_id')->where(['order_id'=>$v['order_id'],'order_type'=>2,'join_status'=>['neq',4]])->limit($n-1,1)->find();
                 }
                 $this->set_gift_time1($Order,$GiftOrderJoin,$v,$infos);
-            }
+            }*/
 
             //开奖推送
             $join_list = $GiftOrderJoin->where(['order_id'=>$v['order_id'],'order_type'=>2,'join_status'=>['neq',4]])->column('user_id');
