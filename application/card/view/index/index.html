@@ -1057,9 +1057,11 @@ body,html{
 <!-- <script src="https://res.wx.qq.com/open/js/jweixin-1.0.0.js"></script>  -->
 
 <script>
-
+    var x = document.getElementById("media"); 
+    var y = document.getElementById("media2"); 
 function test(){
-    
+
+    console.log(66)
     if(isWeiXin()){
 
         if("{$type}" == '1'){
@@ -1088,6 +1090,8 @@ function test(){
         alert('请在微信打开')
     }
    
+    x.pause();
+    y.pause();
     
 }
 
