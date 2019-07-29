@@ -649,9 +649,12 @@ class Order extends Common
             $where['o.order_sn'] = array('like','%'.$order_sn.'%');
         }
         $status = ['未审核','审核通过','审核不通过'];
-        $order_list = Db::name('order')->alias('o')->field('o.order_sn,o.order_id,oe.id,o.pay_status,oe.addtime,oe.examine_time,oe.status,o.order_amount,oe.card_num,oe.card_name')->join('order_examine oe','oe.order_id=o.order_id')->paginate(10);
+        $order_list = Db::name('order')->alias('o')->field('o.order_sn,o.order_id,oe.id,o.pay_status,oe.addtime,oe.examine_time,oe.status,o.order_amount,oe.card_num,oe.card_name')->join('order_examine oe','oe.order_id=o.order_id')->order('oe.addtime desc')->paginate(10);
+        //支付状态
+        $pay_status         = config('PAY_STATUS');
         $this->assign('list',$order_list);
         $this->assign('status',$status);
+        $this->assign('pay_status',$pay_status);
         $this->assign('order_sn',$order_sn);
         return $this->fetch();
    }

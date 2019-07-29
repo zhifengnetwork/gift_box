@@ -47,13 +47,13 @@ class Jifen extends ApiBase
         $card_mobile = I('card_mobile');
         $card_name = I('card_name');
         $card_num = I('card_num');
-        if($card_mobile){
+        if(!$card_mobile){
             $this->ajaxReturn(['status' => -1 , 'msg'=>'vip卡号!','data'=>'']);
         }
-        if($card_mobile){
+        if(!$card_mobile){
             $this->ajaxReturn(['status' => -1 , 'msg'=>'会员名字!','data'=>'']);
         }
-        if($card_mobile){
+        if(!$card_mobile){
             $this->ajaxReturn(['status' => -1 , 'msg'=>'请输入手机号码!','data'=>'']);
         }
          

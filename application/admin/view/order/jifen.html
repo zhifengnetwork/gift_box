@@ -62,7 +62,7 @@
                                     <td>{$vo.card_num}</td>
                                     <td>{$vo.card_name}</td>
                                     <td>{$vo.order_amount}</td>
-                                    <td>{$vo.pay_status}</td>
+                                    <td>{$pay_status[$vo['pay_status']]}</td>
                                     <td>{$status[$vo['status']]}</td>
                                     <td>{$vo.addtime|date="Y-m-d H:i:s",###}</td>
                                     <!-- <td>{$vo.examine_time|date="Y-m-d H:i:s",###}</td> -->
