@@ -640,6 +640,7 @@ class Order extends Common
    //积分支付订单
    public function jifen()
    {
+    //    $order_
        return $this->fetch();
    }
 }
