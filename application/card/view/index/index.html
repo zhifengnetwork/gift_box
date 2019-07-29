@@ -840,6 +840,7 @@ body,html{
     background: #666;
     opacity: 0.7;
     display: none;
+   
 }
 .popup-kk{
     position: absolute;
@@ -852,6 +853,8 @@ body,html{
     z-index: 1003;
     display: none;
     border-radius:5px;
+    background-image: url(/image/share.png);
+    background-size: 100% 100%;
 }
 .span1{
     position: absolute;
@@ -1025,15 +1028,15 @@ body,html{
 
     <a onclick="test()" class="bos3_a" >直接跳過></a>
     
-    
-    <!-- 抽奖时间 -->
-    <div id="mask-kk"></div>     
-    <div class="popup-kk">
-        <span class="span1">開獎時間：</span>
-        <span class="span2">{$lottery_time}</span>
-        <span class="close"></span>
-    </div>
-    
+    {if condition="$type == 2 "}
+        <!-- 抽奖时间 -->
+        <div id="mask-kk"></div>     
+        <div class="popup-kk">
+            <span class="span1">開獎時間：</span>
+            <span class="span2">{$lottery_time}</span>
+            <span class="close"></span>
+        </div>
+    {/if}
 
     <!-- 播放音乐 -->
     {if condition="$info.music_url"}
