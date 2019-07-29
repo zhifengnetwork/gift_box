@@ -489,4 +489,30 @@ class Gift extends ApiBase
         return $shipping_price;
     }
 
+    //获取订单开奖状态
+    public function get_lottery_status(){
+        $user_id = $this->get_user_id();
+        $order_id = input('order_id',0);
+        if(!$user_id){
+            $this->ajaxReturn(['status' => -1 , 'msg'=>'用户不存在','data'=>'']);
+        }
+        if(!$order_id){
+            $this->ajaxReturn(['status' => -1 , 'msg'=>'订单id不能为空','data'=>'']);
+        }  
+        
+        $info = M('Order')->field('order_type,lottery_time,giving_time,overdue_time,gift_uid')->find($order_id);
+
+        if(!$info){
+            $this->ajaxReturn(['status' => -1 , 'msg'=>'订单不存在','data'=>'']);
+        } 
+
+        $lottery_status = 0;
+        if($info['lottery_time'] <= time())$lottery_status = 1;
+        if($info['overdue_time'] <= time())$lottery_status = 2;
+        if($info['gift_uid'] > 0)$lottery_status = 3;
+
+        $info['lottery_status'] = $lottery_status;
+        $this->ajaxReturn(['status' => 1 , 'msg'=>'请求成功','data'=>$info]);
+    }
+
 }
