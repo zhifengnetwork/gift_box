@@ -515,6 +515,12 @@ class Gift extends ApiBase
             $this->ajaxReturn(['status' => -1 , 'msg'=>'订单不存在','data'=>'']);
         } 
 
+        $info['addressid'] = 0;
+        if($info['gift_uid']){
+            $addressid = M('gift_order_join')->where(['order_id'=>$order_id,'user_id'=>$user_id,'status'=>1])->value('addressid');
+            $info['addressid'] = $addressid;
+        }
+
         $lottery_status = 0;
         if($info['lottery_time'] <= time())$lottery_status = 1;
         if($info['overdue_time'] <= time())$lottery_status = 2;
