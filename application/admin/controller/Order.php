@@ -10,6 +10,7 @@ use Overtrue\Wechat\Payment\Refund;
 use think\Request;
 use \think\Db;
 use think\Exception;
+use think\Session;
 
 //物流api
 use app\home\controller\Api;
@@ -637,25 +638,61 @@ class Order extends Common
         return $where;
     }
 
-   //积分支付订单
-   public function jifen()
-   {
+    //积分支付订单
+    public function jifen()
+    {
         $status = input('status',0);
         $order_sn = input('order_sn','');
-        if($status){
+        $where['id'] = array('gt',0);
+        $query = array();
+        if($status != ''){
            $where['oe.status'] = $status;
+           $query['status'] = $status;
         }
         if($order_sn){
             $where['o.order_sn'] = array('like','%'.$order_sn.'%');
+            $query['order_sn'] = $order_sn;
         }
-        $status = ['未审核','审核通过','审核不通过'];
-        $order_list = Db::name('order')->alias('o')->field('o.order_sn,o.order_id,oe.id,o.pay_status,oe.addtime,oe.examine_time,oe.status,o.order_amount,oe.card_num,oe.card_name')->join('order_examine oe','oe.order_id=o.order_id')->order('oe.addtime desc')->paginate(10);
+        $status_arr = ['未审核','审核通过','审核不通过'];
+        $order_list = Db::name('order')->alias('o')->field('o.order_sn,o.order_id,oe.id,o.pay_status,oe.addtime,oe.examine_time,oe.status,o.order_amount,oe.card_num,oe.card_name,oe.admin_name')->join('order_examine oe','oe.order_id=o.order_id')->where($where)->order('oe.addtime desc')->paginate(5, false, ['query' => $query]);
         //支付状态
         $pay_status         = config('PAY_STATUS');
         $this->assign('list',$order_list);
         $this->assign('status',$status);
+        $this->assign('status_arr',$status_arr);
         $this->assign('pay_status',$pay_status);
         $this->assign('order_sn',$order_sn);
         return $this->fetch();
-   }
+    }
+    
+    //积分审核
+    public function jifen_examine()
+    {
+        if(Request::instance()->isPost()){
+            $id = input('id',0);
+            $status = input('status');
+            $remarks = input('remarks');
+            $admin_name = Session::get('admin_user_auth.username');
+            if($status){
+                $data['status'] = $status;
+                $data['examine_time'] = time();
+                $data['admin_name'] = $admin_name;
+            }
+            $data['remarks'] = $remarks;
+            Db::name('order_examine')->where('id',$id)->update($data);
+            $info = Db::name('order_examine')->where('id',$id)->find();
+            //修改订单状态
+            if($status == 1 && $info){
+                Db::name('order')->where('order_id',$info['order_id'])->update(['pay_status'=>$status,'pay_time'=>time()]);
+            }
+            $this->success('操作成功',url('jifen'));
+        }
+        $id = input('id');
+        $info = Db::name('order_examine')->where('id',$id)->find();
+        $order = Db::name('order')->field('user_id,order_id,order_sn,order_amount')->where('order_id',$info['order_id'])->find();
+        $info['nickname'] = Db::name('member')->where('id',$order['user_id'])->value('nickname');
+        $this->assign('info',$info);
+        $this->assign('order',$order);
+        return $this->fetch();
+    }
 }

@@ -16,13 +16,16 @@ class Jifen extends ApiBase
      * 积分支付
      */
     public function order_jifen_pay(){
-        $order_id     = input('order_id');
+        $order_id     = input('order_id',0);
         $user_id      = $this->get_user_id();
         if(!$user_id){
             $this->ajaxReturn(['status' => -1 , 'msg'=>'用户不存在','data'=>'']);
         }
         $pay_type     = input('pay_type');//支付方式
-        $order_info   = Db::name('order')->where(['order_id' => $order_id])->field('order_id,groupon_id,order_sn,order_amount,pay_type,pay_status,user_id')->find();
+        $order_info   = Db::name('order')->where(['order_id' => $order_id])->field('order_id,groupon_id,order_sn,order_amount,pay_type,pay_status,user_id,parent_id')->find();
+        if($order_info['parent_id']){
+            $this->ajaxReturn(['status' => -1 , 'msg'=>'不能支付子订单','data'=>'']);
+        }
         //订单信息
         if($order_info){
             //从订单列表立即付款进来
@@ -48,10 +51,10 @@ class Jifen extends ApiBase
         $card_name = I('card_name');
         $card_num = I('card_num');
         if(!$card_mobile){
-            $this->ajaxReturn(['status' => -1 , 'msg'=>'vip卡号!','data'=>'']);
+            $this->ajaxReturn(['status' => -1 , 'msg'=>'请输入vip卡号!','data'=>'']);
         }
         if(!$card_mobile){
-            $this->ajaxReturn(['status' => -1 , 'msg'=>'会员名字!','data'=>'']);
+            $this->ajaxReturn(['status' => -1 , 'msg'=>'请输入会员名字!','data'=>'']);
         }
         if(!$card_mobile){
             $this->ajaxReturn(['status' => -1 , 'msg'=>'请输入手机号码!','data'=>'']);
