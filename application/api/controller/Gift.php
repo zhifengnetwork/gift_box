@@ -384,7 +384,11 @@ class Gift extends ApiBase
                     Db::rollback();
                     $this->ajaxReturn(['status' => -1 , 'msg'=>'请求失败','data'=>$info]);
                 }
+            }else{
+                $res = Db::name('gift_order_join')->where(['order_id'=>$order_id,'order_type'=>2,'user_id'=>$user_id])->update(['join_status'=>6]);
             }
+        }else{
+            $res = Db::name('gift_order_join')->where(['order_id'=>$order_id,'order_type'=>2,'user_id'=>$user_id])->update(['join_status'=>6]);
         }
         //再次查看是否中奖
         $info = Db::name('gift_order_join')->field('id,status,join_status')->where(['order_id'=>$order_id,'order_type'=>2,'user_id'=>$user_id])->find();
