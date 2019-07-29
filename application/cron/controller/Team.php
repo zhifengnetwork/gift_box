@@ -50,7 +50,7 @@ class Team extends Controller{
     public function lottery(){
         //获取开奖时间100秒以内，且未设置开奖用户的群抢订单
         $Order = M('Order');
-        $list = $Order->field('order_id,overdue_time')->where(['order_type'=>2,'lottery_time'=>['between',[time()-60,time()]],'gift_uid'=>0])->select();  
+        $list = $Order->field('order_id,overdue_time')->where(['order_type'=>2,'lottery_time'=>['between',[time()-3000,time()]],'gift_uid'=>0])->select();  
 
         $GiftOrderJoin = M('gift_order_join');
         foreach($list as $v){
@@ -74,7 +74,6 @@ class Team extends Controller{
             //开奖推送
             $join_list = $GiftOrderJoin->where(['order_id'=>$v['order_id'],'order_type'=>2,'join_status'=>['neq',4]])->column('user_id');
             if($join_list){
-                $formid_result = array();
                 $openid_arr = Db::name('member')->where('id','in',$join_list)->column('id,openid');
                 $formid_arr = Db::name('member_formid')->where('user_id','in',$join_list)->where('status',0)->column('user_id,formid');
                 foreach($join_list as $key=>$val){
@@ -82,10 +81,12 @@ class Team extends Controller{
                     $openid = $openid_arr[$val];
                     $order_id = $v['order_id'];
                     $overdue_time = date('Y-m-d H:i:s',$v['overdue_time']);
-                    $this->news_post($openid,$form_id,$order_id,$overdue_time);
-                    $formid_result[] = $form_id;
+                    $res = $this->news_post($openid,$form_id,$order_id,$overdue_time);
+                    if($res == 'ok'){
+                        Db::name('gift_order_join')->where(['order_id'=>$v['order_id'],'user_id'=>$val])->update(['push_status'=>1]);
+                        Db::name('member_formid')->where('formid',$form_id)->update(['status'=>1]);
+                    }
                 }
-                Db::name('member_formid')->where('formid','in',$formid_result)->update(['status'=>1]);
             }
         } 
     }    
@@ -147,10 +148,10 @@ class Team extends Controller{
         $data = json_encode($data);
         $res = request_curl($url,$data);
         $result = json_decode($res, true);
-        dump($result);
         if($result['errmsg'] == 'ok'){
-            return true;
+            return 'ok';
         }
+        return 'no';
     }
 
     //获取AccessToken
