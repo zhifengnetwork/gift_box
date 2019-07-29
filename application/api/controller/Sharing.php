@@ -105,6 +105,16 @@ class Sharing extends ApiBase
     }
 
     //评论列表
-    
+    public function comment_list()
+    {
+        $sharing_id = input('sharing_id',0);
+        $page = input('page',1);
+        $num = input('num',10);
+        $list = Db::name('sharing_comment')->where('sharing_id',$sharing_id)->order('addtime desc')->page($page,$num)->select();
+        foreach($list as $key=>$val){
+            $list[$key]['nickname'] = Db::name('member')->where('id',$val['user_id'])->value('nickname');
+        }
+        $this->ajaxReturn(['status' => 1 , 'msg'=>'成功','data'=>$list]);
+    }
 
 }
