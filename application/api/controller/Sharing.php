@@ -26,6 +26,7 @@ class Sharing extends ApiBase
         $data['lon'] = input('lon');
         $data['priture'] = input('priture');
         $data['topic_id'] = input('topic_id');
+        // $data['topic_id'] = input('topic_id');
         $data['topic_id'] = str_replace(SITE_URL,'',$data['topic_id']);
         $data['addtime'] = time();
         if($id){
@@ -53,6 +54,27 @@ class Sharing extends ApiBase
         $user_id = $this->get_user_id();
         $resule = $this->UploadFile('images','sharing');
         $this->ajaxReturn($resule);
+    }
+
+    //分享列表
+    public function Sharing_list()
+    {
+        $page = input('page',1);
+        $num = input('num',10);
+        $topic_id = input('topic_id',0);//0推荐 -1附近
+        if($topic_id == '-1'){
+            $where['sc.is_rec'] = 1;//待完善
+        }else if($topic_id){
+            $where['sc.topic_id'] = $topic_id;
+        }else{
+            $where['sc.is_rec'] = 1;
+        }
+        $list = Db::name('sharing_circle')->alias('sc')->join('member m','m.id=sc.user_id','LEFT')->field('m.nickname,sc.id,sc.cover,sc.title,sc.point_num,m.avatar')->where($where)->page($page,$num)->select();
+        foreach($list as $key=>$val){
+            $list[$key]['avatar'] = substr($val['avatar'],0,1) != 'h'?SITE_URL.$val['avatar']:$val['avatar'];
+            $list[$key]['cover'] = $val['cover']?SITE_URL.$val['cover']:'';
+        }
+        $this->ajaxReturn(['status' => 1 , 'msg'=>'成功','data'=>$list]);
     }
 
 }
