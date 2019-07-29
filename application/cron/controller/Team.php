@@ -18,7 +18,7 @@ class Team extends Controller{
      */
     public function run()
     {
-        //$this->lottery();   //群抢开奖
+        $this->lottery();   //群抢开奖
         $this->setGiving();   ///检测过期时间
         M('A')->add(['msg'=>date('Y-m-d H:i:s',time())]);
     }
