@@ -15,7 +15,7 @@ class Gift extends ApiBase
 		$order_id = I('get.order_id/d',0);
 		$overdue_time = M('Order')->where(['order_id'=>$order_id])->value('overdue_time');
 		echo $this->create_token($order_id,$overdue_time);
-	}
+    }
 
     //领取/参与
     public function receive_join(){
@@ -29,7 +29,9 @@ class Gift extends ApiBase
         
         $pwdstr = input('pwdstr/s',''); //加密字符串
         $arr = $this->decode_token($pwdstr);
-        if(!$arr || !$arr['exp'] || ($arr['exp'] < time())){
+        if($arr == 'Expired token')
+            $this->ajaxReturn(['status' => -1 , 'msg'=>'该链接已失效','data'=>'']);
+        elseif(!$arr || !$arr['exp'] || ($arr['exp'] < time())){
             $this->ajaxReturn(['status' => -1 , 'msg'=>'该链接已失效','data'=>'']);
         }else{  //分享回调接口，user_id化用为id-order_id
             $resarr = explode('-',$arr['user_id']);
