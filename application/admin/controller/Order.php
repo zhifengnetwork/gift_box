@@ -637,5 +637,9 @@ class Order extends Common
         return $where;
     }
 
-   
+   //积分支付订单
+   public function jifen()
+   {
+       return $this->fetch();
+   }
 }
