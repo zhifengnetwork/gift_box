@@ -169,28 +169,18 @@ class ApiBase extends Controller
     	// 获取表单上传文件 例如上传了001.jpg
         $files = request()->file($name);
         // 移动到框架应用根目录/public/uploads/ 目录下
-        $arr = [];
-	    if($files && !is_array($files)){
-            $arr[0] = $files;
-        }elseif($files){
-            $arr = $files;
-        }else{
-            return ['msg'=>'上传文件不存在','status'=>-1,'data'=>''];
-        }
-        $data = [];
-        foreach($arr as $file){
+        foreach($files as $file){
             // 移动到框架应用根目录/public/uploads/ 目录下
             $info = $file->validate(['size'=>1024*1024*10])->move(ROOT_PATH . 'public' . DS . 'uploads' . DS . $dir . DS);
             
             if($info){
                 // 成功上传后 获取上传信息
-                $data[] = SITE_URL.'/public/uploads/'.$dir.'/'.$file->getSaveName();
+                $data[] = SITE_URL.'/public/uploads/'.$dir.'/'.$info->getSaveName();
             }else{
                 // 上传失败获取错误信息
                 return ['msg'=>$file->getError(),'status'=>-1,'data'=>''];
             }    
         }
-
         return ['msg'=>'上传成功','status'=>1,'data'=>$data];          
     }    
 }

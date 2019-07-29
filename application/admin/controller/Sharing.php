@@ -32,11 +32,19 @@ class Sharing extends Common
         return $this->fetch();
     }
     
-    //话题列表
+    //话题列表 
     public function topic_list()
     {
         $list  = Db::name('sharing_topic')->order('addtime desc')->paginate(10);
         $this->assign('list',$list);
         return $this->fetch();
+    }
+
+    //删除
+    public function del_topic()
+    {
+        $id = input('id');
+        Db::table('sharing_topic')->where('id',$id)->delete();
+        return json(['status'=>1,'msg'=>'删除成功']);
     }
 }
