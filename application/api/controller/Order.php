@@ -550,7 +550,7 @@ class Order extends ApiBase
             $where['o.giving_time'] = 0;
         }
         //不取已取消的订单
-        $where['o.order_status'] = ['neq',3];
+        !$type && ($where['o.order_status'] = ['neq',3]); 
         $parent_id && ($where['goj.parent_id'] = $parent_id);
         $where['o.user_id'] = $user_id;
         $where['o.order_type'] = ['in',$order_type];
