@@ -30,6 +30,14 @@ class Sharing extends ApiBase
         $data['topic_id'] = str_replace(SITE_URL,'',$data['topic_id']);
         $data['cover'] = input('cover');
         $data['cover'] = str_replace(SITE_URL,'',$data['cover']);
+        if(!$data['cover'] && $data['type'] == 0){
+            $this->ajaxReturn(['status' => -1 , 'msg'=>'请上传图片','data'=>'']);
+        }
+        if(!$data['cover']){
+            $cover = explode(',',$data['priture']);
+            $data['cover'] = $cover[0];
+        }
+
         $data['addtime'] = time();
         if($id){
             $res = Db::name('sharing_circle')->where('id',$id)->update($data);
@@ -116,6 +124,47 @@ class Sharing extends ApiBase
             $list[$key]['addtime'] = date('Y-m-d H:i:s',$val['addtime']);
             $list[$key]['avatar'] = Db::name('member')->where('id',$val['user_id'])->value('avatar');
             $list[$key]['avatar']=substr($list[$key]['avatar'],0,1) != 'h'?SITE_URL.$list[$key]['avatar']:$list[$key]['avatar'];
+        }
+        $this->ajaxReturn(['status' => 1 , 'msg'=>'成功','data'=>$list]);
+    }
+
+    //评论
+    public function add_comment()
+    {
+        $user_id =  $this->get_user_id();
+        $sharing_id = input('sharing_id');
+        $content = input('content');
+        if(!$sharing_id){
+            $this->ajaxReturn(['status' => -1 , 'msg'=>'请提供享物圈id','data'=>'']);
+        }
+        if(!$content){
+            $this->ajaxReturn(['status' => -1 , 'msg'=>'请输入评论内容','data'=>'']);
+        }
+        $data['user_id'] = $user_id;
+        $data['sharing_id'] = $sharing_id;
+        $data['content'] = $content;
+        $data['addtime'] = time();
+        $res = Db::name('sharing_comment')->insert($data);
+        if($res){
+            $this->ajaxReturn(['status' => 1 , 'msg'=>'评论成功','data'=>'']);
+        }else{
+            $this->ajaxReturn(['status' => -1 , 'msg'=>'评论失败','data'=>'']);
+        }
+    }
+
+    //个人中心-评论列表
+    public function my_comment_list()
+    {
+        $user_id =  $this->get_user_id();
+        $page = input('page',1);
+        $num = input('num',10);
+        $content_num = input('content_num',20);
+        $list = Db::name('sharing_circle')->alias('s')->join('sharing_comment sc','sc.sharing_id=s.id')->where('s.user_id',$user_id)->join('member m','m.id=s.user_id')->field('sc.id,sc.sharing_id,sc.content,sc.addtime,m.nickname,m.avatar,s.title,s.cover,s.content')->page($page,$num)->select();
+        foreach($list as $key=>$val){
+            $list[$key]['avatar'] = substr($list[$key]['avatar'],0,1) != 'h'?SITE_URL.$list[$key]['avatar']:$list[$key]['avatar'];
+            $list[$key]['addtime'] = date('Y-m-d H:i:s',$val['addtime']);
+            $list[$key]['cover'] = $val['cover']?SITE_URL.$val['cover']:'';
+            $list[$key]['content'] = mb_substr($val['content'],0,$content_num,'UTF8');
         }
         $this->ajaxReturn(['status' => 1 , 'msg'=>'成功','data'=>$list]);
     }
