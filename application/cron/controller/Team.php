@@ -12,7 +12,7 @@ use think\Controller;
 use think\Db;
 use app\common\util\Exception;
 
-class Team extends Controller{
+class Team extends ApiBase{
     /**
      * 执行方法
      */
