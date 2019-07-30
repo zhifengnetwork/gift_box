@@ -319,4 +319,31 @@ class Sharing extends ApiBase
         }
     }
 
+    //搜索
+    public function search_sharing()
+    {
+        $page = input('page',1);
+        $num = input('num',10);
+        $keyword = input('keyword','');
+        $user_id = $this->get_user_id();
+        if(!$keyword){
+            $this->ajaxReturn(['status' => -1 , 'msg'=>'请输入搜索关键字','data'=>'']);
+        }
+        //写进搜索记录
+        $search['user_id'] = $user_id;
+        $search['addtime'] = time();
+        $search['keyword'] = $keyword;
+        if($page == 1){
+            Db::table('search')->insert($search);
+        }
+        $where['sc.status'] = 1;
+        $where['sc.title'] = array('like','%'.$keyword.'%');
+        $list = Db::name('sharing_circle')->alias('sc')->join('member m','m.id=sc.user_id','LEFT')->field('m.nickname,sc.id,sc.cover,sc.title,sc.point_num,m.avatar')->where($where)->page($page,$num)->select();
+        foreach($list as $key=>$val){
+            $list[$key]['avatar'] = substr($val['avatar'],0,1) != 'h'?SITE_URL.$val['avatar']:$val['avatar'];
+            $list[$key]['cover'] = $val['cover']?SITE_URL.$val['cover']:'';
+        }
+        $this->ajaxReturn(['status' => 1 , 'msg'=>'成功','data'=>$list]);
+    }
+
 }

@@ -47,7 +47,6 @@ class Team extends ApiBase{
         //获取开奖时间100秒以内，且未设置开奖用户的群抢订单
         $Order = M('Order');
         $list = $Order->field('order_id,overdue_time,lottery_time')->where(['order_type'=>2,'lottery_time'=>['between',[time()-120,time()]],'gift_uid'=>0])->select();  
-
         $GiftOrderJoin = M('gift_order_join');
         foreach($list as $v){
             //开奖推送
@@ -59,7 +58,7 @@ class Team extends ApiBase{
                     $form_id = $formid_arr[$val];
                     $openid = $openid_arr[$val];
                     $order_id = $v['order_id'];
-                    $res = $this->news_post($openid,$form_id,$order_id,$overdue_time,$lottery_time);
+                    $res = $this->news_post($openid,$form_id,$order_id,$v['overdue_time'],$v['lottery_time']);
                     if($res == 'ok'){
                         Db::name('gift_order_join')->where(['order_id'=>$v['order_id'],'user_id'=>$val])->update(['push_status'=>1]);
                         Db::name('member_formid')->where('formid',$form_id)->update(['status'=>1]);
