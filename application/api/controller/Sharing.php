@@ -202,9 +202,14 @@ class Sharing extends ApiBase
         if(!$sharing_id){
             $this->ajaxReturn(['status' => -1 , 'msg'=>'请提供享物圈id','data'=>'']);
         }
-        $count = Db::name('sharing_collection')->where($data)->count();
-        if($count){
-            $this->ajaxReturn(['status' => -2 , 'msg'=>'您已经收藏了','data'=>'']);
+        $id = Db::name('sharing_collection')->where($data)->value('id');
+        if($id){
+            Db::name('sharing_circle')->where('id',$sharing_id)->setDec('collection_num',1);
+            $res = Db::name('sharing_collection')->where('id',$id)->delete();
+            if($res){
+                $this->ajaxReturn(['status' => 1 , 'msg'=>'取消收藏','data'=>'']);
+            }
+            // $this->ajaxReturn(['status' => -2 , 'msg'=>'您已经收藏了','data'=>'']);
         }
         $data['addtime'] = time();
         $res =  Db::name('sharing_collection')->insert($data);
@@ -265,6 +270,53 @@ class Sharing extends ApiBase
             $list[$key]['content'] = mb_substr($val['content'],0,$content_num,'UTF8');
         }
         $this->ajaxReturn(['status' => 1 , 'msg'=>'成功','data'=>$list]);
+    }
+
+    //转发
+    public function add_forward()
+    {
+        $user_id =  $this->get_user_id();
+        $sharing_id = input('sharing_id');
+        $data['user_id'] = $user_id;
+        $data['sharing_id'] = $sharing_id;
+        if(!$sharing_id){
+            $this->ajaxReturn(['status' => -1 , 'msg'=>'请提供享物圈id','data'=>'']);
+        }
+        $res =  Db::name('sharing_circle')->where('id',$sharing_id)->setInc('forward_num',1);
+        if($res){
+            $this->ajaxReturn(['status' => 1 , 'msg'=>'转发成功','data'=>'']);
+        }else{
+            $this->ajaxReturn(['status' => -1 , 'msg'=>'转发失败','data'=>'']);
+        }
+    }
+    
+    //关注
+    public function add_follow()
+    {
+        $user_id = $this->get_user_id();
+        $follow_user_id = input('follow_user_id');
+        if(!$follow_user_id){
+            $this->ajaxReturn(['status' => -1 , 'msg'=>'请提供被关注的用户id','data'=>'']);
+        }
+        $data['follow_user_id'] = $follow_user_id;
+        $data['user_id'] = $user_id;
+        $id = Db::name('sharing_follow')->where($data)->value('id');
+        if($id){
+            $res = Db::name('sharing_follow')->where('id',$id)->delect();
+            if($res){
+                Db::name('member')->where('id',$follow_user_id)->setDec('follow_num',1);
+                $this->ajaxReturn(['status' => 1 , 'msg'=>'取消关注','data'=>'']);
+            }
+            // $this->ajaxReturn(['status' => -2 , 'msg'=>'您已经关注该用户了','data'=>'']);
+        }
+        $data['addtime'] = time();
+        $res = Db::name('sharing_follow')->insert($data);
+        if($res){
+            Db::name('member')->where('id',$follow_user_id)->setInc('follow_num',1);
+            $this->ajaxReturn(['status' => 1 , 'msg'=>'关注成功','data'=>'']);
+        }else{
+            $this->ajaxReturn(['status' => -1 , 'msg'=>'关注失败','data'=>'']);
+        }
     }
 
 }
