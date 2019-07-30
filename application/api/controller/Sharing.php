@@ -72,7 +72,7 @@ class Sharing extends ApiBase
     }
 
     //分享列表
-    public function Sharing_list()
+    public function sharing_list()
     {
         $page = input('page',1);
         $num = input('num',10);
@@ -94,7 +94,7 @@ class Sharing extends ApiBase
     }
 
     //分享详情
-    public function Sharing_info()
+    public function sharing_info()
     {
         $id = input('id',0);
         $info = Db::name('sharing_circle')->field('lat,lon,status',true)->where('id',$id)->find();
