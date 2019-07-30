@@ -371,13 +371,13 @@ class Gift extends ApiBase
         if($giftorderid){
             $joinuserid = Db::name('gift_order_join')->where(['order_id'=>$order_id,'order_type'=>2,'status'=>0,'join_status'=>0])->column('user_id'); //参与人数
             if($joinuserid){
-                $joinuserid = shuffle($joinuserid);
+                shuffle($joinuserid); 
                 Db::startTrans();
                 foreach($giftorderid as $k=>$v){
-                    if(!$joinuserid['$k'])continue;
-                                        
-                    M('Order')->where(['order_id'=>$v])->update(['lottery_time'=>0,'giving_time'=>0,'overdue_time'=>0,'gift_uid'=>$joinuserid['$k']]);    
-                    Db::name('gift_order_join')->where(['order_id'=>$order_id,'order_type'=>2,'user_id'=>$joinuserid['$k'],'join_status'=>0])->update(['status'=>1]);
+                    if(!$joinuserid[$k])continue;
+
+                    M('Order')->where(['order_id'=>$v])->update(['lottery_time'=>0,'giving_time'=>0,'overdue_time'=>0,'gift_uid'=>$joinuserid[$k]]);    
+                    Db::name('gift_order_join')->where(['order_id'=>$order_id,'order_type'=>2,'user_id'=>$joinuserid[$k],'join_status'=>0])->update(['status'=>1]);
                 }
                 //其他人设置成未中奖
                 $r = Db::name('gift_order_join')->where(['order_id'=>$order_id,'order_type'=>2,'status'=>0])->update(['status'=>2]);

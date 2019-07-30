@@ -125,7 +125,7 @@ class Team extends ApiBase{
         //定义模板需要带的参数
         $data['data']['keyword1']['value'] = '您所期待的抽奖已经开始了，请尽快参与';
         $data['data']['keyword2']['value'] = '不要错过时间哦';
-        $data['data']['keyword3']['value'] = $overdue_time;
+        $data['data']['keyword3']['value'] = date('Y-m-d H:i:s',$overdue_time);
         $data = json_encode($data);
         $res = request_curl($url,$data);
         $result = json_decode($res, true);
