@@ -346,4 +346,19 @@ class Sharing extends ApiBase
         $this->ajaxReturn(['status' => 1 , 'msg'=>'成功','data'=>$list]);
     }
 
+    //获取表情包列表
+    public function emojis()
+    {
+        $route = 'static/emojis';
+        $url = SITE_URL.'/'. $route.'/';
+        $list = scandir($route);
+        $result = array();
+        foreach($list as $key=>$val){
+            if(substr($val,0,1) != '.' && $val){
+                $result[] = $url.$val;
+            }
+        }
+        $this->ajaxReturn(['status' => 1 , 'msg'=>'成功','data'=>$result]);
+    }
+
 }
