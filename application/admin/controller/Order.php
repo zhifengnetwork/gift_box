@@ -309,6 +309,9 @@ class Order extends Common
                 'remark'   => $handle_remark,
                 'status'   => $status,
             ]; 
+            if($status == 2){
+                $update['on_time'] = time();
+            }
             /*
             if($refund_status == 2){
                 //todo::调用退款程序 
