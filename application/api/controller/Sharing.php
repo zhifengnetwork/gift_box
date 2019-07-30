@@ -361,4 +361,29 @@ class Sharing extends ApiBase
         $this->ajaxReturn(['status' => 1 , 'msg'=>'成功','data'=>$result]);
     }
 
+    //发送消息
+    public function send_news()
+    {
+        $user_id = $this->get_user_id();
+        $receive_id = input('receive_id');
+        $content = input('content','');
+        if(!$content){
+            $this->ajaxReturn(['status' => -1 , 'msg'=>'请输入要发送的内容','data'=>$result]);
+        }
+        if(!$receive_id){
+            $this->ajaxReturn(['status' => -1 , 'msg'=>'请提供要发送的对象','data'=>$result]);
+        }
+        $data['receive_id'] = $receive_id;
+        $data['user_id'] = $user_id;
+        $data['content'] = $content;
+        $data['addtime'] = time();
+        $data['status'] = 0;
+        $res = Db::name('member_news')->insert($data);
+        if($res){
+            $this->ajaxReturn(['status' => 1 , 'msg'=>'发送成功','data'=>'']);
+        }else{
+            $this->ajaxReturn(['status' => -1 , 'msg'=>'发送失败','data'=>'']);
+        }
+    }
+
 }
