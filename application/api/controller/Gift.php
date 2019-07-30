@@ -530,4 +530,27 @@ class Gift extends ApiBase
         $this->ajaxReturn(['status' => 1 , 'msg'=>'请求成功','data'=>$info]);
     }
 
+    //获取礼物双方信息
+    public function get_gift_info(){
+        $user_id = $this->get_user_id();
+        $id = input('id',0);  //参与ID
+        if(!$user_id || !$id){
+            $this->ajaxReturn(['status' => -1 , 'msg'=>'参数错误','data'=>'']);
+        }
+        
+        $info = M('gift_order_join')->alias('goj')->join('order o','goj.order_id=o.order_id')->field('o.user_id')->where(['goj.id'=>$id,'goj.user_id'=>$user_id])->find();
+
+        if(!$info){
+            $this->ajaxReturn(['status' => -1 , 'msg'=>'礼物不存在','data'=>'']);
+        } 
+
+        $accept_info = M('member')->field('id,nickname,avatar')->find($user_id);            //接收人
+        $accept_info['avatar'] = $accept_info['avatar'] ? SITE_URL . $accept_info['avatar'] : '';
+        $send_info = M('member')->field('id,nickname,avatar')->find($info['user_id']);      //发送人
+        $send_info['avatar'] = $send_info['avatar'] ? SITE_URL . $send_info['avatar'] : '';
+
+        $this->ajaxReturn(['status' => 1 , 'msg'=>'请求成功','data'=>['accept_info'=>$accept_info,'send_info'=>$send_info]]);
+
+    }
+
 }
