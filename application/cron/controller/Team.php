@@ -46,7 +46,7 @@ class Team extends ApiBase{
     public function lottery(){
         //获取开奖时间100秒以内，且未设置开奖用户的群抢订单
         $Order = M('Order');
-        $list = $Order->field('order_id,overdue_time')->where(['order_type'=>2,'lottery_time'=>['between',[time()-120,time()]],'gift_uid'=>0])->select();  
+        $list = $Order->field('order_id,overdue_time,lottery_time')->where(['order_type'=>2,'lottery_time'=>['between',[time()-120,time()]],'gift_uid'=>0])->select();  
 
         $GiftOrderJoin = M('gift_order_join');
         foreach($list as $v){
@@ -59,8 +59,7 @@ class Team extends ApiBase{
                     $form_id = $formid_arr[$val];
                     $openid = $openid_arr[$val];
                     $order_id = $v['order_id'];
-                    $overdue_time = date('Y-m-d H:i:s',$v['overdue_time']);
-                    $res = $this->news_post($openid,$form_id,$order_id,$overdue_time);
+                    $res = $this->news_post($openid,$form_id,$order_id,$overdue_time,$lottery_time);
                     if($res == 'ok'){
                         Db::name('gift_order_join')->where(['order_id'=>$v['order_id'],'user_id'=>$val])->update(['push_status'=>1]);
                         Db::name('member_formid')->where('formid',$form_id)->update(['status'=>1]);
@@ -111,8 +110,9 @@ class Team extends ApiBase{
      * order_id     订单id
      * overdue_time 活动结束时间
      *  */
-    public function news_post($openid,$form_id,$order_id,$overdue_time)
+    public function news_post($openid,$form_id,$order_id,$overdue_time,$lottery_time)
     {
+        $goods_name = Db::name('order_goods')->where('order_id',$order_id)->value('goods_name');
         $access_token = $this->getAccessToken();
         $url = 'https://api.weixin.qq.com/cgi-bin/message/wxopen/template/send?access_token='.$access_token;
         $data['touser'] = $openid;//openid
@@ -123,9 +123,9 @@ class Team extends ApiBase{
         $data['page'] = '/pages/turntable/turntable?order_id='.$order_id.'&pwdstr='.$pwdstr;//跳转地址加参数
         $data['form_id'] = $form_id;//form_id
         //定义模板需要带的参数
-        $data['data']['keyword1']['value'] = '您所期待的抽奖已经开始了，请尽快参与';
-        $data['data']['keyword2']['value'] = '不要错过时间哦';
-        $data['data']['keyword3']['value'] = date('Y-m-d H:i:s',$overdue_time);
+        $data['data']['keyword1']['value'] = $goods_name;//商品名称
+        $data['data']['keyword2']['value'] = date('Y-m-d H:i:s',$lottery_time);//开奖时间
+        $data['data']['keyword3']['value'] = '结束时间'.date('Y-m-d H:i:s',$overdue_time).'，请尽快参与';//注意事项
         $data = json_encode($data);
         $res = request_curl($url,$data);
         $result = json_decode($res, true);
