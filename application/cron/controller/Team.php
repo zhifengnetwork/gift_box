@@ -118,7 +118,9 @@ class Team extends Controller{
         $data['touser'] = $openid;//openid
         $template_id = Db::name('config')->where('name','template_id')->value('value');
         $data['template_id'] = $template_id;//模板id，
-        $data['page'] = '/pages/turntable/turntable?order_id='.$order_id;//跳转地址加参数
+        $overdue_time = M('Order')->where(['order_id'=>$order_id])->value('overdue_time');
+        $pwdstr = $this->create_token($order_id,$overdue_time);
+        $data['page'] = '/pages/turntable/turntable?order_id='.$order_id.'&pwdstr='.$pwdstr;//跳转地址加参数
         $data['form_id'] = $form_id;//form_id
         //定义模板需要带的参数
         $data['data']['keyword1']['value'] = '您所期待的抽奖已经开始了，请尽快参与';
