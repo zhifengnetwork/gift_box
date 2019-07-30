@@ -128,7 +128,7 @@ class Sharing extends ApiBase
         $this->ajaxReturn(['status' => 1 , 'msg'=>'成功','data'=>$list]);
     }
 
-    //评论
+    //添加评论
     public function add_comment()
     {
         $user_id =  $this->get_user_id();
@@ -146,9 +146,58 @@ class Sharing extends ApiBase
         $data['addtime'] = time();
         $res = Db::name('sharing_comment')->insert($data);
         if($res){
+            Db::name('sharing_circle')->where('id',$sharing_id)->setInc('comment_num',1);
             $this->ajaxReturn(['status' => 1 , 'msg'=>'评论成功','data'=>'']);
         }else{
             $this->ajaxReturn(['status' => -1 , 'msg'=>'评论失败','data'=>'']);
+        }
+    }
+
+    //点赞
+    public function add_point()
+    {
+        $user_id =  $this->get_user_id();
+        $sharing_id = input('sharing_id');
+        $data['user_id'] = $user_id;
+        $data['sharing_id'] = $sharing_id;
+        if(!$sharing_id){
+            $this->ajaxReturn(['status' => -1 , 'msg'=>'请提供享物圈id','data'=>'']);
+        }
+        $count = Db::name('sharing_point')->where($data)->count();
+        if($count){
+            $this->ajaxReturn(['status' => -2 , 'msg'=>'您已经点过赞了','data'=>'']);
+        }
+        $data['addtime'] = time();
+        $res =  Db::name('sharing_point')->insert($data);
+        if($res){
+            Db::name('sharing_circle')->where('id',$sharing_id)->setInc('point_num',1);
+            $this->ajaxReturn(['status' => 1 , 'msg'=>'点赞成功','data'=>'']);
+        }else{
+            $this->ajaxReturn(['status' => -1 , 'msg'=>'点赞失败','data'=>'']);
+        }
+    }
+
+    //收藏
+    public function add_collection()
+    {
+        $user_id =  $this->get_user_id();
+        $sharing_id = input('sharing_id');
+        $data['user_id'] = $user_id;
+        $data['sharing_id'] = $sharing_id;
+        if(!$sharing_id){
+            $this->ajaxReturn(['status' => -1 , 'msg'=>'请提供享物圈id','data'=>'']);
+        }
+        $count = Db::name('sharing_collection')->where($data)->count();
+        if($count){
+            $this->ajaxReturn(['status' => -2 , 'msg'=>'您已经收藏了','data'=>'']);
+        }
+        $data['addtime'] = time();
+        $res =  Db::name('sharing_collection')->insert($data);
+        if($res){
+            Db::name('sharing_circle')->where('id',$sharing_id)->setInc('collection_num',1);
+            $this->ajaxReturn(['status' => 1 , 'msg'=>'收藏成功','data'=>'']);
+        }else{
+            $this->ajaxReturn(['status' => -1 , 'msg'=>'收藏失败','data'=>'']);
         }
     }
 
