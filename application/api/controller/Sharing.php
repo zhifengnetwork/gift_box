@@ -54,8 +54,13 @@ class Sharing extends ApiBase
     //话题圈
     public function get_sharing_topic()
     {
+        $result[] = ['id'=>'0','name'=>'推荐'];
+        $result[] = ['id'=>'-1','name'=>'附近'];
         $list = Db::name('sharing_topic')->where('status',0)->order('sort,addtime desc')->field('id,name')->select();
-        $this->ajaxReturn(['status' => 1 , 'msg'=>'成功','data'=>$list]);
+        foreach($list as $val){
+            $result[] = $val;
+        }
+        $this->ajaxReturn(['status' => 1 , 'msg'=>'成功','data'=>$result]);
     }
 
     //图片上传
