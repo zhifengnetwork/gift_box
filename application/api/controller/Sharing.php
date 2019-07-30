@@ -19,6 +19,12 @@ class Sharing extends ApiBase
                 $this->ajaxReturn(['status' => -1 , 'msg'=>'该条分享不是该用户的','data'=>'']);
             }
         }
+        $status = input('status',0);
+        if($status){
+            $data['status'] = 3;
+        }else{
+            $data['status'] = 0;
+        }
         $data['title'] = input('title');
         $data['type'] = input('type');
         $data['content'] = input('content');
@@ -54,11 +60,15 @@ class Sharing extends ApiBase
     //话题圈
     public function get_sharing_topic()
     {
+        $type = input('type',0);
         $result[] = ['id'=>'0','name'=>'推荐'];
         $result[] = ['id'=>'-1','name'=>'附近'];
         $list = Db::name('sharing_topic')->where('status',0)->order('sort,addtime desc')->field('id,name')->select();
         foreach($list as $val){
             $result[] = $val;
+        }
+        if($type){
+            $this->ajaxReturn(['status' => 1 , 'msg'=>'成功','data'=>$list]);
         }
         $this->ajaxReturn(['status' => 1 , 'msg'=>'成功','data'=>$result]);
     }
@@ -231,6 +241,23 @@ class Sharing extends ApiBase
         $num = input('num',10);
         $content_num = input('content_num',20);
         $list = Db::name('sharing_circle')->alias('s')->join('sharing_point sp','sp.sharing_id=s.id')->where('s.user_id',$user_id)->join('member m','m.id=s.user_id')->field('sp.id,sp.sharing_id,sp.addtime,m.nickname,m.avatar,s.title,s.cover,s.content')->page($page,$num)->select();
+        foreach($list as $key=>$val){
+            $list[$key]['avatar'] = substr($list[$key]['avatar'],0,1) != 'h'?SITE_URL.$list[$key]['avatar']:$list[$key]['avatar'];
+            $list[$key]['addtime'] = date('Y-m-d H:i:s',$val['addtime']);
+            $list[$key]['cover'] = $val['cover']?SITE_URL.$val['cover']:'';
+            $list[$key]['content'] = mb_substr($val['content'],0,$content_num,'UTF8');
+        }
+        $this->ajaxReturn(['status' => 1 , 'msg'=>'成功','data'=>$list]);
+    }
+
+    //个人中心-收藏列表-别人收藏我的
+    public function user_collection_list()
+    {
+        $user_id =  $this->get_user_id();
+        $page = input('page',1);
+        $num = input('num',10);
+        $content_num = input('content_num',20);
+        $list = Db::name('sharing_circle')->alias('s')->join('sharing_collection sc','sc.sharing_id=s.id')->where('s.user_id',$user_id)->join('member m','m.id=s.user_id')->field('sc.id,sc.sharing_id,sc.addtime,m.nickname,m.avatar,s.title,s.cover,s.content')->page($page,$num)->select();
         foreach($list as $key=>$val){
             $list[$key]['avatar'] = substr($list[$key]['avatar'],0,1) != 'h'?SITE_URL.$list[$key]['avatar']:$list[$key]['avatar'];
             $list[$key]['addtime'] = date('Y-m-d H:i:s',$val['addtime']);
