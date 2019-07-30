@@ -310,7 +310,7 @@ class Gift extends ApiBase
         $where = ['order_id'=>$order_id,'parentid'=>0];
         if($status == 1){
             $where['status']  = 1;
-            // $where['join_status']  = ['notin',[0,4]];
+            $where['join_status']  = ['notin',[0,4]];
         }
         $user_list = Db::name('gift_order_join')->where($where)->column('user_id');
         if(!$user_list){
