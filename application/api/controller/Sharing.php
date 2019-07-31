@@ -99,6 +99,7 @@ class Sharing extends ApiBase
         foreach($list as $key=>$val){
             $list[$key]['avatar'] = substr($val['avatar'],0,1) != 'h'?SITE_URL.$val['avatar']:$val['avatar'];
             $list[$key]['cover'] = $val['cover']?SITE_URL.$val['cover']:'';
+            $list[$key]['show'] = false;
         }
         $this->ajaxReturn(['status' => 1 , 'msg'=>'成功','data'=>$list]);
     }
