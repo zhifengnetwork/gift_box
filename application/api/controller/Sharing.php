@@ -444,4 +444,25 @@ class Sharing extends ApiBase
         $this->ajaxReturn(['status' => 1 , 'msg'=>'成功','data'=>$list]);
     }
 
+    //商品列表
+    public function goods_list()
+    {
+        $page = input('page',1);
+        $num = input('num',10);
+        $keyword = input('keyword');
+        $where['g.is_del'] = 0;
+        $where['g.is_show'] = 1;
+        $where['i.main'] = 1;
+        if($keyword){
+            $where['g.goods_name'] = array('like','%'.$keyword.'%');
+        }
+        $list = Db::name('goods')->alias('g')->join('goods_img i','i.goods_id=g.goods_id')->field('g.goods_id,g.goods_name,g.desc,i.picture')->where($where)->order('add_time desc')->page($page,$num)->select();
+        foreach($list as $key=>$val){
+            $list[$key]['picture'] = $val['picture']?SITE_URL.$val['picture']:'';
+        }
+        $this->ajaxReturn(['status' => 1 , 'msg'=>'成功','data'=>$list]);
+    }
+
+    //品牌列表
+
 }
