@@ -464,5 +464,20 @@ class Sharing extends ApiBase
     }
 
     //品牌列表
+    public function brand_list()
+    {
+        $page = input('page',1);
+        $num = input('num',10);
+        $keyword = input('keyword','');
+        $where['status'] = 0;
+        if($keyword){
+            $where['name'] = array('like','%'.$keyword.'%');
+        }
+        $list = Db::name('goods_brand')->where($where)->order('addtime desc')->page($page,$num)->select();
+        foreach($list as $key=>$val){
+            $list[$key]['priture'] = $val['priture']?SITE_URL.$val['priture']:'';
+        }
+        $this->ajaxReturn(['status' => 1 , 'msg'=>'成功','data'=>$list]);
+    }
 
 }
