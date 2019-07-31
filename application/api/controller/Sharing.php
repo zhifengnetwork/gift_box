@@ -386,4 +386,57 @@ class Sharing extends ApiBase
         }
     }
 
+    /**
+     * 单文件上传
+     */
+    public function upload_file()
+    {
+    	// 获取表单上传文件 例如上传了001.jpg
+        $file = request()->file('file');
+	    // 移动到框架应用根目录/public/uploads/ 目录下
+	    if($file){
+	        $info = $file->validate(['size'=>1024*1024*10])->move(ROOT_PATH . 'public' . DS . 'uploads' . DS . 'user' . DS);
+	        if($info){
+	            // 成功上传后 获取上传信息
+	            $result['data'] = SITE_URL.'/public/uploads/user/'.$info->getSaveName();
+	            $result['status'] = 1;
+	            $result['msg'] = '上传成功';
+	            $this->ajaxReturn($result);
+	        }else{
+	            // 上传失败获取错误信息
+	            $result['msg'] = $file->getError();
+	            $result['status'] = -1;
+	            $result['data'] = '';
+	            $this->ajaxReturn($result);
+	        }
+        }
+        // 上传失败获取错误信息
+        $result['msg'] = '上传文件不存在';
+        $result['status'] = -1;
+        $result['data'] = '';
+        $this->ajaxReturn($result);
+    }
+
+    //清空历史搜索记录
+    public function empty_search()
+    {
+        $user_id = $this->get_user_id();
+        Db::name('search')->where('user_id',$user_id)->delete();
+        $result['msg'] = '操作成功';
+        $result['status'] = 1;
+        $result['data'] = '';
+        $this->ajaxReturn($result);
+    }
+
+    //获取某个用户未读消息
+    public function get_unread_news()
+    {
+        $user_id = $this->get_user_id();
+        $receive_id = input('receive_id');
+        $list = Db::name('member_news')->where(['user_id'=>$user_id,'receive_id'=>$receive_id,'status'=>0])->field('id,addtime,content')->order('addtime desc')->select();
+        foreach($list as $key=>$val){
+            $list[$key]['addtime'] = date('Y-m-d H:i:s',$val['addtime']);
+        }
+    }
+
 }
