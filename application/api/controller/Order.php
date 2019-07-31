@@ -1788,4 +1788,17 @@ class Order extends ApiBase
         $this->ajaxReturn(['status' => 1 , 'msg'=>'获取数据成功','data'=>$list]);
     }
 
+    //获取退货物流信息
+    public function refund_logistics()
+    {
+        $list = [
+            '顺丰快递'=>'顺丰快递',
+            '中国邮政'=>'中国邮政',
+            '圆通快递'=>'圆通快递',
+            '韵达快递'=>'韵达快递',
+            '中通快递'=>'中通快递'
+        ];
+        $this->ajaxReturn(['status' => 1 , 'msg'=>'获取数据成功','data'=>$list]);
+    }
+
 }

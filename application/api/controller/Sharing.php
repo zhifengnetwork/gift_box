@@ -431,12 +431,17 @@ class Sharing extends ApiBase
     //获取某个用户未读消息
     public function get_unread_news()
     {
+        echo time();
         $user_id = $this->get_user_id();
         $receive_id = input('receive_id');
+        if(!$receive_id){
+            $this->ajaxReturn(['status' => -1 , 'msg'=>'获取的用户id不能为空','data'=>'']);
+        }
         $list = Db::name('member_news')->where(['user_id'=>$user_id,'receive_id'=>$receive_id,'status'=>0])->field('id,addtime,content')->order('addtime desc')->select();
         foreach($list as $key=>$val){
             $list[$key]['addtime'] = date('Y-m-d H:i:s',$val['addtime']);
         }
+        $this->ajaxReturn(['status' => 1 , 'msg'=>'成功','data'=>$list]);
     }
 
 }
