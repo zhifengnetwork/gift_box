@@ -431,9 +431,8 @@ class Sharing extends ApiBase
     //获取某个用户未读消息
     public function get_unread_news()
     {
-        echo time();
         $user_id = $this->get_user_id();
-        $receive_id = input('receive_id');
+        $receive_id = input('receive_id',0);
         if(!$receive_id){
             $this->ajaxReturn(['status' => -1 , 'msg'=>'获取的用户id不能为空','data'=>'']);
         }

@@ -1791,12 +1791,12 @@ class Order extends ApiBase
     //获取退货物流信息
     public function refund_logistics()
     {
-        $list = [
-            '顺丰快递'=>'顺丰快递',
-            '中国邮政'=>'中国邮政',
-            '圆通快递'=>'圆通快递',
-            '韵达快递'=>'韵达快递',
-            '中通快递'=>'中通快递'
+        $list =  [
+            ['name'=>'顺丰快递','value'=>'顺丰快递'],
+            ['name'=>'中国邮政','value'=>'中国邮政'],
+            ['name'=>'圆通快递','value'=>'圆通快递'],
+            ['name'=>'韵达快递','value'=>'韵达快递'],
+            ['name'=>'中通快递','value'=>'中通快递']
         ];
         $this->ajaxReturn(['status' => 1 , 'msg'=>'获取数据成功','data'=>$list]);
     }
