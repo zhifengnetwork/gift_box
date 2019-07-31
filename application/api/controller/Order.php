@@ -1541,7 +1541,9 @@ class Order extends ApiBase
         $info['return_desc'] = $return['return_desc'];
         $info['return_remarks'] = $return['return_remarks'];
         $info['return_remarks2'] = $return['return_remarks2'];
-        $info['on_time'] = $this->secToTime(time()-$info['on_time']);
+        if($info['on_time']){
+            $info['on_time'] = $this->secToTime(time()-$info['on_time']);
+        }
         $this->ajaxReturn(['status' => 1 , 'msg'=>'请求成功！','data'=>$info]);
     }
 
