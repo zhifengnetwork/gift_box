@@ -150,6 +150,7 @@ class Sharing extends ApiBase
         $user_id =  $this->get_user_id();
         $sharing_id = input('sharing_id');
         $content = input('content');
+        $pid = input('pid',0);
         if(!$sharing_id){
             $this->ajaxReturn(['status' => -1 , 'msg'=>'请提供享物圈id','data'=>'']);
         }
@@ -159,6 +160,7 @@ class Sharing extends ApiBase
         $data['user_id'] = $user_id;
         $data['sharing_id'] = $sharing_id;
         $data['content'] = $content;
+        $data['pid'] = $pid;
         $data['addtime'] = time();
         $res = Db::name('sharing_comment')->insert($data);
         if($res){
