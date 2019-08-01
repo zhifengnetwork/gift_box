@@ -183,7 +183,7 @@ class Gift extends ApiBase
             $this->ajaxReturn(['status' => -1 , 'msg'=>'您不能转赠该礼物！','data'=>'']);
 
         if(in_array($act,[2,3])){ //查看是否可以转赠
-            $joininfo = M('gift_order_join')->field('id')->where(['order_id'=>$order_id,'status'=>1,'user_id'=>$user_id,'join_status'=>0,'addressid'=>0])->find();
+            $joininfo = M('gift_order_join')->field('id')->where(['order_id'=>$order_id,'status'=>1,'user_id'=>$user_id,'join_status'=>6,'addressid'=>0])->find();
 
             //只能转赠一次
             $joinnum = M('gift_order_join')->where(['order_id'=>$order_id,'join_status'=>5])->count();
@@ -374,7 +374,7 @@ class Gift extends ApiBase
                 shuffle($joinuserid); 
                 Db::startTrans();
                 foreach($giftorderid as $k=>$v){
-                    if(!isset($joinuserid[$k]))continue;
+                    if(!$joinuserid[$k])continue;
 
                     M('Order')->where(['order_id'=>$v])->update(['lottery_time'=>0,'giving_time'=>0,'overdue_time'=>0,'gift_uid'=>$joinuserid[$k]]);    
                     Db::name('gift_order_join')->where(['order_id'=>$order_id,'order_type'=>2,'user_id'=>$joinuserid[$k],'join_status'=>0])->update(['status'=>1]);
