@@ -136,6 +136,8 @@ class Sharing extends ApiBase
         foreach($info['priture'] as $key=>$val){
             $info['priture'][$key] = SITE_URL.$val;
         }
+        $info['point_count'] = $this->getCount('point',$id);
+        $info['collection_count'] = $this->getCount('collection',$id);
         $info['comment'] = Db::name('sharing_comment')->where('sharing_id',$id)->order('addtime desc')->limit(3)->select();
         foreach($info['comment'] as $key=>$val){
             $info['comment'][$key]['nickname'] = Db::name('member')->where('id',$val['user_id'])->value('nickname');

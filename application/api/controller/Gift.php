@@ -374,7 +374,7 @@ class Gift extends ApiBase
                 shuffle($joinuserid); 
                 Db::startTrans();
                 foreach($giftorderid as $k=>$v){
-                    if(!$joinuserid[$k])continue;
+                    if(!isset($joinuserid[$k]))continue;
 
                     M('Order')->where(['order_id'=>$v])->update(['lottery_time'=>0,'giving_time'=>0,'overdue_time'=>0,'gift_uid'=>$joinuserid[$k]]);    
                     Db::name('gift_order_join')->where(['order_id'=>$order_id,'order_type'=>2,'user_id'=>$joinuserid[$k],'join_status'=>0])->update(['status'=>1]);
