@@ -181,9 +181,14 @@ class Sharing extends ApiBase
         if(!$sharing_id){
             $this->ajaxReturn(['status' => -1 , 'msg'=>'请提供享物圈id','data'=>'']);
         }
-        $count = Db::name('sharing_point')->where($data)->count();
-        if($count){
-            $this->ajaxReturn(['status' => -2 , 'msg'=>'您已经点过赞了','data'=>'']);
+        $id = Db::name('sharing_point')->where($data)->value('id');
+        if($id){
+            Db::name('sharing_circle')->where('id',$sharing_id)->setDec('point_num',1);
+            $res = Db::name('sharing_point')->where('id',$id)->delete();
+            if($res){
+                $this->ajaxReturn(['status' => 1 , 'msg'=>'取消点赞','data'=>'']);
+            }
+            // $this->ajaxReturn(['status' => -2 , 'msg'=>'您已经点过赞了','data'=>'']);
         }
         $data['addtime'] = time();
         $res =  Db::name('sharing_point')->insert($data);
