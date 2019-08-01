@@ -100,8 +100,23 @@ class Sharing extends ApiBase
             $list[$key]['avatar'] = substr($val['avatar'],0,1) != 'h'?SITE_URL.$val['avatar']:$val['avatar'];
             $list[$key]['cover'] = $val['cover']?SITE_URL.$val['cover']:'';
             $list[$key]['show'] = false;
+            $list[$key]['count'] = $this->getCount('point',$val['id']);
         }
         $this->ajaxReturn(['status' => 1 , 'msg'=>'成功','data'=>$list]);
+    }
+
+    //获取某一项是否点赞关注收藏
+    public function getCount($table,$id)
+    {
+        if(!$table || !$id){
+            return 0;
+        }
+        $px = 'sharing_';
+        $user_id = $this->get_user_id();
+        $where['user_id'] = $user_id;
+        $where['sharing_id'] = $id;
+        $count = Db::name($px.$table)->where($where)->count();
+        return $count;
     }
 
     //分享详情
