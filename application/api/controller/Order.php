@@ -1654,11 +1654,15 @@ class Order extends ApiBase
 
         Db::startTrans();    
         $res1 = M('refund_apply')->where(['id'=>$raid])->update(['status' => 4]);     
-        
+        $OrderGoods = M('OrderGoods');
+        $RefundApply = M('RefundApply');
         if(false !== $res1){
             //查看当前订单商品是否已全部退货
             $rec_ids1 = $OrderGoods->where(['order_id'=>$raid['order_id']])->column('rec_id');
-            $rec_ids2 = $RefundApply->where(['order_id'=>$raid['order_id'],'rec_id'=>['in',$rec_ids],'status'=>['notin',[1,4]]])->column('rec_id');
+            $rec_ids2 = array();
+            if($rec_ids1){
+                $rec_ids2 = $RefundApply->where(['order_id'=>$raid['order_id'],'rec_id'=>['in',$rec_ids],'status'=>['notin',[1,4]]])->column('rec_id');
+            }
             $arr = array_diff($rec_ids1,$rec_ids2);
             $arr1 = array_diff($rec_ids1,$arr);
 
