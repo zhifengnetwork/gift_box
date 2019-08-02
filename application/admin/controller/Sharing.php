@@ -34,8 +34,15 @@ class Sharing extends Common
     public function edit()
     {
         $id = input('id',0);
+        if(Request::instance()->isPost()){
+            $sort = input('sort');
+            $status = input('status');
+            Db::name('sharing_circle')->where('id',$id)->update(['sort'=>$sort,'status'=>$status]);
+            $this->success('审核成功','index');
+        }
         $info = Db::name('sharing_circle')->where('id',$id)->find();
         $info['priture'] = explode(',',$info['priture']);
+        $info['topic_name'] = Db::name('sharing_topic')->where('id',$info['topic_id'])->value('name');
         $info['nickname'] = Db::name('member')->where('id',$info['user_id'])->value('nickname');
         $this->assign('info',$info);
         return $this->fetch();
@@ -69,4 +76,6 @@ class Sharing extends Common
         Db::table('sharing_topic')->where('id',$id)->delete();
         return json(['status'=>1,'msg'=>'删除成功']);
     }
+
+    
 }

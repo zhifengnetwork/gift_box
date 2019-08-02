@@ -10,7 +10,7 @@
                     <h5>审核</h5>
                 </div>
                 <div class="ibox-content">
-                    <form method="post" class="form-horizontal" id="ajaxForm" action="{:url('add_topic')}"  enctype="multipart/form-data">
+                    <form method="post" class="form-horizontal" id="ajaxForm" action="{:url('edit')}"  enctype="multipart/form-data">
                         <input type="hidden" name="id" value="{$info.id}">
                         <div class="form-group">
                             <label class="col-sm-2 control-label">标题</label>
@@ -21,42 +21,73 @@
                         <div class="form-group">
                             <label class="col-sm-2 control-label">内容</label>
                             <div class="col-sm-9">
-                                <textarea name="" id="" cols="30" rows="10" style="width: 100%;">{$info.content}</textarea>
+                                <textarea name="" id="" cols="30" readonly rows="10" style="width: 100%;">{$info.content}</textarea>
                             </div>
                         </div>
                         <div class="form-group">
                             <label class="col-sm-2 control-label">封面图</label>
                             <div class="col-sm-9">
-                                <img src="https://wx.qlogo.cn/mmopen/vi_32/H6US70MyQlXDyy7O7ibgt2YeoUBfWnX8rXyaoNucmZR3s1OicWYZWA6mvMGUlZibx2Iicn4xwibCuvvvUfIbt1dGb0A/132" style="max-height:100px;max-width:100px;" alt="">
+                                <img src="{$info.cover}" style="max-height:100px;max-width:100px;" alt="">
                             </div>
                         </div>
                         <div class="form-group">
                             <label class="col-sm-2 control-label">图片</label>
                             <div class="col-sm-9">
                                 {volist name="info['priture']" id="vo"}
-                                    <img src="https://wx.qlogo.cn/mmopen/vi_32/H6US70MyQlXDyy7O7ibgt2YeoUBfWnX8rXyaoNucmZR3s1OicWYZWA6mvMGUlZibx2Iicn4xwibCuvvvUfIbt1dGb0A/132" style="max-height:100px;max-width:100px;" alt="">
+                                    <img src="{$vo}" style="max-height:100px;max-width:100px;" alt="">
                                 {/volist}
                             </div>
                         </div>
                         <div class="form-group">
                             <label class="col-sm-2 control-label">话题类型</label>
                             <div class="col-sm-9" style="line-height: 35px;">
-                                {$info.type_name}
+                                {$info.topic_name}
                             </div>
                         </div>
                         <div class="form-group">
-                            <label class="col-sm-2 control-label">状态</label>
+                            <label class="col-sm-2 control-label">排序</label>
+                            <div class="col-sm-9">
+                                <input type="text" name="sort" value="{$info.sort}"  class="form-control">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">点赞次数</label>
+                            <div class="col-sm-9" style="line-height: 35px;">
+                                {$info.point_num}
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">评论次数</label>
+                            <div class="col-sm-9" style="line-height: 35px;">
+                                {$info.comment_num}
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">收藏次数</label>
+                            <div class="col-sm-9" style="line-height: 35px;">
+                                {$info.collection_num}
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">转发次数</label>
+                            <div class="col-sm-9" style="line-height: 35px;">
+                                {$info.forward_num}
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">审核结果</label>
                             <div class="col-sm-9">
                                 <div class="radio radio-success radio-inline">
-                                    <input type="radio" value="1" name="status" checked="true" id="show1" >
-                                    <label for="show1">启用</label>
+                                    <input type="radio" value="1" name="status" {if condition="$info.status eq 1"}checked{/if} id="show1" >
+                                    <label for="show1">审核通过</label>
                                 </div>
                                 <div class="radio radio-danger radio-inline">
-                                    <input type="radio" value="0" name="status" id="show2"  >
-                                    <label for="show2">禁用</label>
+                                    <input type="radio" value="2" name="status" id="show2" {if condition="$info.status eq 0"}checked{/if} >
+                                    <label for="show2">不通过</label>
                                 </div>
                             </div>
                         </div>
+
                         <div class="form-group">
                             <div class="col-sm-4 col-sm-offset-2">
                                 <input value="提交" type="submit" class="btn btn-primary ajax-post" target-form="form-horizontal" type="submit">
