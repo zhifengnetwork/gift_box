@@ -23,10 +23,13 @@
                             <thead>
                             <tr>
                                 <th>ID</th>
-                                <th>类别 </th>
-                                <th>制作人 </th>
-                                <!-- <th>发送的对象</th> -->
-                                <th>添加时间</th>
+                                <th>标题</th>
+                                <th>发布人</th>
+                                <th>状态</th>
+                                <th>点赞数</th>
+                                <th>排序</th>
+                                <th>是否推荐</th>
+                                <th>发布时间</th>
                                 <th>操作</th>
                             </tr>
                             </thead>
@@ -34,12 +37,16 @@
                             {volist name="list" id="vo"}
                             <tr>
                                 <td>{$vo.id}</td>
-                                <td>{$vo.name}</td>
-                                <td>{$vo.u_nickname}</td>
-                                <td>{$vo.addtime|date="Y-m-d",###}</td>
+                                <td>{$vo.title}</td>
+                                <td>{$vo.nickname}</td>
+                                <td>{$vo.status_name}</td>
+                                <td>{$vo.point_num}</td>
+                                <td>{$vo.sort}</td>
+                                <td>{$vo.is_rec}</td>
+                                <td>{$vo.addtime|date="Y-m-d H:i:s",###}</td>
                                 <td>
-                                    <a class="btn btn-default delete" href="{:url('box/edit',['id'=>$vo.id],false)}" >查看 </i></a>
-                                    <!-- <a class="btn btn-default delete" onclick="del(this,{$vo.id})" href="javascript:;" >删除 </i></a> -->
+                                    <a class="btn btn-default delete" href="{:url('edit',['id'=>$vo.id],false)}" >审核</i></a>
+                                    <a class="btn btn-default delete" onclick="del(this,{$vo.id})" href="javascript:;" >下架</i></a>
                                 </td>
                             </tr>
                             {/volist}

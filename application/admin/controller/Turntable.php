@@ -13,8 +13,9 @@ class Turntable extends Common
     public function index()
     {
         $list = array();
-        $list = Db::name('order')->field('box_id,order_id,overdue_time,lottery_time')->where('order_type',2)->where('pay_status',1)->paginate(10)->each(function($v,$k){
+        $list = Db::name('order')->field('box_id,order_id,overdue_time,lottery_time')->where('order_type',2)->where('pay_status',1)->order('add_time desc')->paginate(10)->each(function($v,$k){
             $v['goods_num'] = Db::name('order_goods')->where('order_id',$v['order_id'])->value('goods_num');
+            $v['add_time'] = Db::name('order')->where('order_id',$v['order_id'])->value('add_time');
             return $v;
         });
         $this->assign('list',$list);
