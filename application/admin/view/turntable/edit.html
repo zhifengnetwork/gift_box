@@ -14,7 +14,7 @@
                         <input type="hidden" name="order_id" value="{$order_id}">
                         <dd>
                             {volist name="list" id="vo"}
-                            <div><label><input type="checkbox" value="{$vo.}" {if condition="$vo.status eq 1"}checked{/if} name="ids[]">{$vo.nickname}</label></div>
+                            <div><label><input type="checkbox" value="{$vo.status}" {if condition="$vo.status eq 1"}checked{/if} name="ids[]">{$vo.nickname}</label></div>
                             {/volist}
                         </dd>
                         <div class="form-group">

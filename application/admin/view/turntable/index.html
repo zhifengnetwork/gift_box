@@ -22,6 +22,7 @@
                             <thead>
                             <tr>
                                 <th>订单id</th>
+                                <th>订单号</th>
                                 <th>礼盒数量</th>
                                 <th>下单时间</th>
                                 <th>开奖时间</th>
@@ -34,13 +35,18 @@
                             {volist name="list" id="vo"}
                             <tr>
                                 <td>{$vo.order_id}</td>
-                                <td>{$vo.godos_num|default="0"}</td>
+                                <td>{$vo.order_sn}</td>
+                                <td>{$vo.goods_num|default="0"}</td>
                                 <td>{$vo.add_time|date="Y-m-d H:i:s",###}</td>
                                 <td>{$vo.lottery_time|date="Y-m-d H:i:s",###}</td>
-                                <td>{$vo.overdue_time|date="Y-m-d H:i:s",###}</td>
+                                {if condition="$vo.overdue_time"}
+                                    <td>{$vo.overdue_time|date="Y-m-d H:i:s",###}</td>
+                                {else/}
+                                    <td></td>
+                                {/if}
                                 <td>{$vo.box_id}</td>
                                 <td>
-                                    <!-- <a class="btn btn-default delete" href="{:url('edit',['order_id'=>$vo.order_id],false)}" >设置中奖名单</i></a> -->
+                                    <a class="btn btn-default delete" href="{:url('edit',['order_id'=>$vo.order_id],false)}" >设置/查看中奖名单</i></a>
                                 </td>
                             </tr>
                             {/volist}
@@ -49,6 +55,7 @@
                     </div>
                     
                     <ul class="pagination">
+                        {$list->render()}
                     </ul>
                 </div>
             </div>
