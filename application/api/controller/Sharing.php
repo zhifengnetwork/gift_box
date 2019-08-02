@@ -504,4 +504,59 @@ class Sharing extends ApiBase
         $this->ajaxReturn(['status' => 1 , 'msg'=>'成功','data'=>$list]);
     }
 
+    //获取评论列表
+    public function sharing_comment_list()
+    {
+        $page = input('page',1);
+        $num = input('num',10);
+        $sharing_id = input('sharing_id',0);
+        if(!$sharing_id){
+            $this->ajaxReturn(['status' => -1 , 'msg'=>'缺少享物圈id','data'=>'']);
+        }
+        $user_id = $this->get_user_id();
+        $point_array = Db::name('sharing_comment_point')->where(['sharing_id'=>$sharing_id,'user_id'=>$user_id])->column('comment_id');
+        $list = Db::name('sharing_comment')->alias('sc')->join('member m','sc.user_id=m.id')->where('sharing_id',$sharing_id)->where('pid',0)->field('sc.id,sc.content,sc.addtime,sc.point_num,sc.user_id,m.nickname,m.avatar')->order('point_num desc,addtime desc')->page($page,$num)->select();
+        foreach($list as $key=>$val){
+            $list[$key]['avatar'] = substr($val['avatar'],0,1) != 'h'?SITE_URL.$val['avatar']:$val['avatar'];
+            //判断有没有点赞
+            if(in_array($val['id'],$point_array)){
+                $list[$key]['count'] = 1;
+            }else{
+                $list[$key]['count'] = 0;
+            }
+            $list[$key]['addtime'] = $this->time_tran($val['addtime']);
+            $tmp_list = array();
+            //获取二级评论
+            $tmp_list = Db::name('sharing_comment')->alias('sc')->join('member m','sc.user_id=m.id')->where('sharing_id',$sharing_id)->where('pid',$val['id'])->field('sc.id,sc.content,sc.addtime,sc.point_num,sc.user_id,m.nickname,m.avatar')->order('point_num desc,addtime desc')->select();
+            foreach($tmp_list as $ko=>$vo){
+                $tmp_list[$ko]['avatar'] = substr($vo['avatar'],0,1) != 'h'?SITE_URL.$vo['avatar']:$vo['avatar'];
+                if(in_array($val['id'],$point_array)){
+                    $tmp_list[$ko]['count'] = 1;
+                }else{
+                    $tmp_list[$ko]['count'] = 0;
+                }
+                $tmp_list[$ko]['addtime'] = $this->time_tran($ko['addtime']);
+            }
+            $list[$key]['list'] = $tmp_list;
+        }
+        $this->ajaxReturn(['status' => 1 , 'msg'=>'成功','data'=>$list]);
+    }
+
+    //时间转换
+    public function time_tran($time='')
+    {
+        $zt_be_time = mktime(0,0,0,date('m'),date('d')-1,date('Y'));//昨天开始时间
+        $jt_be_time = mktime(0,0,0,date('m'),date('d'),date('Y'));//今天开始时间
+        if((time() - $time) < 120){
+            return '刚刚';
+        }
+        if($time < $zt_be_time){
+            return date('m-d');
+        }
+        if($time < $jt_be_time){
+            return '昨天 '.date('H:i',$time);
+        }
+        return '今天 '.date('H:i',$time);
+    }
+
 }
