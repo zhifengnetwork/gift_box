@@ -559,4 +559,29 @@ class Sharing extends ApiBase
         return '今天 '.date('H:i',$time);
     }
 
+    //对评论进行点赞
+    public function comment_point()
+    {
+        $comment_id = input('comment_id');
+        $sharing_id = input('sharing_id');
+        $user_id = $this->get_user_id();
+        $data['comment_id'] = $comment_id;
+        $data['sharing_id'] = $sharing_id;
+        $data['user_id'] = $user_id;
+        $res = Db::name('sharing_comment_point')->where($data)->delete();
+        if($res){
+            Db::name('sharing_comment')->where('id',$comment_id)->setDec('point_num',1);
+            $this->ajaxReturn(['status' => 1 , 'msg'=>'取消点赞成功','data'=>'']);
+        }
+        $data['addtime'] = time();
+        $res = Db::name('sharing_comment_point')->insert($data);
+        if($res){
+            Db::name('sharing_comment')->where('id',$comment_id)->setInc('point_num',1);
+            $this->ajaxReturn(['status' => 1 , 'msg'=>'点赞成功','data'=>'']);
+        }else{
+            $this->ajaxReturn(['status' => -1 , 'msg'=>'点赞失败','data'=>'']);
+        }
+
+    }
+
 }

@@ -13,8 +13,28 @@
                 </div>
                 <div class="ibox-content">
                     <div class="row" style="margin-left:0px;" >
-                        <!-- <a class="btn btn-default delete" href="{:url('add')}" >添加礼盒 </i></a> -->
-                        <!-- <a class="btn btn-default delete" onclick="del_all(0)" href="javascript:;" >批量删除 <i class="fa fa-trash-o"></i></a> -->
+                        <form method="get" action="">
+                            <div class="col-sm-2 m-b-xs">
+                                <select name="status_ed" class="input-sm form-control input-s-sm inline">
+                                    <option value="">全部</option>
+                                    <option value="0" {if condition="$status_ed heq '0'"}selected{/if}>未审核</option>
+                                    <option value="1" {if condition="$status_ed eq '1'"}selected{/if}>审核通过</option>
+                                    <option value="2" {if condition="$status_ed eq '2'"}selected{/if}>未通过</option>
+                                </select>
+                            </div>
+                            
+                            <div class="col-sm-2">
+                                <div class="input-group"><input type="text" name="keyword" value="{$keyword}" placeholder="搜索标题名称" class="input-sm form-control"> </div>
+                            </div>
+    
+                            <div class="col-sm-3">
+                                <div class="input-group"> 
+                                    <span class="input-group-btn">
+                                        <button type="submit" class="btn btn-sm btn-primary"> 搜索</button> 
+                                    </span>
+                                </div>
+                            </div>
+                        </form>
                     </div>
 
                     <div class="table-responsive">
@@ -33,7 +53,7 @@
                                 <th>操作</th>
                             </tr>
                             </thead>
-                            <tbody>
+                            <tbody> 
                             {volist name="list" id="vo"}
                             <tr>
                                 <td>{$vo.id}</td>
@@ -42,11 +62,21 @@
                                 <td>{$vo.status_name}</td>
                                 <td>{$vo.point_num}</td>
                                 <td>{$vo.sort}</td>
-                                <td>{$vo.is_rec}</td>
+                                <td align="left" axis="col0">
+                                    <div style="text-align: left; width: 30px;">
+                                        {if condition='$vo.is_rec eq 1'}
+                                        <span onClick="changeTableVal('sharing_circle','id','{$vo.id}','is_rec',this)">
+                                                    <i class="fa fa-check-circle"></i>是</span>
+                                        {else/}
+                                        <span onClick="changeTableVal('sharing_circle','id','{$vo.id}','is_rec',this)">
+                                                    <i class="fa fa-ban"></i>否</span>
+                                        {/if}
+                                    </div>
+                                </td>
                                 <td>{$vo.addtime|date="Y-m-d H:i:s",###}</td>
                                 <td>
                                     <a class="btn btn-default delete" href="{:url('edit',['id'=>$vo.id],false)}" >审核</i></a>
-                                    <a class="btn btn-default delete" onclick="del(this,{$vo.id})" href="javascript:;" >下架</i></a>
+                                    <a class="btn btn-default delete" onclick="del(this,{$vo.id})" href="javascript:;" >删除</i></a>
                                 </td>
                             </tr>
                             {/volist}
@@ -66,7 +96,7 @@
 {block name='script'}
 <script>
     function del(obj,id){
-        if(window.confirm('确认删除该商品吗？')){
+        if(window.confirm('确认删除吗？')){
             $.post("{:url('del')}",{'id':id},function(data){
                 alert(data.msg);
                 if(data.status){

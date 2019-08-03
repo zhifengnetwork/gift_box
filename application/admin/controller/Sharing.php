@@ -15,18 +15,29 @@ class Sharing extends Common
     public function index()
     {
         $status = ['未审核','审核通过','审核不通过','草稿箱','已下架'];
-        $is_rec = ['未推荐','已推荐'];
         $where['status'] = array('neq',4);
-        $list  = Db::name('sharing_circle')->where($where)->order('sort,addtime desc')->paginate(10)->each(function($v,$k) use($status,$is_rec){
+        $where['is_del'] = array('neq',1);
+        $status_ed = input('status_ed','');
+        $keyword = input('keyword','');
+        if($status_ed !== ''){
+            $where['status'] = $status_ed;
+            $pageParam['query']['status'] = $status_ed;
+        }
+        if($keyword){
+            $where['title'] = array('like','%'.$keyword.'%');
+            $pageParam['query']['keyword'] = $keyword;
+        }
+        $list  = Db::name('sharing_circle')->where($where)->order('sort,addtime desc')->paginate(10,false,$pageParam)->each(function($v,$k) use($status){
             $v['nickname'] = Db::name('member')->where('id',$v['user_id'])->value('nickname');
             if(mb_strlen( $v['title'],'UTF8') > 10){
                 $v['title'] = mb_substr($v['title'],0,10).'...';
             }
             $v['status_name'] = $status[$v['status']];
-            $v['is_rec'] = $is_rec[$v['is_rec']];
             return $v;
         });
         $this->assign('list',$list);
+        $this->assign('status_ed',$status_ed);
+        $this->assign('keyword',$keyword);
         return $this->fetch();
     }
 
@@ -52,6 +63,24 @@ class Sharing extends Common
     public function add_topic()
     {
         $id = input('id');
+        if(Request::instance()->isPost()){
+            $sort = input('sort');
+            $name = input('name');
+            $status = input('status');
+            if(!$name){
+                $this->error('请填写话题名称');
+            }
+            $count = Db::name('sharing_topic')->where(['name'=>$name,'id'=>array('neq',$id)])->count();
+            if($count){
+                $this->error('话题名称已存在');
+            }
+            if($id){
+                Db::name('sharing_topic')->where('id',$id)->update(['sort'=>$sort,'name'=>$name,'status'=>$status]);
+            }else{
+                Db::name('sharing_topic')->insert(['sort'=>$sort,'name'=>$name,'status'=>$status,'addtime'=>time()]);
+            }
+            $this->success('操作成功','topic_list');
+        }
         if($id){
             $info = Db::name('sharing_topic')->where('id',$id)->find();
         }else{
@@ -64,12 +93,12 @@ class Sharing extends Common
     //话题列表 
     public function topic_list()
     {
-        $list  = Db::name('sharing_topic')->order('addtime desc')->paginate(10);
+        $list  = Db::name('sharing_topic')->order('sort')->order('addtime desc')->paginate(10);
         $this->assign('list',$list);
         return $this->fetch();
     }
 
-    //删除
+    //删除话题
     public function del_topic()
     {
         $id = input('id');
@@ -77,5 +106,12 @@ class Sharing extends Common
         return json(['status'=>1,'msg'=>'删除成功']);
     }
 
+    //删除享物圈
+    public function del()
+    {
+        $id = input('id');
+        Db::table('sharing_circle')->where('id',$id)->update(['is_del'=>1]);
+        return json(['status'=>1,'msg'=>'删除成功']);
+    }
     
 }

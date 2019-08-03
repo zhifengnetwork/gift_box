@@ -33,10 +33,10 @@
                             <tr>
                                 <td>{$vo.id}</td>
                                 <td>{$vo.name}</td>
-                                <td>{$vo.status}</td>
+                                <td>{if condition="$vo.status"}禁用{else/}启用{/if}</td>
                                 <td>{$vo.addtime|date="Y-m-d",###}</td>
                                 <td>
-                                    <a class="btn btn-default delete" href="{:url('box/edit',['id'=>$vo.id],false)}" >编辑</i></a>
+                                    <a class="btn btn-default delete" href="{:url('add_topic',['id'=>$vo.id],false)}" >编辑</i></a>
                                     <a class="btn btn-default delete" onclick="del(this,{$vo.id})" href="javascript:;" >删除 </i></a>
                                 </td>
                             </tr>
@@ -58,7 +58,7 @@
 <script>
     function del(obj,id){
         if(window.confirm('确认删除吗？')){
-            $.post("{:url('del')}",{'id':id},function(data){
+            $.post("{:url('del_topic')}",{'id':id},function(data){
                 alert(data.msg);
                 if(data.status){
                     $(obj).parents('tr').remove();
