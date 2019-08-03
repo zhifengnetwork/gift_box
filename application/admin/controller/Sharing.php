@@ -19,6 +19,7 @@ class Sharing extends Common
         $where['is_del'] = array('neq',1);
         $status_ed = input('status_ed','');
         $keyword = input('keyword','');
+        $pageParam = array();
         if($status_ed !== ''){
             $where['status'] = $status_ed;
             $pageParam['query']['status'] = $status_ed;
