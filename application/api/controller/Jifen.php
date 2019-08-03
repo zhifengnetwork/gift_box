@@ -50,16 +50,18 @@ class Jifen extends ApiBase
         $card_mobile = I('card_mobile');
         $card_name = I('card_name');
         $card_num = I('card_num');
-        if(!$card_mobile){
+        if(!$card_num){
             $this->ajaxReturn(['status' => -1 , 'msg'=>'请输入vip卡号!','data'=>'']);
         }
-        if(!$card_mobile){
+        if(!$card_name){
             $this->ajaxReturn(['status' => -1 , 'msg'=>'请输入会员名字!','data'=>'']);
         }
         if(!$card_mobile){
             $this->ajaxReturn(['status' => -1 , 'msg'=>'请输入手机号码!','data'=>'']);
         }
-         
+        if(!preg_match("/^1[3456789]{1}\d{9}$/",$card_mobile)){
+            $this->ajaxReturn(['status' => -1 , 'msg'=>'手机号码格式错误!','data'=>'']);
+        }
         $result = Db::name('order_examine')->where('order_id',$order_id)->count();
         if($result){
             $this->ajaxReturn(['status' => 1 , 'msg'=>'该订单已经提交审核!','data'=>'']);
