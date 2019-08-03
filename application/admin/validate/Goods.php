@@ -8,6 +8,9 @@ class Goods extends Validate
         'cat_id1'        => 'require',
         'cat_id2'        => 'require',
         'type_id'        => 'require',
+        'goods_attr1'        => 'require',
+        'goods_attr2'        => 'require',
+        'brand_id'        => 'require',
     ];
 
     protected $message = [
@@ -17,7 +20,7 @@ class Goods extends Validate
         'goods_attr1.require'   => '请选择一级栏目',
         'goods_attr2.require'   => '请选择二级栏目',
         'type_id.require'       => '类型必须选择',
-        'brand_id.require'       => '类型必须选择',
+        'brand_id.require'       => '请选择品牌',
     ];
 
     protected $scene = [
