@@ -11,6 +11,7 @@ use think\Request;
 use \think\Db;
 use think\Exception;
 use think\Session;
+use app\api\controller\Pay;
 
 //物流api
 use app\home\controller\Api;
@@ -309,18 +310,27 @@ class Order extends Common
                 'remark'   => $handle_remark,
                 'status'   => $status,
             ]; 
+            $tmp_res = true;
+            $result = array();
             if($status == 2){
                 $update['on_time'] = time();
+                if($info['type'] == 1 || $info['type'] == 2){
+                    //todo::调用退款程序 
+                    //$relut = OrderRefund::refund_obj($info);
+                   $pay = new pay;
+                   $result = $pay->wx_refund($info['order_id']);
+                }
             }
-            /*
-            if($refund_status == 2){
-                //todo::调用退款程序 
-               $relut = OrderRefund::refund_obj($info);
-               
-
-
-            }*/
-            $res = Db::name('refund_apply')->where(['id' => $id])->update($update);
+            
+            if($result){
+                if($result['return_code']=='SUCCESS'){
+                    $res = Db::name('refund_apply')->where(['id' => $id])->update($update);
+                }else{
+                    $this->error($result['return_msg']);
+                }
+            }else{
+                $res = Db::name('refund_apply')->where(['id' => $id])->update($update);
+            }
 
             if($res !== false){
                 $this->success('审核成功', url('order/refund_edit',['id' => $id]));

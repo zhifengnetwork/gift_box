@@ -71,7 +71,7 @@
                                         {/eq}
                                     </td>
                                     <td>{$vo.price}</td>
-                                    <td>{$vo.addtime|date="y-m-d H:i:s",###}</td>
+                                    <td>{$vo.addtime|date="Y-m-d H:i:s",###}</td>
                                     <td>{$refund_status[$vo.status]}</td>
                                     <td>
                                         <a class="btn btn-default" href="{:url('order/refund_edit',['id'=>$vo.id])}"><i class="fa fa-list"></i> 查看</a>
