@@ -745,7 +745,7 @@ class Pay extends ApiBase
     {
         $order = Db::name('order')->field('transaction_id,order_sn,order_amount')->where('order_id',$order_id)->find();
         $refund_order = Db::name('refund_apply')->field('price,real_pay_price')->where('order_id',$order_id)->find();
-        // if($order && $refund_order['status'] == 1){
+        if($order && $refund_order['status'] == 1){
             $config = config('wx_config');
             $parma = array(
                 'appid'=> Db::name('config')->where('name','appid')->value('value'),
@@ -753,20 +753,16 @@ class Pay extends ApiBase
                 'nonce_str'=> $this->createNoncestr(),
                 'out_refund_no'=> $order['order_sn'],
                 'transaction_id'=> $order['transaction_id'],//微信订单号
-                'total_fee'=> $order['order_amount'],//订单金额
-                'refund_fee'=> $refund_order['price'],//退款金额
+                'total_fee'=> $order['order_amount']*100,//订单金额
+                'refund_fee'=> $refund_order['price']*100,//退款金额
                 'notify_url'=>$config['notify_recharge_url'],
             );
             $parma['sign'] = $this->getSign($parma);
             $xmldata = $this->arrayToXml($parma);
             $xmlresult = $this->postXmlSSLCurl($xmldata,'https://api.mch.weixin.qq.com/secapi/pay/refund');
             $result = $this->xmlToArray($xmlresult);
-            if($result['return_code'] == 'SUCCESS'){
-                Db::name('refund_apply')->where('order_id',$order_id)->update(['status'=>2]);
-                return $result;
-            }
             return $result;
-        // }
+        }
         return false;
     }
 
