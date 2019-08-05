@@ -585,4 +585,48 @@ class Sharing extends ApiBase
 
     }
 
+    //我发布的文章
+    public function my_sharing_list()
+    {
+        $user_id = $this->get_user_id();
+        $page = input('page',1);
+        $num = input('num',10);
+        $where['sc.status'] = 1;
+        $where['sc.user_id'] = $user_id;
+        $list = Db::name('sharing_circle')->alias('sc')->join('member m','m.id=sc.user_id','LEFT')->field('m.nickname,sc.id,sc.cover,sc.title,sc.point_num,m.avatar')->order('sc.addtime desc')->where($where)->page($page,$num)->select();
+        foreach($list as $key=>$val){
+            $list[$key]['avatar'] = substr($val['avatar'],0,1) != 'h'?SITE_URL.$val['avatar']:$val['avatar'];
+            $list[$key]['cover'] = $val['cover']?SITE_URL.$val['cover']:'';
+            $list[$key]['show'] = false;
+            $list[$key]['count'] = $this->getCount('point',$val['id']);
+        }
+        $this->ajaxReturn(['status' => 1 , 'msg'=>'成功','data'=>$list]);
+    }
+
+    //我收藏的文章
+    public function my_collection_list()
+    {
+        $user_id = $this->get_user_id();
+        $page = input('page',1);
+        $num = input('num',10);
+        $where['sc.status'] = 1;
+        $where['cc.user_id'] = $user_id;
+        $list = Db::name('sharing_circle')
+                ->alias('sc')
+                ->join('member m','m.id=sc.user_id','LEFT')
+                ->join('sharing_collection cc','sc.id=cc.sharing_id')
+                ->field('m.nickname,sc.id,sc.cover,sc.title,sc.point_num,m.avatar')
+                ->order('sc.addtime desc')
+                ->where($where)
+                ->page($page,$num)
+                ->select();
+        foreach($list as $key=>$val){
+            $list[$key]['avatar'] = substr($val['avatar'],0,1) != 'h'?SITE_URL.$val['avatar']:$val['avatar'];
+            $list[$key]['cover'] = $val['cover']?SITE_URL.$val['cover']:'';
+            $list[$key]['show'] = false;
+            $list[$key]['count'] = $this->getCount('point',$val['id']);
+        }
+        $this->ajaxReturn(['status' => 1 , 'msg'=>'成功','data'=>$list]);
+    }
+
 }
