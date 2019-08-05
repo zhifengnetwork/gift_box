@@ -175,7 +175,7 @@ class Gift extends ApiBase
                     $this->ajaxReturn(['status' => -1 , 'msg'=>'该订单已赠送过啦！','data'=>'']);
                 elseif($order['overdue_time'] < time())
                     $this->ajaxReturn(['status' => -1 , 'msg'=>'该订单已赠送过啦！','data'=>'']);
-                else */if($order['gift_uid'])
+                else */if($order['gift_uid'] != $user_id)
                     $this->ajaxReturn(['status' => -1 , 'msg'=>'该订单已有领取人啦！','data'=>'']);
             }elseif(!$order['parent_id'])
                 $this->ajaxReturn(['status' => -1 , 'msg'=>'群抢母订单不能转赠！','data'=>'']);
