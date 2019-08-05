@@ -123,7 +123,8 @@ class Sharing extends ApiBase
     //分享详情
     public function sharing_info()
     {
-        $id = input('id',0);
+        $id = input('id',1);
+        $user_id = $this->get_user_id();
         $info = Db::name('sharing_circle')->field('lat,lon,status',true)->where('id',$id)->find();
         if(!$info){
             $this->ajaxReturn(['status' => -1 , 'msg'=>'享物圈不存在','data'=>'']);
@@ -139,10 +140,21 @@ class Sharing extends ApiBase
         }
         $info['point_count'] = $this->getCount('point',$id);
         $info['collection_count'] = $this->getCount('collection',$id);
-        $info['comment'] = Db::name('sharing_comment')->where('sharing_id',$id)->order('addtime desc')->limit(3)->select();
-        foreach($info['comment'] as $key=>$val){
-            $info['comment'][$key]['nickname'] = Db::name('member')->where('id',$val['user_id'])->value('nickname');
+        //记录读过这篇文章
+        $log_id = Db::name('sharing_user_log')->where(['user_id'=>$user_id,'sharing_id'=>$id])->value('id');
+        $data['addtime'] = time();
+        if($log_id){
+            Db::name('sharing_user_log')->where('id',$log_id)->update($data);
+        }else{
+            $data['user_id'] = $user_id;
+            $data['sharing_id'] = $id;
+            Db::name('sharing_user_log')->insert($data);
         }
+        //顶部显示3条评论
+        // $info['comment'] = Db::name('sharing_comment')->where('sharing_id',$id)->order('addtime desc')->limit(3)->select();
+        // foreach($info['comment'] as $key=>$val){
+        //     $info['comment'][$key]['nickname'] = Db::name('member')->where('id',$val['user_id'])->value('nickname');
+        // }
         $this->ajaxReturn(['status' => 1 , 'msg'=>'成功','data'=>$info]);
     }
 
@@ -616,7 +628,7 @@ class Sharing extends ApiBase
                 ->join('member m','m.id=sc.user_id','LEFT')
                 ->join('sharing_collection cc','sc.id=cc.sharing_id')
                 ->field('m.nickname,sc.id,sc.cover,sc.title,sc.point_num,m.avatar')
-                ->order('sc.addtime desc')
+                ->order('cc.addtime desc')
                 ->where($where)
                 ->page($page,$num)
                 ->select();
@@ -625,6 +637,31 @@ class Sharing extends ApiBase
             $list[$key]['cover'] = $val['cover']?SITE_URL.$val['cover']:'';
             $list[$key]['show'] = false;
             $list[$key]['count'] = $this->getCount('point',$val['id']);
+        }
+        $this->ajaxReturn(['status' => 1 , 'msg'=>'成功','data'=>$list]);
+    }
+
+    //我看过的文章
+    public function my_log_list()
+    {
+        $user_id = $this->get_user_id();
+        $page = input('page',1);
+        $num = input('num',10);
+        $where['sc.status'] = 1;
+        $where['sul.user_id'] = $user_id;
+        $list = Db::name('sharing_circle')
+                ->alias('sc')
+                ->join('member m','m.id=sc.user_id','LEFT')
+                ->join('sharing_user_log sul','sc.id=sul.sharing_id')
+                ->field('m.nickname,sc.id,sc.cover,sc.title,sc.point_num,m.avatar')
+                ->order('sul.addtime desc')
+                ->where($where)
+                ->page($page,$num)
+                ->select();
+        foreach($list as $key=>$val){
+            $list[$key]['avatar'] = substr($val['avatar'],0,1) != 'h'?SITE_URL.$val['avatar']:$val['avatar'];
+            $list[$key]['cover'] = $val['cover']?SITE_URL.$val['cover']:'';
+            $list[$key]['show'] = false;
         }
         $this->ajaxReturn(['status' => 1 , 'msg'=>'成功','data'=>$list]);
     }
