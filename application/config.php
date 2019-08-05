@@ -404,6 +404,8 @@ return [
             'fee_type'          => 'CNY',// 货币类型  当前仅支持该字段
         
             'notify_url'        => SITE_URL.'/api/pay/weixin_notify',
+
+            'notify_recharge_url'        => SITE_URL.'/api/pay/weixin_refund',
         
             'redirect_url'      => SITE_URL,// 如果是h5支付，可以设置该值，返回到指定页面
         

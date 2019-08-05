@@ -699,20 +699,5 @@ class Order extends Common
         return $this->fetch();
     }
 
-    //微信退款
-    public function wx_refund()
-    {
-        $data['appid'] = Db::name('config')->where('name','appid')->value('value');
-        $data['mch_id'] = Db::name('config')->where('name','mch_id')->value('value');
-        $data['nonce_str'] = '';
-        $data['sign'] = '';
-        $data['sign_type'] = '';
-        $data['transaction_id'] = '';
-        $data['out_refund_no'] = '';
-        $data['total_fee'] = '';
-        $data['refund_fee'] = '';
-        $data['refund_fee_type'] = 'CNY';
-        $data['refund_desc'] = '';
-        $data['notify_url'] = '';
-    }
+    
 }
