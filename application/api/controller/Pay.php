@@ -741,11 +741,11 @@ class Pay extends ApiBase
     }
 
     //微信退款
-    public function wx_refund($order_id)
+    public function wx_refund($order_id='2595')
     {
         $order = Db::name('order')->field('transaction_id,order_sn,order_amount')->where('order_id',$order_id)->find();
         $refund_order = Db::name('refund_apply')->field('price,real_pay_price,status')->where('order_id',$order_id)->find();
-        if($order && $refund_order['status'] == 1){
+        if($order && $refund_order['status'] == 0){
             $config = config('wx_config');
             $parma = array(
                 'appid'=> Db::name('config')->where('name','appid')->value('value'),
@@ -755,7 +755,6 @@ class Pay extends ApiBase
                 'transaction_id'=> $order['transaction_id'],//微信订单号
                 'total_fee'=> $order['order_amount']*100,//订单金额
                 'refund_fee'=> $refund_order['price']*100,//退款金额
-                'notify_url'=>$config['notify_recharge_url'],
             );
             $parma['sign'] = $this->getSign($parma);
             $xmldata = $this->arrayToXml($parma);

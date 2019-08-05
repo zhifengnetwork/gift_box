@@ -321,7 +321,6 @@ class Order extends Common
                    $result = $pay->wx_refund($info['order_id']);
                 }
             }
-            
             if($result){
                 if($result['return_code']=='SUCCESS'){
                     $res = Db::name('refund_apply')->where(['id' => $id])->update($update);
