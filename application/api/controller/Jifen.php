@@ -72,7 +72,12 @@ class Jifen extends ApiBase
         $data['order_id'] = $order_id;
         $data['addtime'] = time();
         $data['status'] = 0;
-        Db::name('order')->where(['order_id' => $order_id])->update(['pay_status'=>5,'transaction_id'=>'jifen']);
+
+
+        //  先支付成功
+        Db::name('order')->where(['order_id' => $order_id])->update(['pay_status'=>1,'transaction_id'=>'jifen']);
+
+        
         $res = Db::name('order_examine')->insert($data);
         if($res){
             $this->ajaxReturn(['status' => 1 , 'msg'=>'提交审核成功!','data'=>'']);
