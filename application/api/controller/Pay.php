@@ -744,7 +744,7 @@ class Pay extends ApiBase
     public function wx_refund($order_id = '2269')
     {
         $order = Db::name('order')->field('transaction_id,order_sn,order_amount')->where('order_id',$order_id)->find();
-        $refund_order = Db::name('refund_apply')->field('price,real_pay_price')->where('order_id',$order_id)->find();
+        $refund_order = Db::name('refund_apply')->field('price,real_pay_price,status')->where('order_id',$order_id)->find();
         if($order && $refund_order['status'] == 1){
             $config = config('wx_config');
             $parma = array(
