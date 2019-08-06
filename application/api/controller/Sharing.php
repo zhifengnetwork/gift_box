@@ -649,7 +649,7 @@ class Sharing extends ApiBase
         $this->ajaxReturn(['status' => 1 , 'msg'=>'成功','data'=>$list]);
     }
 
-    //我/他看过的文章
+    //我/他赞过的文章
     public function my_log_list()
     {
         $user_id = input('user_id','');
@@ -663,7 +663,7 @@ class Sharing extends ApiBase
         $list = Db::name('sharing_circle')
                 ->alias('sc')
                 ->join('member m','m.id=sc.user_id','LEFT')
-                ->join('sharing_user_log sul','sc.id=sul.sharing_id')
+                ->join('sharing_point sul','sc.id=sul.sharing_id')
                 ->field('m.nickname,sc.id,sc.cover,sc.title,sc.point_num,m.avatar')
                 ->order('sul.addtime desc')
                 ->where($where)
