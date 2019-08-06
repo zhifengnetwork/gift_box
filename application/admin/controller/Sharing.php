@@ -68,6 +68,8 @@ class Sharing extends Common
             $sort = input('sort');
             $name = input('name');
             $status = input('status');
+            $img = input('img');
+            $pid = input('pid');
             if(!$name){
                 $this->error('请填写话题名称');
             }
@@ -75,26 +77,45 @@ class Sharing extends Common
             if($count){
                 $this->error('话题名称已存在');
             }
+            $data['sort'] = $sort;
+            $data['name'] = $name;
+            $data['status'] = $status;
+            $data['img'] = $img;
+            $data['pid'] = $pid;
             if($id){
-                Db::name('sharing_topic')->where('id',$id)->update(['sort'=>$sort,'name'=>$name,'status'=>$status]);
+                if($pid){
+                    $count = Db::name('sharing_topic')->where('pid',$id)->count();
+                    if($count){
+                        $this->error('该话题拥有下级，请先删除下级在规划到别的话题');
+                    }
+                }
+                Db::name('sharing_topic')->where('id',$id)->update($data);
             }else{
-                Db::name('sharing_topic')->insert(['sort'=>$sort,'name'=>$name,'status'=>$status,'addtime'=>time()]);
+                $data['addtime'] = time();
+                Db::name('sharing_topic')->insert($data);
             }
             $this->success('操作成功','topic_list');
         }
+        $topic_list  = Db::name('sharing_topic')->where('pid',0)->select();
         if($id){
             $info = Db::name('sharing_topic')->where('id',$id)->find();
         }else{
             $info = getTableField('sharing_topic');
         }
+        $pid = input('pid',0);
         $this->assign('info',$info);
+        $this->assign('pid',$pid);
+        $this->assign('topic_list',$topic_list);
         return $this->fetch();
     }
     
     //话题列表 
     public function topic_list()
     {
-        $list  = Db::name('sharing_topic')->order('sort')->order('addtime desc')->paginate(10);
+        $list  = Db::name('sharing_topic')->where('pid',0)->order('sort,addtime desc')->paginate(5)->each(function($v,$k){
+            $v['list'] =  Db::name('sharing_topic')->where('pid',$v['id'])->select();
+            return $v;
+        });
         $this->assign('list',$list);
         return $this->fetch();
     }

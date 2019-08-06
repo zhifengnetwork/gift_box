@@ -699,4 +699,35 @@ class Sharing extends ApiBase
         $this->ajaxReturn(['status' => 1 , 'msg'=>'成功','data'=>$user]);
     }
 
+    //参与话题
+    public function join_topic()
+    {
+        $pid = input('pid',0);
+        $keyword = input('keyword','');
+        $page = input('page',1);
+        $num = input('page',10);
+        //分类
+        if(!$pid && !$keyword){
+            $list = Db::name('sharing_topic')->field('id,name,img')->where(['pid'=>0,'status'=>0])->order('sort')->page($page,$num)->select();
+            foreach($list as $key=>$val){
+                $list[$key]['img'] = $val['img']?SITE_URL.$val['img']:'';
+            }
+            $this->ajaxReturn(['status' => 1 , 'msg'=>'成功','data'=>$list]);
+        }
+        //搜索或者分类下的话题
+        $where['status'] = 0;
+        $where['pid'] = array('neq',0);
+        if($pid){
+            $where['pid'] = $pid;
+        }
+        if($keyword){
+            $where['name'] = arrar('like','%'.$keyword.'%');
+        }
+        $list  = Db::name('sharing_topic')->field('id,name')->where($where)->order('sort')->page($page,$num)->select();
+        foreach($list as $key=>$val){
+            $list[$key]['count'] = Db::name('sharing_circle')->where('topic_id',$val['id'])->where('status',1)->group('user_id')->count();
+        }
+        $this->ajaxReturn(['status' => 1 , 'msg'=>'成功','data'=>$list]);
+    }
+
 }
