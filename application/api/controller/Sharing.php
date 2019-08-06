@@ -599,10 +599,13 @@ class Sharing extends ApiBase
 
     }
 
-    //我发布的文章
+    //我/他发布的文章
     public function my_sharing_list()
     {
-        $user_id = $this->get_user_id();
+        $user_id = input('user_id','');
+        if(!$user_id){
+            $user_id = $this->get_user_id();
+        }
         $page = input('page',1);
         $num = input('num',10);
         $where['sc.status'] = 1;
@@ -617,10 +620,13 @@ class Sharing extends ApiBase
         $this->ajaxReturn(['status' => 1 , 'msg'=>'成功','data'=>$list]);
     }
 
-    //我收藏的文章
+    //我/他收藏的文章
     public function my_collection_list()
     {
-        $user_id = $this->get_user_id();
+        $user_id = input('user_id','');
+        if(!$user_id){
+            $user_id = $this->get_user_id();
+        }
         $page = input('page',1);
         $num = input('num',10);
         $where['sc.status'] = 1;
@@ -643,10 +649,13 @@ class Sharing extends ApiBase
         $this->ajaxReturn(['status' => 1 , 'msg'=>'成功','data'=>$list]);
     }
 
-    //我看过的文章
+    //我/他看过的文章
     public function my_log_list()
     {
-        $user_id = $this->get_user_id();
+        $user_id = input('user_id','');
+        if(!$user_id){
+            $user_id = $this->get_user_id();
+        }
         $page = input('page',1);
         $num = input('num',10);
         $where['sc.status'] = 1;
@@ -664,8 +673,30 @@ class Sharing extends ApiBase
             $list[$key]['avatar'] = substr($val['avatar'],0,1) != 'h'?SITE_URL.$val['avatar']:$val['avatar'];
             $list[$key]['cover'] = $val['cover']?SITE_URL.$val['cover']:'';
             $list[$key]['show'] = false;
+            $list[$key]['count'] = $this->getCount('point',$val['id']);
         }
         $this->ajaxReturn(['status' => 1 , 'msg'=>'成功','data'=>$list]);
+    }
+
+    //我/他的页面
+    public function my_user()
+    {
+        $user_id = input('user_id',0);
+        $new_user_id = $this->get_user_id();
+        if(!$user_id){
+            $user_id = $this->get_user_id();
+        }
+        $user = Db::name('member')->field('id,nickname,avatar,follow_num as fans_num')->where('id',$user_id)->find();
+        $user['follow_num'] = Db::name('sharing_follow')->where('user_id',$user_id)->count();
+        $user['article_num'] = Db::name('sharing_circle')->where('user_id',$user_id)->where('status',1)->count();
+        $user['user_no'] = 'NO.'.str_pad($user_id,6,"0",STR_PAD_LEFT);
+        $user['avatar'] = $user['avatar']?SITE_URL.$user['avatar']:$user['avatar'];
+        if($new_user_id != $user_id){
+            $user['follow_count'] = Db::name('sharing_follow')->where('user_id',$new_user_id)->where('follow_user_id',$user_id)->count();
+        }else{
+            $user['follow_count'] = 0;
+        }
+        $this->ajaxReturn(['status' => 1 , 'msg'=>'成功','data'=>$user]);
     }
 
 }

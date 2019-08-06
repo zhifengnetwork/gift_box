@@ -35,7 +35,7 @@ class Turntable extends Common
             $goods_num = Db::name('order_goods')->where('order_id',$order_id)->value('goods_num');
             $lottery_time = Db::name('order')->where('order_id',$order_id)->value('lottery_time');
             if(time() >= $lottery_time){
-                $this->error('已经开奖了不能设置中奖名单，不能设置中奖名单');
+                $this->error('已经开奖了不能设置中奖名单');
             }
             if(!$ids){
                 $this->error('请勾选中奖的名单');
