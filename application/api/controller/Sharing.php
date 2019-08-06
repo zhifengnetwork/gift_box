@@ -150,6 +150,7 @@ class Sharing extends ApiBase
             $data['sharing_id'] = $id;
             Db::name('sharing_user_log')->insert($data);
         }
+        Db::name('sharing_circle')->where('id',$id)->setInc('read_num',1);
         //顶部显示3条评论
         // $info['comment'] = Db::name('sharing_comment')->where('sharing_id',$id)->order('addtime desc')->limit(3)->select();
         // foreach($info['comment'] as $key=>$val){
@@ -605,7 +606,7 @@ class Sharing extends ApiBase
         $num = input('num',10);
         $where['sc.status'] = 1;
         $where['sc.user_id'] = $user_id;
-        $list = Db::name('sharing_circle')->alias('sc')->join('member m','m.id=sc.user_id','LEFT')->field('m.nickname,sc.id,sc.cover,sc.title,sc.point_num,m.avatar')->order('sc.addtime desc')->where($where)->page($page,$num)->select();
+        $list = Db::name('sharing_circle')->alias('sc')->join('member m','m.id=sc.user_id','LEFT')->field('m.nickname,sc.id,sc.cover,sc.title,sc.point_num,m.avatar,sc.read_num')->order('sc.addtime desc')->where($where)->page($page,$num)->select();
         foreach($list as $key=>$val){
             $list[$key]['avatar'] = substr($val['avatar'],0,1) != 'h'?SITE_URL.$val['avatar']:$val['avatar'];
             $list[$key]['cover'] = $val['cover']?SITE_URL.$val['cover']:'';
