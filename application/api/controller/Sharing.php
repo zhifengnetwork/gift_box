@@ -151,6 +151,7 @@ class Sharing extends ApiBase
             Db::name('sharing_user_log')->insert($data);
         }
         Db::name('sharing_circle')->where('id',$id)->setInc('read_num',1);
+        $info['follow_count'] = Db::name('sharing_follow')->where(['user_id'=>$user_id,'follow_user_id'=>$info['user_id']])->count();
         //顶部显示3条评论
         // $info['comment'] = Db::name('sharing_comment')->where('sharing_id',$id)->order('addtime desc')->limit(3)->select();
         // foreach($info['comment'] as $key=>$val){
