@@ -690,7 +690,7 @@ class Sharing extends ApiBase
         $user['follow_num'] = Db::name('sharing_follow')->where('user_id',$user_id)->count();
         $user['article_num'] = Db::name('sharing_circle')->where('user_id',$user_id)->where('status',1)->count();
         $user['user_no'] = 'NO.'.str_pad($user_id,6,"0",STR_PAD_LEFT);
-        $user['avatar'] = $user['avatar']?SITE_URL.$user['avatar']:$user['avatar'];
+        $user['avatar'] = $user['avatar']!='h'?SITE_URL.$user['avatar']:$user['avatar'];
         if($new_user_id != $user_id){
             $user['follow_count'] = Db::name('sharing_follow')->where('user_id',$new_user_id)->where('follow_user_id',$user_id)->count();
         }else{
@@ -726,6 +726,30 @@ class Sharing extends ApiBase
         $list  = Db::name('sharing_topic')->field('id,name')->where($where)->order('sort')->page($page,$num)->select();
         foreach($list as $key=>$val){
             $list[$key]['count'] = Db::name('sharing_circle')->where('topic_id',$val['id'])->where('status',1)->group('user_id')->count();
+        }
+        $this->ajaxReturn(['status' => 1 , 'msg'=>'成功','data'=>$list]);
+    }
+
+    //我/他的关注
+    public function my_follow()
+    {
+        $user_id = input('user_id',0);
+        $new_user_id = $this->get_user_id();
+        $page = input('page',1);
+        $num = input('num',10);
+        if(!$user_id){
+            $user_id = $this->get_user_id();
+        }
+        $list = Db::name('sharing_follow')->alias('sf')->field('sf.id,sf.follow_user_id as user_id,m.nickname,m.avatar')->where(['user_id'=>$user_id])->order('sf.addtime desc')->join('member m','m.id=sf.user_id')->order('addtime desc')->page($page,$num)->select();
+        foreach($list as $key=>$val){
+            $list[$key]['avatar'] = $val['avatar']!='h'?SITE_URL.$val['avatar']:$val['avatar'];
+            $list[$key]['article_num'] = Db::name('sharing_circle')->where('user_id',$val['user_id'])->where('status',1)->count();
+            $list[$key]['fans_num'] = Db::name('sharing_follow')->where('follow_user_id',$val['user_id'])->count();
+            if($new_user_id != $user_id){
+                $list[$key]['follow_count'] = Db::name('sharing_follow')->where('user_id',$new_user_id)->where('follow_user_id',$val['user_id'])->count();
+            }else{
+                $list[$key]['follow_count'] = 1;
+            }
         }
         $this->ajaxReturn(['status' => 1 , 'msg'=>'成功','data'=>$list]);
     }
