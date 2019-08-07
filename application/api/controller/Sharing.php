@@ -778,4 +778,22 @@ class Sharing extends ApiBase
         $this->ajaxReturn(['status' => 1 , 'msg'=>'成功','data'=>$list]);
     }
 
+    //地点标签和影视标签
+    public function label_list()
+    {
+        $page = input('page',1);
+        $num = input('num',10);
+        $type = input('type',1);
+        $keyword = input('keyword','');
+        $where['type'] = $type;
+        if($keyword){
+            $where['title'] = array('like','%'.$keyword.'%');
+        }
+        $list = Db::name('sharing_label')->field('id,title,desc,img')->where($where)->order('addtime desc')->page($page,$num)->select();
+        foreach($list as $key=>$val){
+            $list[$key]['img'] = $val['img']?SITE_URL.$val['img']:'';
+        }
+        $this->ajaxReturn(['status' => 1 , 'msg'=>'成功','data'=>$list]);
+    }
+
 }
