@@ -174,4 +174,43 @@ class Sharing extends Common
         Db::name('sharing_label')->where('id',$id)->delete();
         $this->success('删除成功','label_list');
     }
+
+    //文章列表
+    public function article_list()
+    {
+        $list = Db::name('sharing_article')->order('sort,addtime desc')->paginate(10);
+        $this->assign('list',$list);
+        return $this->fetch();
+    }
+
+    //添加文章
+    public function add_article()
+    {
+        $id = input('id',0);
+        if(Request::instance()->isPost()){
+            $post = input('post.');
+            if($id){
+                Db::name('sharing_article')->where('id',$id)->update($post);
+            }else{
+                $post['addtime'] = time();
+                Db::name('sharing_article')->insert($post);
+            }
+            $this->success('操作成功','label_list');
+        }
+        if($id){
+            $info = Db::name('sharing_article')->where('id',$id)->find();
+        }else{
+            $info = getTableField('sharing_article');
+        }
+        $this->assign('info',$info);
+        return $this->fetch();
+    }
+
+    //删除文章
+    public function del_article()
+    {
+        $id = input('id');
+        Db::name('sharing_article')->where('id',$id)->delete();
+        $this->success('删除成功','label_list');
+    }
 }
