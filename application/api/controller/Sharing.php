@@ -723,7 +723,7 @@ class Sharing extends ApiBase
         if($keyword){
             $where['name'] = arrar('like','%'.$keyword.'%');
         }
-        $list  = Db::name('sharing_topic')->field('id,name')->where($where)->order('sort')->page($page,$num)->select();
+        $list  = Db::name('sharing_topic')->field('id,name')->where($where)->order('sort,addtime desc')->page($page,$num)->select();
         foreach($list as $key=>$val){
             $list[$key]['count'] = Db::name('sharing_circle')->where('topic_id',$val['id'])->where('status',1)->group('user_id')->count();
         }

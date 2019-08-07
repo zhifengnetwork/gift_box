@@ -1,0 +1,86 @@
+{extend name="common:base" /}
+{block name="content"}
+<link rel="stylesheet"  type="text/css"  href="__STATIC__/layui/build/css/layui.css"  >
+<link rel="stylesheet"  type="text/css"  href="__STATIC__/css/form.css"  >
+<div class="wrapper wrapper-content animated fadeInRight">
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="ibox float-e-margins">
+                <div class="ibox-title">
+                    <h5>添加话题</h5>
+                </div>
+                <div class="ibox-content">
+                    <form method="post" class="form-horizontal"  action="{:url('add_label')}"  enctype="multipart/form-data">
+                        <input type="hidden" name="id" value="{$info.id}">
+                        <input type="hidden" name="img" value="{$info.img}">
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label"><span style="color:red;">*</span>标题</label>
+                            <div class="col-sm-9">
+                                <input type="text" name="title" value="{$info.title}" class="form-control">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">封面图</label>
+                            <div class="col-sm-9">
+                                    <dd class="upload_area clearfix" style="margin: 0 auto;">
+                                        <ul id="imglist" class="post_imglist">
+                                            <li><img class="wh60" id="image_src" src="{$info.img|default='/static/images/default.jpg'}"></li>
+                                        </ul>
+                                        <label for="image_file"><div class="upload_btn"></div></label>
+                                    </dd>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label"><span style="color:red;">*</span>描述</label>
+                            <div class="col-sm-9">
+                                <input type="text" name="desc" value="{$info.desc}" class="form-control">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">类别</label>
+                            <div class="col-sm-9">
+                                <div class="radio radio-success radio-inline">
+                                    <input type="radio" value="1" name="type" {if condition="$info.type eq 1"}checked="true"{/if} id="show1" >
+                                    <label for="show1">地点</label>
+                                </div>
+                                <div class="radio radio-danger radio-inline">
+                                    <input type="radio" {if condition="$info.type eq 4"}checked="true"{/if} value="4" name="type" id="show2"  >
+                                    <label for="show2">影视</label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="col-sm-4 col-sm-offset-2">
+                                <input value="提交" type="submit" class="btn btn-primary ajax-post" target-form="form-horizontal" type="submit">
+                                <button class="btn btn-white" onclick="javascript:history.back(-1);return false;">取消</button>
+                            </div> 
+                        </div>
+                    </form>
+                    <!-- 图片上传 -->
+                    <form method="post" class="form-horizontal" id="ajaxForm" action="{:url('goods/upload_file')}" enctype="multipart/form-data">
+                        <input type="file" id="image_file" value="" accept="image/*" name="file" onchange="upload_file()" style="display: none">
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{/block}
+
+{block name="script"}
+<script src="__STATIC__/js/jquery.form.js" type="text/javascript"></script>
+<script type="text/javascript">
+    //文件上传
+    function upload_file(){
+        $("#ajaxForm").ajaxSubmit(function (data) {
+            if(data.status == 1){
+                $('input[name="img"]').val(data.data);
+                $('#image_src').attr('src',data.data);
+            }else{
+                alert(data.msg);
+            }
+        });
+    }
+</script>
+{/block}

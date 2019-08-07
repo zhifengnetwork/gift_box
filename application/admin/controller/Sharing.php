@@ -139,7 +139,39 @@ class Sharing extends Common
     //标签列表
     public function label_list()
     {
-        
+        $list =  Db::name('sharing_label')->order('addtime desc')->paginate(10);
+        $this->assign('list',$list);
+        return $this->fetch();
+    }
+
+    //添加修改标签
+    public function add_label()
+    {
+        $id = input('id',0);
+        if(Request::instance()->isPost()){
+            $post = input('post.');
+            if($id){
+                Db::name('sharing_label')->where('id',$id)->update($post);
+            }else{
+                $post['addtime'] = time();
+                Db::name('sharing_label')->insert($post);
+            }
+            $this->success('操作成功','label_list');
+        }
+        if($id){
+            $info = Db::name('sharing_label')->where('id',$id)->find();
+        }else{
+            $info = getTableField('sharing_label');
+        }
+        $this->assign('info',$info);
+        return $this->fetch();
     }
     
+    //删除标签
+    public function del_label()
+    {
+        $id = input('id');
+        Db::name('sharing_label')->where('id',$id)->delete();
+        $this->success('删除成功','label_list');
+    }
 }
