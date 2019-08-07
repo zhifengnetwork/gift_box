@@ -135,5 +135,11 @@ class Sharing extends Common
         Db::table('sharing_circle')->where('id',$id)->update(['is_del'=>1]);
         return json(['status'=>1,'msg'=>'删除成功']);
     }
+
+    //标签列表
+    public function label_list()
+    {
+        
+    }
     
 }

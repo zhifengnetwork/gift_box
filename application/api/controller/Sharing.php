@@ -705,7 +705,7 @@ class Sharing extends ApiBase
         $pid = input('pid',0);
         $keyword = input('keyword','');
         $page = input('page',1);
-        $num = input('page',10);
+        $num = input('num',10);
         //分类
         if(!$pid && !$keyword){
             $list = Db::name('sharing_topic')->field('id,name,img')->where(['pid'=>0,'status'=>0])->order('sort')->page($page,$num)->select();
