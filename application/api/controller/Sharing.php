@@ -725,7 +725,7 @@ class Sharing extends ApiBase
             $where['pid'] = $pid;
         }
         if($keyword){
-            $where['name'] = arrar('like','%'.$keyword.'%');
+            $where['name'] = array('like','%'.$keyword.'%');
         }
         $list  = Db::name('sharing_topic')->field('id,name')->where($where)->order('sort,addtime desc')->page($page,$num)->select();
         foreach($list as $key=>$val){

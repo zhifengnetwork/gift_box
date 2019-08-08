@@ -199,6 +199,7 @@ class Sharing extends Common
         }
         if($id){
             $info = Db::name('sharing_article')->where('id',$id)->find();
+            $info['cover'] = explode(',',$info['cover']);
         }else{
             $info = getTableField('sharing_article');
         }
@@ -213,4 +214,25 @@ class Sharing extends Common
         Db::name('sharing_article')->where('id',$id)->delete();
         $this->success('删除成功','label_list');
     }
+
+    //文件上传
+    public function UploadFile()
+    {
+    	// 获取表单上传文件 例如上传了001.jpg
+        $files = request()->file('image');
+        // 移动到框架应用根目录/public/uploads/ 目录下
+        foreach($files as $file){
+            // 移动到框架应用根目录/public/uploads/ 目录下
+            $info = $file->validate(['size'=>1024*1024*10])->move(ROOT_PATH . 'public' . DS . 'uploads' . DS . 'sharing' . DS);
+            
+            if($info){
+                // 成功上传后 获取上传信息
+                $data[] = SITE_URL.'/public/uploads/'.'sharing'.'/'.$info->getSaveName();
+            }else{
+                // 上传失败获取错误信息
+                return ['msg'=>$file->getError(),'status'=>-1,'data'=>''];
+            }    
+        }
+        return ['msg'=>'上传成功','status'=>1,'data'=>$data];          
+    }  
 }

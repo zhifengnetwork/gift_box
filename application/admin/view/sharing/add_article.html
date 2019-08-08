@@ -13,7 +13,11 @@
                     <form method="post" class="form-horizontal"  action="{:url('add_article')}"  enctype="multipart/form-data">
                         <input type="hidden" name="id" value="{$info.id}">
                         <input type="hidden" name="logo" value="{$info.logo}">
-                        <input type="hidden" name="cover" value="{$info.cover}">
+                        <div style="display: none;" id="covers">
+                            {volist name="info.cover" id="vo"}
+                            <input type="hidden" name="cover[]" value="{$vo}">
+                            {/volist}
+                        </div>
                         <div class="form-group">
                             <label class="col-sm-2 control-label"><span style="color:red;">*</span>标题</label>
                             <div class="col-sm-9">
@@ -36,9 +40,12 @@
                             <div class="col-sm-9">
                                 <dd class="upload_area clearfix" style="margin: 0 auto;">
                                     <ul id="imglist" class="post_imglist">
+                                        {volist name="info.cover" id="vv"}
                                         <li>
-                                            <img class="wh60" id="image_src2" src="{$info.cover|default='/static/images/default.jpg'}">
+                                            <img class="wh60" src="{$vv}">
+                                            <p class="del"></p>
                                         </li>
+                                        {/volist}
                                     </ul>
                                     <label for="image_file2"><div class="upload_btn"></div></label>
                                 </dd>
@@ -80,8 +87,8 @@
                     <form method="post" class="form-horizontal" id="ajaxForm" action="{:url('goods/upload_file')}" enctype="multipart/form-data">
                         <input type="file" id="image_file" value="" accept="image/*" name="file" onchange="upload_file()" style="display: none">
                     </form>
-                    <form method="post" class="form-horizontal" id="ajaxForm2" action="{:url('goods/upload_file')}" enctype="multipart/form-data">
-                        <input type="file" id="image_file2" value="" accept="image/*" name="file" onchange="upload_file2()" style="display: none">
+                    <form method="post" class="form-horizontal" id="ajaxForm2" action="{:url('UploadFile')}" enctype="multipart/form-data">
+                        <input type="file" id="image_file2" value="" accept="image/*" name="image" onchange="upload_file2()" multiple  style="display: none">
                     </form>
                 </div>
             </div>
@@ -109,11 +116,15 @@
             }
         });
     }
-    //文件上传
+    //多文件上传
     function upload_file2(){
+        var li = '<li><img class="wh60" id="image_src2" src=""><p class="del"></p></li>';
         $("#ajaxForm2").ajaxSubmit(function (data) {
             if(data.status == 1){
-                $('input[name="cover"]').val(data.data);
+                $.each(data.data,function(v,k){
+                    // var str =
+                    // $('#covers').append('$('input[name="cover[]"]').val(data.data)');
+                })
                 $('#image_src2').attr('src',data.data);
             }else{
                 alert(data.msg);
