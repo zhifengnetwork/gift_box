@@ -821,7 +821,14 @@ class Sharing extends ApiBase
         if(!$article_id){
             $this->ajaxReturn(['status' => -1 , 'msg'=>'消息不存在','data'=>'']);
         }
-        // $info = Db::name('')
-        $this->ajaxReturn(['status' => 1 , 'msg'=>'成功','data'=>$list]);
+        $info = Db::name('sharing_article')->where('id',$article_id)->find();
+        $info['logo'] = $info['logo']?SITE_URL.$info['logo']:'';
+        $info['addtime'] = date('Y-m-d H:i:s',$info['addtime']);
+        $tmp = explode(',',$info['cover']);
+        foreach($tmp as $k=>$v){
+            $tmp[$k] = $v?SITE_URL.$v:$v;
+        }
+        $info['cover'] = $tmp;
+        $this->ajaxReturn(['status' => 1 , 'msg'=>'成功','data'=>$info]);
     }
 }
