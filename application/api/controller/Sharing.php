@@ -33,8 +33,26 @@ class Sharing extends ApiBase
         $data['lat'] = input('lat');
         $data['lon'] = input('lon');
         $data['priture'] = input('priture');
-        $data['topic_id'] = input('topic_id');
-        $data['topic_id'] = str_replace(SITE_URL,'',$data['topic_id']);
+        $data['text'] = input('text');
+        $data['text2'] = input('text2');
+        $topic_name = input('topic_name');
+        if(!$topic_name){
+            $this->ajaxReturn(['status' => -1 , 'msg'=>'请选择话题','data'=>'']);
+        }
+        $topic_id = Db::name('sharing_topic')->where('name',$topic_name)->value('id');
+        if($topic_id){
+            $data['topic_id'] = $topic_id;
+        }else{
+            $zdy_id = Db::name('sharing_topic')->where('name','自定义')->value('id');
+            if(!$zdy_id){
+                $zdy_id = Db::name('sharing_topic')->insertGetId(['name'=>'自定义','addtime'=>time()]);
+            }
+            $topic['addtime'] = time();
+            $topic['name'] = $topic_name;
+            $topic['pid'] = $zdy_id;
+            $topic_id = Db::name('sharing_topic')->insertGetId($topic);
+            $data['topic_id'] = $topic_id;
+        }
         $data['cover'] = input('cover');
         $data['cover'] = str_replace(SITE_URL,'',$data['cover']);
         if(!$data['cover'] && $data['type'] == 0){
@@ -607,14 +625,18 @@ class Sharing extends ApiBase
     public function my_sharing_list()
     {
         $user_id = input('user_id','');
+        if($user_id){
+            $where['sc.status'] = 1;
+        }else{
+            $where['sc.status'] = array('lt',3);
+        }
         if(!$user_id){
             $user_id = $this->get_user_id();
         }
         $page = input('page',1);
         $num = input('num',10);
-        $where['sc.status'] = 1;
         $where['sc.user_id'] = $user_id;
-        $list = Db::name('sharing_circle')->alias('sc')->join('member m','m.id=sc.user_id','LEFT')->field('m.nickname,sc.id,sc.cover,sc.title,sc.point_num,m.avatar,sc.read_num')->order('sc.addtime desc')->where($where)->page($page,$num)->select();
+        $list = Db::name('sharing_circle')->alias('sc')->join('member m','m.id=sc.user_id','LEFT')->field('m.nickname,sc.id,sc.cover,sc.title,sc.point_num,m.avatar,sc.read_num,sc.status')->order('sc.addtime desc')->where($where)->page($page,$num)->select();
         foreach($list as $key=>$val){
             $list[$key]['avatar'] = substr($val['avatar'],0,1) != 'h'?SITE_URL.$val['avatar']:$val['avatar'];
             $list[$key]['cover'] = $val['cover']?SITE_URL.$val['cover']:'';

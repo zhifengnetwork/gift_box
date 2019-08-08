@@ -39,7 +39,7 @@
                             <label class="col-sm-2 control-label">封面图</label>
                             <div class="col-sm-9">
                                 <dd class="upload_area clearfix" style="margin: 0 auto;">
-                                    <ul id="imglist" class="post_imglist">
+                                    <ul id="imglist2" class="post_imglist">
                                         {volist name="info.cover" id="vv"}
                                         <li>
                                             <img class="wh60" src="{$vv}">
@@ -118,12 +118,13 @@
     }
     //多文件上传
     function upload_file2(){
-        var li = '<li><img class="wh60" id="image_src2" src=""><p class="del"></p></li>';
+        // var li = '<li><img class="wh60" id="image_src2" src=""><p class="del"></p></li>';
         $("#ajaxForm2").ajaxSubmit(function (data) {
             if(data.status == 1){
                 $.each(data.data,function(v,k){
-                    // var str =
-                    // $('#covers').append('$('input[name="cover[]"]').val(data.data)');
+                    var str = '<input name="cover[]" value="'+v+'">';
+                    $('#covers').append(str);
+                    var str_img = '<li><img class="wh60" src="'+v+'"><p class="del"></p></li>';
                 })
                 $('#image_src2').attr('src',data.data);
             }else{
