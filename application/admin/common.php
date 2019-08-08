@@ -690,8 +690,15 @@ function getTableField($table_name='')
 /**
 *物流接口
 */
-function getDelivery($shipping_code, $invoice_no)
+function getDelivery($shipping_code, $invoice_no,$order_id=0)
 {
+    if(!$order_id){
+        return false;
+    }
+    $result = db('order_logistics')->where(['order_id'=>$order_id,'addtime'=>array('gt',time())])->value('text');
+    if($result){
+        return $result;
+    }
     $host = "https://wuliu.market.alicloudapi.com";//api访问链接
     $path = "/kdi";//API访问后缀
     $method = "GET";
@@ -718,6 +725,10 @@ function getDelivery($shipping_code, $invoice_no)
         curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, false);
     }
 
+    $data['order_id'] = $order_id;
+    $data['text'] = curl_exec($curl);
+    $data['addtime'] = time()+600;
+    db('order_logistics')->insert($data);
     return curl_exec($curl);
 }
 

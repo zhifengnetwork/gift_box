@@ -192,16 +192,16 @@ class Order extends Common
         $order_info     =  $orderModel->where(['order_id'=>$order_id])->find();
         $orderGoods     =  $orderGoodsMdel::all(['order_id'=>$order_id,'is_send'=>['lt',2]]);
         //快递信息
-        // $kuaidi_info = [];
-        // if($order_info['shipping_status']==1 && $order_info['shipping_code']){
-        //     $type = kuaidi_code($order_info['shipping_code']);
-        //     if($type){
-        //         $kuaidi_info = getDelivery($type,$order_info['invoice_no']);
-        //         $kuaidi_info = json_decode($kuaidi_info,true);
-        //         if($kuaidi_info['msg']=='ok' || isset($kuaidi_info['result']['list'])) $kuaidi_info = $kuaidi_info['result']['list'];
-        //     }
-        // }
-        // $this->assign('kuaidi_info', $kuaidi_info);
+        $kuaidi_info = [];
+        if($order_info['shipping_status']==1 && $order_info['shipping_code']){
+            $type = $order_info['shipping_code'];
+            if($type){
+                $kuaidi_info = getDelivery($type,$order_info['invoice_no'],$order_id);
+                $kuaidi_info = json_decode($kuaidi_info,true);
+                if($kuaidi_info['msg']=='ok' || isset($kuaidi_info['result']['list'])) $kuaidi_info = $kuaidi_info['result']['list'];
+            }
+        }
+        $this->assign('kuaidi_info', $kuaidi_info);
 
          //订单状态
          $this->assign('order_status', config('ORDER_STATUS'));
@@ -425,16 +425,18 @@ class Order extends Common
         
 
         $delivery_record = Db::name('delivery_doc')->alias('d')->where('d.order_id='.$order_id)->select();
-        if(!empty($delivery_record)){
-            $order['invoice_no'] = $delivery_record[count($delivery_record)-1]['invoice_no'];
-        }else{
-            $order['invoice_no'] = '';
-        }
+        // if(!empty($delivery_record)){
+        //     $order['invoice_no'] = $delivery_record[count($delivery_record)-1]['invoice_no'];
+        // }else{
+        //     $order['invoice_no'] = '';
+        // }
         $this->assign('order',$order);
         $this->assign('orderGoods',$orderGoods);
         $this->assign('delivery_record',$delivery_record);//发货记录
-        $shipping_list = Db::name('shipping')->field('shipping_name,shipping_code')->where('')->select();
+        //快递
+        $shipping_list = Db::name('order_shipping')->select();
         $this->assign('shipping_list',$shipping_list);
+
         $this->assign('express_switch',0);
         $this->assign('meta_title','发货单编辑');
         return $this->fetch();    
@@ -711,13 +713,42 @@ class Order extends Common
     //物流公司列表
     public function shipping_list()
     {
+        $list = Db::name('order_shipping')->paginate(10);
+        $this->assign('list',$list);
         return $this->fetch();
     }
 
     //物流公司详情
     public function add_shipping()
     {
+        $id = input('id',0);
+        if(Request::instance()->isPost()){
+            $post = input('post.');
+            if(!$post['name']){
+                $this->error('物流公司名称不能为空');
+            }
+            if($id){
+                Db::name('order_shipping')->where('id',$id)->update($post);
+            }else{
+                Db::name('order_shipping')->insert($post);
+            }
+            $this->success('操作成功','shipping_list');
+        }
+        if($id){
+            $info = Db::name('order_shipping')->where('id',$id)->find();
+        }else{
+            $info = getTableField('order_shipping');
+        }
+        $this->assign('info',$info);
         return $this->fetch();
+    }
+
+    //删除物流公司
+    public function del_shipping()
+    {
+        $id = input('id',0);
+        Db::name('order_shipping')->where('id',$id)->delete();
+        $this->success('删除成功');
     }
     
 }

@@ -10,58 +10,20 @@
                     <h5>添加话题</h5>
                 </div>
                 <div class="ibox-content">
-                    <form method="post" class="form-horizontal"  action="{:url('add_topic')}"  enctype="multipart/form-data">
+                    <form method="post" class="form-horizontal"  action="{:url('add_shipping')}"  enctype="multipart/form-data">
                         <input type="hidden" name="id" value="{$info.id}">
-                        <input type="hidden" name="img" value="{$info.img}">
                         <div class="form-group">
-                            <label class="col-sm-2 control-label"><span style="color:red;">*</span>话题名称</label>
+                            <label class="col-sm-2 control-label"><span style="color:red;">*</span>公司名称</label>
                             <div class="col-sm-9">
                                 <input type="text" name="name" value="{$info.name}" class="form-control">
                             </div>
                         </div>
                         <div class="form-group">
-                            <label class="col-sm-2 control-label">上级话题</label>
+                            <label class="col-sm-2 control-label">type缩写</label>
                             <div class="col-sm-9">
-                                <div style="line-height:34px;float:left;margin:0 10px 0 0;width: 100%">
-                                    <select class="form-control" name="pid" >
-                                        <option value="" >顶级话题</option>
-                                        {volist name="topic_list" id="vo"}
-                                        <option value="{$vo.id}" {if condition="$vo.id eq $pid"}selected{/if} {if condition="$vo.id eq $info.pid"}selected{/if} >{$vo.name}</option>
-                                        {/volist}
-                                    </select>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label class="col-sm-2 control-label">封面图</label>
-                            <div class="col-sm-9">
-                                    <dd class="upload_area clearfix" style="margin: 0 auto;">
-                                        <ul id="imglist" class="post_imglist">
-                                            <li><img class="wh60" id="image_src" src="{$info.img|default='/static/images/default.jpg'}"></li>
-                                        </ul>
-                                        <label for="image_file"><div class="upload_btn"></div></label>
-                                    </dd>
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label class="col-sm-2 control-label">排序</label>
-                            <div class="col-sm-9">
-                                <input type="text" name="sort" value="{$info.sort}" class="form-control">
+                                <input type="text" name="code" value="{$info.code}" class="form-control">
                             </div>
                         </div> 
-                        <div class="form-group">
-                            <label class="col-sm-2 control-label">状态</label>
-                            <div class="col-sm-9">
-                                <div class="radio radio-success radio-inline">
-                                    <input type="radio" value="0" name="status" {if condition="$info.status eq 0"}checked="true"{/if} id="show1" >
-                                    <label for="show1">启用</label>
-                                </div>
-                                <div class="radio radio-danger radio-inline">
-                                    <input type="radio" {if condition="$info.status eq 1"}checked="true"{/if} value="1" name="status" id="show2"  >
-                                    <label for="show2">禁用</label>
-                                </div>
-                            </div>
-                        </div>
                         <div class="form-group">
                             <div class="col-sm-4 col-sm-offset-2">
                                 <input value="提交" type="submit" class="btn btn-primary ajax-post" target-form="form-horizontal" type="submit">

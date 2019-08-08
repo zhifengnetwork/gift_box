@@ -189,6 +189,7 @@ class Order extends Model
         $update['shipping_time'] = time();
         $update['shipping_code'] = isset($data['shipping_code'])? $data['shipping_code'] : '';
         $update['shipping_name'] = isset($data['shipping_name'] )? $data['shipping_name'] : '';
+        $update['invoice_no'] = isset($data['invoice_no'] )? $data['invoice_no'] : '';
         if($is_delivery == count($orderGoods)){
             $update['shipping_status'] = 1;
         }else{

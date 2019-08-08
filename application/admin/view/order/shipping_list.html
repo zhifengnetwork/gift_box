@@ -8,12 +8,12 @@
                 <div class="ibox-title">
                     <h5>{$meta_title}</h5>
                     <div class="pull-right" style="margin-top:-8px;">
-                            <a class="btn btn-info" href="{:url('add_topic')}"><i class="fa fa-plus"></i> 添加话题</a>
+                            <a class="btn btn-info" href="{:url('add_shipping')}"><i class="fa fa-plus"></i> 添加物流公司</a>
                     </div>
                 </div>
                 <div class="ibox-content">
                     <div class="row" style="margin-left:0px;" >
-                        <a class="btn btn-default delete" href="{:url('add_topic')}" >添加话题 </i></a>
+                        <a class="btn btn-default delete" href="{:url('add_shipping')}" >添加物流公司 </i></a>
                     </div>
 
                     <div class="table-responsive">
@@ -22,9 +22,8 @@
                             <thead>
                             <tr>
                                 <th>ID</th>
-                                <th>话题名称 </th>
-                                <th>状态 </th>
-                                <th>添加时间</th>
+                                <th>物流公司 </th>
+                                <th>type缩写 </th>
                                 <th>操作</th>
                             </tr>
                             </thead>
@@ -33,26 +32,12 @@
                             <tr>
                                 <td>{$vo.id}</td>
                                 <td>{$vo.name}</td>
-                                <td>{if condition="$vo.status"}禁用{else/}启用{/if}</td>
-                                <td>{$vo.addtime|date="Y-m-d",###}</td>
+                                <td>{$vo.code}</td>
                                 <td>
-                                    <a class="btn btn-default delete" href="{:url('add_topic',['pid'=>$vo.id],false)}" >添加下级话题</i></a>
-                                    <a class="btn btn-default delete" href="{:url('add_topic',['id'=>$vo.id],false)}" >编辑</i></a>
+                                    <a class="btn btn-default delete" href="{:url('add_shipping',['id'=>$vo.id],false)}" >编辑</i></a>
                                     <a class="btn btn-default delete" onclick="del(this,{$vo.id})" href="javascript:;" >删除 </i></a>
                                 </td>
                             </tr>
-                                {volist name="vo['list']" id="vv"}
-                                <tr>
-                                    <td>{$vv.id}</td>
-                                    <td>------{$vv.name}</td>
-                                    <td>{if condition="$vv.status"}禁用{else/}启用{/if}</td>
-                                    <td>{$vv.addtime|date="Y-m-d",###}</td>
-                                    <td>
-                                        <a class="btn btn-default delete" href="{:url('add_topic',['id'=>$vv.id],false)}" >编辑</i></a>
-                                        <a class="btn btn-default delete" onclick="del(this,{$vv.id})" href="javascript:;" >删除 </i></a>
-                                    </td>
-                                </tr>
-                                {/volist}
                             {/volist}
                             </tbody>
                         </table>
@@ -71,7 +56,7 @@
 <script>
     function del(obj,id){
         if(window.confirm('确认删除吗？')){
-            $.post("{:url('del_topic')}",{'id':id},function(data){
+            $.post("{:url('del_shipping')}",{'id':id},function(data){
                 alert(data.msg);
                 if(data.status){
                     $(obj).parents('tr').remove();

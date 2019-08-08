@@ -132,10 +132,14 @@
                 </table>
             </div>
         </div>
-        <div class="row">
+        <div class="row" style="margin-bottom: 50px;">
             <div class="col-lg-12">
                     <h3>物流信息</h3>
-                   
+                    <ul>
+                       {volist name="$kuaidi_info" id="vo"}
+                       <li>{$vo.time} {$vo.status}</li>
+                       {/volist}
+                    </ul>
            </div>
         </div>
 

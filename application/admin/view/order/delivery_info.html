@@ -14,7 +14,7 @@
      <form  action="{:url('order/deliveryHandle')}"  method="post" class="form-horizontal form" enctype="multipart/form-data">
         <input type="hidden" id="shipping" name="shipping" value="{$order.shipping_status}">
         <input type="hidden" name="order_id" value="{$order.order_id}">
-        <input type="hidden" id="shipping_name" name="shipping_name" value="{if condition='$order.shipping_status eq 1'}{$order.shipping_name}{else/}{$shipping_list['0']['shipping_name']}{/if}">
+        <input type="hidden" id="shipping_name" name="shipping_name" value="{if condition='$order.shipping_status eq 1'}{$order.shipping_name}{else/}{$shipping_list['0']['name']}{/if}">
         <div class="row">
             <div class="col-lg-12">
                 <div class="m-b-md" style="position:relative;">
@@ -32,7 +32,7 @@
                                 <select id="shipping_code" name="shipping_code" onchange="set_shipping_name()">
                                     <option value="">-请选择-</option>
                                      {volist name="shipping_list" id="shipping"}
-                                         <option {if condition="$order.shipping_code eq $shipping.shipping_code"}selected{/if} value="{$shipping.shipping_code}" >{$shipping.shipping_name}</option>
+                                         <option {if condition="$order.shipping_code eq $shipping.code"}selected{/if} value="{$shipping.code}" >{$shipping.name}</option>
                                      {/volist}
                                  </select>
                             </td>
