@@ -346,7 +346,7 @@ class Sharing extends ApiBase
         $data['user_id'] = $user_id;
         $id = Db::name('sharing_follow')->where($data)->value('id');
         if($id){
-            $res = Db::name('sharing_follow')->where('id',$id)->delect();
+            $res = Db::name('sharing_follow')->where('id',$id)->delete();
             if($res){
                 Db::name('member')->where('id',$follow_user_id)->setDec('follow_num',1);
                 $this->ajaxReturn(['status' => 1 , 'msg'=>'取消关注','data'=>'']);
