@@ -12,7 +12,7 @@
                 <div class="ibox-content">
                     <form method="post" class="form-horizontal"  action="{:url('add_article')}"  enctype="multipart/form-data">
                         <input type="hidden" name="id" value="{$info.id}">
-                        <input type="hidden" name="logo" value="{$info.logo}">
+                        <input type="hidden" name="logo" value="{$info.logo|default='/static/inspinia/img/default1.jpg'}">
                         <div style="display: none;" id="covers">
                             {volist name="info.cover" id="vo"}
                             <input type="hidden" name="cover[]" value="{$vo}">
@@ -29,7 +29,7 @@
                             <div class="col-sm-9">
                                 <dd class="upload_area clearfix" style="margin: 0 auto;">
                                     <ul id="imglist" class="post_imglist">
-                                        <li><img class="wh60" id="image_src" src="{$info.logo|default='/static/images/default.jpg'}"></li>
+                                        <li><img class="wh60" id="image_src" src="{$info.logo|default='/static/inspinia/img/default1.jpg'}"></li>
                                     </ul>
                                     <label for="image_file"><div class="upload_btn"></div></label>
                                 </dd>
@@ -39,11 +39,11 @@
                             <label class="col-sm-2 control-label">封面图</label>
                             <div class="col-sm-9">
                                 <dd class="upload_area clearfix" style="margin: 0 auto;">
-                                    <ul id="imglist2" class="post_imglist">
+                                    <ul id="imglist" class="post_imglist post_imglist2">
                                         {volist name="info.cover" id="vv"}
                                         <li>
                                             <img class="wh60" src="{$vv}">
-                                            <p class="del"></p>
+                                            <p class="del" onclick="del_img(this)"></p>
                                         </li>
                                         {/volist}
                                     </ul>
@@ -88,7 +88,7 @@
                         <input type="file" id="image_file" value="" accept="image/*" name="file" onchange="upload_file()" style="display: none">
                     </form>
                     <form method="post" class="form-horizontal" id="ajaxForm2" action="{:url('UploadFile')}" enctype="multipart/form-data">
-                        <input type="file" id="image_file2" value="" accept="image/*" name="image" onchange="upload_file2()" multiple  style="display: none">
+                        <input type="file" id="image_file2" value="" accept="image/*" name="image[]" onchange="upload_file2()" multiple  style="display: none">
                     </form>
                 </div>
             </div>
@@ -121,16 +121,28 @@
         // var li = '<li><img class="wh60" id="image_src2" src=""><p class="del"></p></li>';
         $("#ajaxForm2").ajaxSubmit(function (data) {
             if(data.status == 1){
-                $.each(data.data,function(v,k){
+                $.each(data.data,function(k,v){
                     var str = '<input name="cover[]" value="'+v+'">';
                     $('#covers').append(str);
-                    var str_img = '<li><img class="wh60" src="'+v+'"><p class="del"></p></li>';
+                    var str_img = '<li><img class="wh60" src="'+v+'"><p class="del" onclick="del_img(this)"></p></li>';
+                    $('.post_imglist2').append(str_img);
                 })
-                $('#image_src2').attr('src',data.data);
             }else{
                 alert(data.msg);
             }
         });
+    }
+
+    // 删除图片
+    function del_img(obj)
+    {
+        $(obj).parent().remove();
+        var url = $(obj).prev().attr('src');
+        $('input[name="cover[]"]').each(function(k,v){
+            if(url == $(v).val()){
+                $('input[name="cover[]"]').eq(k).remove();
+            }
+        })
     }
 
     //实例化富文本编辑器

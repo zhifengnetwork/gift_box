@@ -189,6 +189,7 @@ class Sharing extends Common
         $id = input('id',0);
         if(Request::instance()->isPost()){
             $post = input('post.');
+            $post['cover'] = implode(',',$post['cover']);
             if($id){
                 Db::name('sharing_article')->where('id',$id)->update($post);
             }else{
@@ -227,7 +228,7 @@ class Sharing extends Common
             
             if($info){
                 // 成功上传后 获取上传信息
-                $data[] = SITE_URL.'/public/uploads/'.'sharing'.'/'.$info->getSaveName();
+                $data[] = '/public/uploads/'.'sharing'.'/'.$info->getSaveName();
             }else{
                 // 上传失败获取错误信息
                 return ['msg'=>$file->getError(),'status'=>-1,'data'=>''];
