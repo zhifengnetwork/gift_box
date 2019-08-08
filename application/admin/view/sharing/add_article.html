@@ -10,37 +10,44 @@
                     <h5>添加话题</h5>
                 </div>
                 <div class="ibox-content">
-                    <form method="post" class="form-horizontal"  action="{:url('add_topic')}"  enctype="multipart/form-data">
+                    <form method="post" class="form-horizontal"  action="{:url('add_article')}"  enctype="multipart/form-data">
                         <input type="hidden" name="id" value="{$info.id}">
-                        <input type="hidden" name="img" value="{$info.img}">
+                        <input type="hidden" name="logo" value="{$info.logo}">
+                        <input type="hidden" name="cover" value="{$info.cover}">
                         <div class="form-group">
-                            <label class="col-sm-2 control-label"><span style="color:red;">*</span>话题名称</label>
+                            <label class="col-sm-2 control-label"><span style="color:red;">*</span>标题</label>
                             <div class="col-sm-9">
-                                <input type="text" name="name" value="{$info.name}" class="form-control">
+                                <input type="text" name="title" value="{$info.title}" class="form-control">
                             </div>
                         </div>
                         <div class="form-group">
-                            <label class="col-sm-2 control-label">上级话题</label>
+                            <label class="col-sm-2 control-label">logo</label>
                             <div class="col-sm-9">
-                                <div style="line-height:34px;float:left;margin:0 10px 0 0;width: 100%">
-                                    <select class="form-control" name="pid" >
-                                        <option value="" >顶级话题</option>
-                                        {volist name="topic_list" id="vo"}
-                                        <option value="{$vo.id}" {if condition="$vo.id eq $pid"}selected{/if} {if condition="$vo.id eq $info.pid"}selected{/if} >{$vo.name}</option>
-                                        {/volist}
-                                    </select>
-                                </div>
+                                <dd class="upload_area clearfix" style="margin: 0 auto;">
+                                    <ul id="imglist" class="post_imglist">
+                                        <li><img class="wh60" id="image_src" src="{$info.logo|default='/static/images/default.jpg'}"></li>
+                                    </ul>
+                                    <label for="image_file"><div class="upload_btn"></div></label>
+                                </dd>
                             </div>
                         </div>
                         <div class="form-group">
                             <label class="col-sm-2 control-label">封面图</label>
                             <div class="col-sm-9">
-                                    <dd class="upload_area clearfix" style="margin: 0 auto;">
-                                        <ul id="imglist" class="post_imglist">
-                                            <li><img class="wh60" id="image_src" src="{$info.img|default='/static/images/default.jpg'}"></li>
-                                        </ul>
-                                        <label for="image_file"><div class="upload_btn"></div></label>
-                                    </dd>
+                                <dd class="upload_area clearfix" style="margin: 0 auto;">
+                                    <ul id="imglist" class="post_imglist">
+                                        <li>
+                                            <img class="wh60" id="image_src2" src="{$info.cover|default='/static/images/default.jpg'}">
+                                        </li>
+                                    </ul>
+                                    <label for="image_file2"><div class="upload_btn"></div></label>
+                                </dd>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">内容</label>
+                            <div class="col-sm-9">
+                                <script id="editor" name="content" type="text/plain" style="width:100%;height:400px;">{$info.content}</script> 
                             </div>
                         </div>
                         <div class="form-group">
@@ -50,15 +57,15 @@
                             </div>
                         </div> 
                         <div class="form-group">
-                            <label class="col-sm-2 control-label">状态</label>
+                            <label class="col-sm-2 control-label">是否发布</label>
                             <div class="col-sm-9">
                                 <div class="radio radio-success radio-inline">
-                                    <input type="radio" value="0" name="status" {if condition="$info.status eq 0"}checked="true"{/if} id="show1" >
-                                    <label for="show1">启用</label>
+                                    <input type="radio" value="1" name="status" {if condition="$info.status eq 1"}checked="true"{/if} id="show1" >
+                                    <label for="show1">是</label>
                                 </div>
                                 <div class="radio radio-danger radio-inline">
-                                    <input type="radio" {if condition="$info.status eq 1"}checked="true"{/if} value="1" name="status" id="show2"  >
-                                    <label for="show2">禁用</label>
+                                    <input type="radio" {if condition="$info.status eq 0"}checked="true"{/if} value="0" name="status" id="show2"  >
+                                    <label for="show2">否</label>
                                 </div>
                             </div>
                         </div>
@@ -73,6 +80,9 @@
                     <form method="post" class="form-horizontal" id="ajaxForm" action="{:url('goods/upload_file')}" enctype="multipart/form-data">
                         <input type="file" id="image_file" value="" accept="image/*" name="file" onchange="upload_file()" style="display: none">
                     </form>
+                    <form method="post" class="form-horizontal" id="ajaxForm2" action="{:url('goods/upload_file')}" enctype="multipart/form-data">
+                        <input type="file" id="image_file2" value="" accept="image/*" name="file" onchange="upload_file2()" style="display: none">
+                    </form>
                 </div>
             </div>
         </div>
@@ -83,17 +93,45 @@
 
 {block name="script"}
 <script src="__STATIC__/js/jquery.form.js" type="text/javascript"></script>
+<script type="text/javascript" src="__STATIC__/ueditor/1.4.3/ueditor.config.js"></script> 
+<script type="text/javascript" src="__STATIC__/ueditor/1.4.3/ueditor.all.min.js"> </script> 
+<script type="text/javascript" src="__STATIC__/ueditor/1.4.3/lang/zh-cn/zh-cn.js"></script> 
+<script src="__STATIC__/layui/src/localResizeIMG2.js" type="text/javascript"></script>
 <script type="text/javascript">
     //文件上传
     function upload_file(){
         $("#ajaxForm").ajaxSubmit(function (data) {
             if(data.status == 1){
-                $('input[name="img"]').val(data.data);
+                $('input[name="logo"]').val(data.data);
                 $('#image_src').attr('src',data.data);
             }else{
                 alert(data.msg);
             }
         });
     }
+    //文件上传
+    function upload_file2(){
+        $("#ajaxForm2").ajaxSubmit(function (data) {
+            if(data.status == 1){
+                $('input[name="cover"]').val(data.data);
+                $('#image_src2').attr('src',data.data);
+            }else{
+                alert(data.msg);
+            }
+        });
+    }
+
+    //实例化富文本编辑器
+    var ue = UE.getEditor('editor',{
+        initialFrameWidth:650,
+        initialFrameHeight:180,
+        toolbars: [[
+            'fullscreen', 'source', '|', 'undo', 'redo', '|', 'searchreplace' ,
+            'bold', 'italic', 'underline', 'fontborder', 'strikethrough', 'superscript', 'subscript', 'removeformat', 'formatmatch','pasteplain', '|', 'forecolor', 'backcolor', 'insertorderedlist', 'insertunorderedlist', 'selectall', 'cleardoc', '|',
+            'rowspacingtop', 'rowspacingbottom', 'lineheight', 'paragraph', 'fontfamily', 'fontsize', 'indent', '|',
+            'justifyleft', 'justifycenter', 'justifyright', 'justifyjustify', '|', 'touppercase', 'tolowercase', '|',
+            'link', 'unlink', 'insertimage', 'insertvideo', 'music', 'attachment', 'map', 'gmap',
+        ]]
+    });
 </script>
 {/block}

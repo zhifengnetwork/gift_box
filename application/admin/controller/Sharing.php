@@ -195,7 +195,7 @@ class Sharing extends Common
                 $post['addtime'] = time();
                 Db::name('sharing_article')->insert($post);
             }
-            $this->success('操作成功','label_list');
+            $this->success('操作成功','article_list');
         }
         if($id){
             $info = Db::name('sharing_article')->where('id',$id)->find();
