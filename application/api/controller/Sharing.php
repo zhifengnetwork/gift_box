@@ -139,6 +139,7 @@ class Sharing extends ApiBase
             $info['priture'][$key] = SITE_URL.$val;
         }
         $info['point_count'] = $this->getCount('point',$id);
+        $info['follow_count'] = Db::name('sharing_follow')->where(['user_id'=>$user_id,'follow_user_id'=>$info['user_id']])->count();
         $info['collection_count'] = $this->getCount('collection',$id);
         //记录读过这篇文章
         $log_id = Db::name('sharing_user_log')->where(['user_id'=>$user_id,'sharing_id'=>$id])->value('id');
@@ -337,6 +338,9 @@ class Sharing extends ApiBase
         $follow_user_id = input('follow_user_id');
         if(!$follow_user_id){
             $this->ajaxReturn(['status' => -1 , 'msg'=>'请提供被关注的用户id','data'=>'']);
+        }
+        if($user_id == $follow_user_id){
+            $this->ajaxReturn(['status' => -1 , 'msg'=>'你不能关注自己','data'=>'']);
         }
         $data['follow_user_id'] = $follow_user_id;
         $data['user_id'] = $user_id;
