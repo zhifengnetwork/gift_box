@@ -191,24 +191,24 @@ class Order extends Common
         $orderModel     =  new OrderModel();
         $order_info     =  $orderModel->where(['order_id'=>$order_id])->find();
         $orderGoods     =  $orderGoodsMdel::all(['order_id'=>$order_id,'is_send'=>['lt',2]]);
-        
+        //快递信息
+        // $kuaidi_info = [];
+        // if($order_info['shipping_status']==1 && $order_info['shipping_code']){
+        //     $type = kuaidi_code($order_info['shipping_code']);
+        //     if($type){
+        //         $kuaidi_info = getDelivery($type,$order_info['invoice_no']);
+        //         $kuaidi_info = json_decode($kuaidi_info,true);
+        //         if($kuaidi_info['msg']=='ok' || isset($kuaidi_info['result']['list'])) $kuaidi_info = $kuaidi_info['result']['list'];
+        //     }
+        // }
+        // $this->assign('kuaidi_info', $kuaidi_info);
+
          //订单状态
          $this->assign('order_status', config('ORDER_STATUS'));
          $this->assign('pay_status', config('PAY_STATUS'));
          $this->assign('shipping_status', config('SHIPPING_STATUS'));
          //支付方式
          $this->assign('type_list',config('PAY_TYPE'));
-        //物流
-        // $Api = new Api;
-        // $data = M('delivery_doc')->where('order_id', $order_id)->find();
-        // $shipping_code = $data['shipping_code'];
-        // $invoice_no = $data['invoice_no'];
-        // $result = $Api->queryExpress($shipping_code, $invoice_no);
-        // if ($result['status'] == 0) {
-        //     $result['result'] = $result['result']['list'];
-        // }
-        // $this->assign('invoice_no', $invoice_no);
-        // $this->assign('result', $result);
         $this->assign('orderGoods', $orderGoods);
         $this->assign('order_info', $order_info);
         $this->assign('meta_title', '订单详情');
@@ -708,5 +708,16 @@ class Order extends Common
         return $this->fetch();
     }
 
+    //物流公司列表
+    public function shipping_list()
+    {
+        return $this->fetch();
+    }
+
+    //物流公司详情
+    public function add_shipping()
+    {
+        return $this->fetch();
+    }
     
 }
