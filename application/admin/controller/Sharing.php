@@ -172,7 +172,7 @@ class Sharing extends Common
     {
         $id = input('id');
         Db::name('sharing_label')->where('id',$id)->delete();
-        $this->success('删除成功','label_list');
+        return json(['status'=>1,'msg'=>'删除成功']);
     }
 
     //文章列表
@@ -213,7 +213,7 @@ class Sharing extends Common
     {
         $id = input('id');
         Db::name('sharing_article')->where('id',$id)->delete();
-        $this->success('删除成功','label_list');
+        return json(['status'=>1,'msg'=>'删除成功']);
     }
 
     //文件上传
@@ -266,6 +266,7 @@ class Sharing extends Common
             $data['status'] = $status;
             $data['url'] = $url;
             $data['pid'] = $pid;
+            $data['desc'] = input('desc','');
             if($id){
                 if($pid){
                     $count = Db::name('sharing_music')->where('pid',$id)->count();
@@ -291,5 +292,13 @@ class Sharing extends Common
         $this->assign('pid',$pid);
         $this->assign('music_list',$music_list);
         return $this->fetch();
+    }
+
+    //删除音乐
+    public function del_music()
+    {
+        $id = input('id');
+        Db::name('sharing_music')->where('id',$id)->delete();
+        return json(['status'=>1,'msg'=>'删除成功']);
     }
 }
