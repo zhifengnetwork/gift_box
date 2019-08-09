@@ -69,7 +69,7 @@ class Advertisement extends Common
             if ($id) {
                 $Advertise = new Advertise;
                 if ($Advertise->save($data, ['id' => $id]) !== false) {
-                    $this->success('编辑成功', url('advertisement/list', ['page_id' => $page_id]));
+                    $this->success('编辑成功', url('advertisement/list2', ['page_id' => $page_id]));
                 }
                 $this->error('编辑失败');
             }

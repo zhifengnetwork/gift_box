@@ -870,7 +870,13 @@ class Sharing extends ApiBase
     //获取视频的配乐
     public function get_sharing_music()
     {
+        $type = input('type',0);
         $pid = input('pid');
-        $sharing_music = Db::name('sharing_music')->field('id,name,url')->where(['status'=>0,'pid'=>0])->select();
+        if($type){
+            $sharing_music = Db::name('sharing_music')->field('id,name,url')->where(['status'=>0,'pid'=>array('neq',0)])->select();
+        }else{
+            $sharing_music = Db::name('sharing_music')->field('id,name,url')->where(['status'=>0,'pid'=>$pid])->select();
+        }
+
     }
 }
