@@ -149,9 +149,9 @@ class Sharing extends ApiBase
     {
         $id = input('id',0);
         $user_id = $this->get_user_id();
-        $info = Db::name('sharing_circle')->field('lat,lon,status',true)->where('id',$id)->find();
+        $info = Db::name('sharing_circle')->where('id',$id)->find();
         if(!$info){
-            $info = Db::name('sharing_circle')->where('status',3)->field('lat,lon,status',true)->order('addtime desc')->find();
+            $info = Db::name('sharing_circle')->where('status',3)->order('addtime desc')->find();
             if(!$info){
                 $this->ajaxReturn(['status' => 1 , 'msg'=>'成功','data'=>'']);
             }
