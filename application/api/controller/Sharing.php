@@ -57,7 +57,7 @@ class Sharing extends ApiBase
         $data['cover'] = str_replace(SITE_URL,'',$data['cover']);
         // $data['priture'] = implode(',',$data['priture']);
         $data['priture'] = str_replace(SITE_URL,'',$data['priture']);
-        if(!$data['cover'] && $data['type'] == 0){
+        if(!$data['priture'] && $data['type'] == 0){
             $this->ajaxReturn(['status' => -1 , 'msg'=>'请上传图片','data'=>'']);
         }
         if(!$data['cover']){
