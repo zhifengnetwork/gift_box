@@ -300,8 +300,8 @@ class User extends ApiBase
                     $post_data['province'] = Db::table('region')->where('area_name',$res['province'])->value('area_id');
                     $post_data['city'] = Db::table('region')->where('area_name',$res['city'])->value('area_id');
                     $post_data['district'] = Db::table('region')->where('area_name',$res['district'])->value('area_id');
-                    if($res['town']){
-                        $post_data['town'] = Db::table('region')->where('area_name',$res['town'])->value('area_id');
+                    if($res['twon']){
+                        $post_data['twon'] = Db::table('region')->where('area_name',$res['twon'])->value('area_id');
                     }
                 }
             }else{
@@ -369,8 +369,8 @@ class User extends ApiBase
                 $post_data['province'] = Db::table('region')->where('area_name',$res['province'])->value('area_id');
                 $post_data['city'] = Db::table('region')->where('area_name',$res['city'])->value('area_id');
                 $post_data['district'] = Db::table('region')->where('area_name',$res['district'])->value('area_id');
-                if($res['town']){
-                    $post_data['town'] = Db::table('region')->where('area_name',$res['town'])->value('area_id');
+                if($res['twon']){
+                    $post_data['twon'] = Db::table('region')->where('area_name',$res['twon'])->value('area_id');
                 }
             }
         }else{
@@ -411,6 +411,22 @@ class User extends ApiBase
             $this->ajaxReturn(['status' => 1 , 'msg'=>'删除地址成功','data'=>$row]);
         else
             $this->ajaxReturn(['status' => -2 , 'msg'=>'删除失败','data'=>'']);
+    }
+
+    //获取默认收货地址
+    public function get_default_address()
+    {
+        $user_id = $this->get_user_id();
+        $address = Db::name('user_address')->where(["user_id" => $user_id,'is_default'=>1])->find();
+        if($address){
+            $address['province'] = Db::table('region')->where('area_id',$address['province'])->value('area_name');
+            $address['city'] = Db::table('region')->where('area_id',$address['city'])->value('area_name');
+            $address['district'] = Db::table('region')->where('area_id',$address['district'])->value('area_name');
+            if($address['twon']){
+                $address['twon'] = Db::table('region')->where('area_id',$address['twon'])->value('area_name');
+            }
+        }
+        $this->ajaxReturn(['status' => 1 , 'msg'=>'成功','data'=>$address]);
     }
 
 
