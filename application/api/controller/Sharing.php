@@ -23,7 +23,8 @@ class Sharing extends ApiBase
         if($status){
             $data['status'] = 3;
         }else{
-            $data['status'] = 0;
+            // $data['status'] = 0;
+            $data['status'] = 1;//模仿小红书不需要审核
         }
         $data['title'] = input('title');
         $data['text'] = input('text');
@@ -36,6 +37,9 @@ class Sharing extends ApiBase
         $data['text'] = input('text');
         $data['text2'] = input('text2');
         $topic_name = input('topic_name');
+        if(!$data['title']){
+            $this->ajaxReturn(['status' => -1 , 'msg'=>'请输入标题','data'=>'']);
+        }
         if(!$topic_name){
             $this->ajaxReturn(['status' => -1 , 'msg'=>'请选择话题','data'=>'']);
         }
@@ -143,11 +147,15 @@ class Sharing extends ApiBase
     //分享详情
     public function sharing_info()
     {
-        $id = input('id',1);
+        $id = input('id',0);
         $user_id = $this->get_user_id();
         $info = Db::name('sharing_circle')->field('lat,lon,status',true)->where('id',$id)->find();
         if(!$info){
-            $this->ajaxReturn(['status' => -1 , 'msg'=>'享物圈不存在','data'=>'']);
+            $info = Db::name('sharing_circle')->where('status',3)->field('lat,lon,status',true)->order('addtime desc')->find();
+            if(!$info){
+                $this->ajaxReturn(['status' => 1 , 'msg'=>'成功','data'=>'']);
+            }
+            // $this->ajaxReturn(['status' => -1 , 'msg'=>'享物圈不存在','data'=>'']);
         }
         $user = Db::name('member')->field('avatar,nickname')->where('id',$info['user_id'])->find();
         $info['avatar'] = substr($user['avatar'],0,1) != 'h'?SITE_URL.$user['avatar']:$user['avatar'];
