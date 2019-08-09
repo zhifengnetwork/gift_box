@@ -27,7 +27,7 @@ class Sharing extends ApiBase
         }
         $data['title'] = input('title');
         $data['text'] = input('text');
-        $data['type'] = input('type');
+        $data['type'] = input('type',0);
         $data['content'] = input('content');
         $data['user_id'] = $user_id;
         $data['lat'] = input('lat');
