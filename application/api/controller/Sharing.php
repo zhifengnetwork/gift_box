@@ -37,10 +37,10 @@ class Sharing extends ApiBase
         $data['text'] = input('text');
         $data['text2'] = input('text2');
         $topic_name = input('topic_name');
-        if(!$data['title']){
+        if(!$data['title'] && !$status){
             $this->ajaxReturn(['status' => -1 , 'msg'=>'请输入标题','data'=>'']);
         }
-        if(!$topic_name){
+        if(!$topic_name && !$status){
             $this->ajaxReturn(['status' => -1 , 'msg'=>'请选择话题','data'=>'']);
         }
         $topic_id = Db::name('sharing_topic')->where('name',$topic_name)->value('id');
@@ -61,14 +61,13 @@ class Sharing extends ApiBase
         $data['cover'] = str_replace(SITE_URL,'',$data['cover']);
         // $data['priture'] = implode(',',$data['priture']);
         $data['priture'] = str_replace(SITE_URL,'',$data['priture']);
-        if(!$data['priture'] && $data['type'] == 0){
+        if(!$data['priture'] && $data['type'] == 0  && !$status){
             $this->ajaxReturn(['status' => -1 , 'msg'=>'请上传图片','data'=>'']);
         }
         if(!$data['cover']){
             $cover = explode(',',$data['priture']);
             $data['cover'] = $cover[0];
         }
-
         $data['addtime'] = time();
         if($id){
             $res = Db::name('sharing_circle')->where('id',$id)->update($data);

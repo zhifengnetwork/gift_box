@@ -236,4 +236,64 @@ class Sharing extends Common
         }
         return ['msg'=>'上传成功','status'=>1,'data'=>$data];          
     }  
+
+    //配乐列表
+    public function music_list()
+    {
+        $list  = Db::name('sharing_music')->where('pid',0)->order('sort,addtime desc')->paginate(5)->each(function($v,$k){
+            $v['list'] =  Db::name('sharing_music')->where('pid',$v['id'])->select();
+            return $v;
+        });
+        $this->assign('list',$list);
+        return $this->fetch();
+    }
+
+    //添加配乐
+    public function add_music()
+    {
+        $id = input('id');
+        if(Request::instance()->isPost()){
+            $sort = input('sort');
+            $name = input('name');
+            $status = input('status');
+            $img = input('img');
+            $pid = input('pid');
+            if(!$name){
+                $this->error('请填写名称');
+            }
+            $count = Db::name('sharing_music')->where(['name'=>$name,'id'=>array('neq',$id)])->count();
+            if($count){
+                $this->error('话题名称已存在');
+            }
+            $data['sort'] = $sort;
+            $data['name'] = $name;
+            $data['status'] = $status;
+            $data['img'] = $img;
+            $data['pid'] = $pid;
+            if($id){
+                if($pid){
+                    $count = Db::name('sharing_music')->where('pid',$id)->count();
+                    if($count){
+                        $this->error('该话题拥有下级，请先删除下级在规划到别的话题');
+                    }
+                }
+                Db::name('sharing_music')->where('id',$id)->update($data);
+            }else{
+                $data['addtime'] = time();
+                Db::name('sharing_music')->insert($data);
+            }
+            $this->success('操作成功','music_list');
+        }
+        $music_list  = Db::name('sharing_music')->where('pid',0)->select();
+        if($id){
+            $info = Db::name('sharing_music')->where('id',$id)->find();
+        }else{
+            $info = getTableField('sharing_music');
+        }
+        $pid = input('pid',0);
+        $this->assign('info',$info);
+        $this->assign('pid',$pid);
+        $this->assign('music_list',$music_list);
+        return $this->fetch();
+    }
 }
