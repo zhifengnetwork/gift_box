@@ -871,12 +871,18 @@ class Sharing extends ApiBase
     public function get_sharing_music()
     {
         $type = input('type',0);
-        $pid = input('pid');
+        $pid = input('pid',0);
+        $page = input('page',1);
+        $num = input('num',10);
         if($type){
-            $sharing_music = Db::name('sharing_music')->field('id,name,url')->where(['status'=>0,'pid'=>array('neq',0)])->select();
+            $sharing_music = Db::name('sharing_music')->field('id,name,url,desc')->where(['status'=>0,'pid'=>array('neq',0)])->select();
         }else{
-            $sharing_music = Db::name('sharing_music')->field('id,name,url')->where(['status'=>0,'pid'=>$pid])->select();
+            $sharing_music = Db::name('sharing_music')->field('id,name,url,desc')->where(['status'=>0,'pid'=>$pid])->select();
         }
+        foreach($sharing_music as $key=>$val){
+            $sharing_music[$key]['url'] = $val['url']?SITE_URL.$val['url']:'';
 
+        }
+        $this->ajaxReturn(['status' => 1 , 'msg'=>'成功','data'=>$sharing_music]);
     }
 }
