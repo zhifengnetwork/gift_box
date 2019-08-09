@@ -35,13 +35,13 @@
                         <div class="form-group">
                             <label class="col-sm-2 control-label">音乐上传</label>
                             <div class="col-sm-9">
-                                    <dd class="upload_area clearfix" style="margin: 0 auto;">
-                                        <ul id="imglist" class="post_imglist">
-                                            <li><a href="" class="music_css"><img class="wh60" id="file0" src="{if condition='$info.url'}__STATIC__/images/music.jpg{else/}__STATIC__/images/default.jpg{/if}"></a></li>
-                                        </ul>
-                                        <label for="image_file" style="float: left"><div class="upload_btn"></div></label>
-                                        <div style=" margin-left: 10px;float: left;line-height: 60px;"><span class="jianyi" style="color: #5fb878;">只能上传小于10M的</span></div>
-                                    </dd>
+                                <dd class="upload_area clearfix" style="margin: 0 auto;">
+                                    <ul id="imglist" class="post_imglist2"  style="float: left;">
+                                        <li><a href="{$info.url}" class="music_css"><img class="wh60" id="file0" src="{if condition='$info.url'}__STATIC__/images/music.jpg{else/}__STATIC__/images/default.jpg{/if}"></a></li>
+                                    </ul>
+                                    <label for="image_file" style="float: left"><div class="upload_btn"></div></label>
+                                    <div style=" margin-left: 10px;float: left;line-height: 60px;"><span class="jianyi" style="color: #5fb878;">只能上传小于10M的</span></div>
+                                </dd>
                             </div>
                         </div>
                         <div class="form-group">
@@ -72,7 +72,7 @@
                     </form>
                     <!-- 图片上传 -->
                     <form method="post" class="form-horizontal" id="ajaxForm" action="{:url('goods/upload_file')}" enctype="multipart/form-data">
-                        <input type="file" id="image_file" value="" accept="image/*" name="file" onchange="upload_file()" style="display: none">
+                        <input type="file" id="image_file" value=""  name="file" onchange="upload_file()" style="display: none">
                     </form>
                 </div>
             </div>
@@ -89,9 +89,9 @@
     function upload_file(){
         $("#ajaxForm").ajaxSubmit(function (data) {
             if(data.status == 1){
-                $('input[name="url"]').val(data.url);
+                $('input[name="url"]').val(data.data);
                 $('#file0').attr('src','/static/images/music.jpg');
-                $('.music_css').attr('href',data.url);
+                $('.music_css').attr('href',data.data);
                 tiao();
             }else{
                 alert(data.msg);

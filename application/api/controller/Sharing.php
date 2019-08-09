@@ -866,4 +866,11 @@ class Sharing extends ApiBase
         $info['cover'] = $tmp;
         $this->ajaxReturn(['status' => 1 , 'msg'=>'成功','data'=>$info]);
     }
+
+    //获取视频的配乐
+    public function get_sharing_music()
+    {
+        $pid = input('pid');
+        $sharing_music = Db::name('sharing_music')->field('id,name,url')->where(['status'=>0,'pid'=>0])->select();
+    }
 }

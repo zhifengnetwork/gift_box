@@ -256,19 +256,15 @@ class Sharing extends Common
             $sort = input('sort');
             $name = input('name');
             $status = input('status');
-            $img = input('img');
+            $url = input('url');
             $pid = input('pid');
             if(!$name){
                 $this->error('请填写名称');
             }
-            $count = Db::name('sharing_music')->where(['name'=>$name,'id'=>array('neq',$id)])->count();
-            if($count){
-                $this->error('话题名称已存在');
-            }
             $data['sort'] = $sort;
             $data['name'] = $name;
             $data['status'] = $status;
-            $data['img'] = $img;
+            $data['url'] = $url;
             $data['pid'] = $pid;
             if($id){
                 if($pid){

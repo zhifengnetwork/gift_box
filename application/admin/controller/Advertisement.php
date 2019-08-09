@@ -78,7 +78,7 @@ class Advertisement extends Common
             !$file && $this->error('图片不能为空');
             $Advertise = new Advertise($data);
             if ($Advertise->save()) {
-                $this->success('添加成功', url('advertisement/list', ['page_id' => $page_id]));
+                $this->success('添加成功', url('advertisement/list2', ['page_id' => $page_id]));
             }
             $this->error('添加失败');
         }
