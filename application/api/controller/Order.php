@@ -1620,7 +1620,7 @@ class Order extends ApiBase
             $this->ajaxReturn(['status' => -1 , 'msg'=>'用户不存在！','data'=>'']);
         }   
 
-        $order_id = I('id/d',0);
+        $order_id = I('order_id/d',0);
         if(!$order_id)$this->ajaxReturn(['status' => -1 , 'msg'=>'参数错误！','data'=>'']);
         $orderinfo = M('Order')->where(['order_id'=>$order_id,'user_id'=>$user_id])->count();
         if(!$orderinfo)$this->ajaxReturn(['status' => -1 , 'msg'=>'订单不存在！','data'=>'']);
