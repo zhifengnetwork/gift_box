@@ -1797,14 +1797,20 @@ class Order extends ApiBase
     //获取退货物流信息
     public function refund_logistics()
     {
-        $list =  [
-            ['name'=>'顺丰快递','value'=>'顺丰快递'],
-            ['name'=>'中国邮政','value'=>'中国邮政'],
-            ['name'=>'圆通快递','value'=>'圆通快递'],
-            ['name'=>'韵达快递','value'=>'韵达快递'],
-            ['name'=>'中通快递','value'=>'中通快递']
-        ];
-        $this->ajaxReturn(['status' => 1 , 'msg'=>'获取数据成功','data'=>$list]);
+        // $list =  [
+        //     ['name'=>'顺丰快递','value'=>'顺丰快递'],
+        //     ['name'=>'中国邮政','value'=>'中国邮政'],
+        //     ['name'=>'圆通快递','value'=>'圆通快递'],
+        //     ['name'=>'韵达快递','value'=>'韵达快递'],
+        //     ['name'=>'中通快递','value'=>'中通快递']
+        // ];
+        $list  = Db::name('order_shipping')->select();
+        $data = array();
+        foreach($list as $key=>$val){
+            $data[$key]['name'] = $val['name'];
+            $data[$key]['value'] = $val['name'];
+        }
+        $this->ajaxReturn(['status' => 1 , 'msg'=>'获取数据成功','data'=>$data]);
     }
 
     //获取物流接口
