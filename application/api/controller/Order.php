@@ -1844,7 +1844,7 @@ class Order extends ApiBase
             $data['courierPhone'] = $logistics['result']['courierPhone'];
             $data['number'] = $logistics['result']['number'];
             $data['list'] = $new_result;
-            $data['status'] = $status[$logistics['result']['deliverystatus']];
+            $data['deliverystatus'] = $status[$logistics['result']['deliverystatus']];
         }
         $this->ajaxReturn(['status' => 1 , 'msg'=>'成功','data'=>$data]);
     }
