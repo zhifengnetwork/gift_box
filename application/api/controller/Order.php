@@ -1793,7 +1793,7 @@ class Order extends ApiBase
         }
         $this->ajaxReturn(['status' => 1 , 'msg'=>'获取数据成功','data'=>$list]);
     }
-
+ 
     //获取退货物流信息
     public function refund_logistics()
     {
@@ -1805,6 +1805,48 @@ class Order extends ApiBase
             ['name'=>'中通快递','value'=>'中通快递']
         ];
         $this->ajaxReturn(['status' => 1 , 'msg'=>'获取数据成功','data'=>$list]);
+    }
+
+    //获取物流接口
+    public function get_order_logistics()
+    {
+        $order_id = input('order_id',0);
+        $order = Db::name('order')->field('shipping_code,order_id,invoice_no,add_time,pay_time,order_status')->where('order_id',$order_id)->find();
+        if(!$order){
+            $this->ajaxReturn(['status' => -1 , 'msg'=>'订单不存在','data'=>'']);
+        }
+        $status = ['快递收件(揽件)','在途中','正在派件','已签收','派送失败','疑难件','退件签收'];
+        $logistics = getDelivery($order['shipping_code'],$order['invoice_no'],$order_id);
+        $logistics = json_decode($logistics,true);
+        $new_result = array();
+        $data = array();
+        if($logistics['msg'] == 'ok'){
+            $result = array();
+            if(isset($logistics['result']['list'])){
+                $result = $logistics['result']['list'];
+                foreach($result as $key=>$val){
+                    if(strpos($val['status'],'已签收') !== false){
+                        $val['title'] = '已签收';
+                    }else if(strpos($val['status'],'派件中') !== false){
+                        $val['title'] = '派件中';
+                    }else if(strpos($val['status'],'已收件') !== false){
+                        $val['title'] = '已收件';
+                    }else{
+                        $val['title'] = '运输中';
+                    }
+                    $new_result[] = $val;
+                }
+                $new_result[] = ['title'=>'已支付','time'=>date('Y-m-d H:i:s',$order['pay_time']?$order['pay_time']:$order['add_time']),'status'=>'订单支付成功等待仓库发货'];
+                $new_result[] = ['title'=>'已下单','time'=>date('Y-m-d H:i:s',$order['add_time']),'status'=>'订单支付成功等待仓库发货'];
+            }
+            $data['expName'] = $logistics['result']['expName'];
+            $data['courier'] = $logistics['result']['courier'];
+            $data['courierPhone'] = $logistics['result']['courierPhone'];
+            $data['number'] = $logistics['result']['number'];
+            $data['list'] = $new_result;
+            $data['status'] = $status[$logistics['result']['deliverystatus']];
+        }
+        $this->ajaxReturn(['status' => 1 , 'msg'=>'成功','data'=>$data]);
     }
 
 }
