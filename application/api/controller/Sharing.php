@@ -36,6 +36,7 @@ class Sharing extends ApiBase
         $data['priture'] = input('priture');
         $data['text'] = input('text');
         $data['text2'] = input('text2');
+        $data['music_id'] = input('music_id',0);
         $topic_name = input('topic_name');
         if(!$data['title'] && !$status){
             $this->ajaxReturn(['status' => -1 , 'msg'=>'请输入标题','data'=>'']);
@@ -165,6 +166,7 @@ class Sharing extends ApiBase
         foreach($info['priture'] as $key=>$val){
             $info['priture'][$key] = SITE_URL.$val;
         }
+        $info['music'] = Db::name('sharing_music')->where('id',$info['music_id'])->value('url');
         $info['point_count'] = $this->getCount('point',$id);
         $info['follow_count'] = Db::name('sharing_follow')->where(['user_id'=>$user_id,'follow_user_id'=>$info['user_id']])->count();
         $info['collection_count'] = $this->getCount('collection',$id);
