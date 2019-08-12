@@ -46,7 +46,7 @@ class Sharing extends ApiBase
         $topic_id = Db::name('sharing_topic')->where('name',$topic_name)->value('id');
         if($topic_id){
             $data['topic_id'] = $topic_id;
-        }else{
+        }else if($topic_name){
             $zdy_id = Db::name('sharing_topic')->where('name','自定义')->value('id');
             if(!$zdy_id){
                 $zdy_id = Db::name('sharing_topic')->insertGetId(['name'=>'自定义','addtime'=>time()]);
@@ -889,7 +889,7 @@ class Sharing extends ApiBase
     //获取物流接口
     public function get_order_logistics()
     {
-        $order_id = input('order_id');
+        $order_id = input('order_id',0);
         $order = Db::name('order')->field('shipping_code,order_id,invoice_no,add_time,pay_time,order_status')->where('order_id',$order_id)->find();
         if(!$order){
             $this->ajaxReturn(['status' => -1 , 'msg'=>'订单不存在','data'=>'']);
