@@ -877,9 +877,9 @@ class Sharing extends ApiBase
         $page = input('page',1);
         $num = input('num',10);
         if($pid == '-1'){
-            $sharing_music = Db::name('sharing_music')->field('id,name,url,desc')->where(['status'=>0,'pid'=>array('neq',0)])->select();
+            $sharing_music = Db::name('sharing_music')->field('id,name,url,desc')->where(['status'=>0,'pid'=>array('neq',0)])->page($page,$num)->select();
         }else{
-            $sharing_music = Db::name('sharing_music')->field('id,name,url,desc')->where(['status'=>0,'pid'=>$pid])->select();
+            $sharing_music = Db::name('sharing_music')->field('id,name,url,desc')->where(['status'=>0,'pid'=>$pid])->page($page,$num)->select();
         }
         $data = array();
         if(!$pid){
