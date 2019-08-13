@@ -55,7 +55,7 @@
     </div>
     <div class="ibox-content">
         <div class="table-responsive">
-                <div style="margin-bottom:20px;">
+                <!-- <div style="margin-bottom:20px;">
                     <a class="btn btn-sm btn-info checkboxorder" style="margin-left: 0px;" >
                          <i class="fa fa-plus"></i>批量发货
                     </a>
@@ -68,7 +68,7 @@
                     <a class="btn btn-sm btn-info" style="margin-left: 10px;" href="{:url('member/group_add')}">
                          <i class="fa fa-plus"></i>批量打印快递单
                     </a>
-                </div>
+                </div> -->
            
             <table class="table  table-bordered table-hover text-center">
                 <thead>
@@ -105,9 +105,9 @@
                         <td> {$vo.shipping_price}</td>
                         <td>{$vo.pay_time|date="y-m-d H:i:s",###}</td>
                         <td>{$vo.total_amount}</td>
-                        <td>
+                        <td> 
                             <!-- <a class="btn btn-default" href="{:url('order/delivery_print',['id'=>$vo.order_id])}"><i class="fa fa-print"></i> 配货单</a> -->
-                            <a class="btn btn-default" href="{:url('order/delivery_info',['id'=>$vo.order_id])}"><i class="fa fa-send-o"></i> 去发货</a>
+                            <a class="btn btn-default" href="{:url('order/delivery_info',['id'=>$vo.order_id])}"><i class="fa fa-send-o"></i> {if condition="$vo.shipping_status eq 0"}去发货{else/}查看物流信息{/if}</a>
                         </td>
                     </tr>
                     {/volist}

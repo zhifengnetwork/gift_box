@@ -42,8 +42,12 @@ class Common extends Controller
         $leftmenu =  self::get_leftmenu();
         $this->view->lefts_menu  = self::lefts_menu($leftmenu);
         $this->view->left_menu   = $leftmenu;
-        
-        View::share('meta_title', '电子礼盒后台管理');
+
+        $controller = toUnderScore(request()->controller());
+        $action = request()->action();
+        $yw_meta = $controller.'/'.$action;
+        $meta_title = Db::name('menu')->where('url',$yw_meta)->value('title');
+        View::share('meta_title', $meta_title);
     }
 
     /*

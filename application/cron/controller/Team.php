@@ -46,7 +46,7 @@ class Team extends ApiBase{
     public function lottery(){
         //获取开奖时间100秒以内，且未设置开奖用户的群抢订单
         $Order = M('Order');
-        $list = $Order->field('order_id,overdue_time,lottery_time')->where(['order_type'=>2,'lottery_time'=>['between',[time()-120,time()]],'gift_uid'=>0])->select();  
+        $list = $Order->field('order_id,overdue_time,lottery_time')->where(['order_type'=>2,'lottery_time'=>['between',[time(),time()+120]],'gift_uid'=>0])->select();  
         $GiftOrderJoin = M('gift_order_join');
         foreach($list as $v){
             //开奖推送
