@@ -23,6 +23,8 @@ class Sharing extends Common
         if($status_ed !== ''){
             $where['status'] = $status_ed;
             $pageParam['query']['status'] = $status_ed;
+        }else{
+            $where['status'] = array('in','0,1,2');
         }
         if($keyword){
             $where['title'] = array('like','%'.$keyword.'%');
