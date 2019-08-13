@@ -111,22 +111,37 @@ class Sharing extends ApiBase
     {
         $page = input('page',1);
         $num = input('num',10);
+        $lat = input('lat',0);
+        $lon = input('lon',0);
         $topic_id = input('topic_id',0);//0推荐 -1附近
         $where['sc.status'] = 1;
         if($topic_id == '-1'){
-            // $where['sc.is_rec'] = 1;//待完善
-
+            // $where['sc.is_rec'] = 1;//附近不处理
         }else if($topic_id){
             $where['sc.topic_id'] = $topic_id;
         }else{
             $where['sc.is_rec'] = 1;
         }
-        $list = Db::name('sharing_circle')->alias('sc')->join('member m','m.id=sc.user_id','LEFT')->field('m.nickname,sc.id,sc.cover,sc.title,sc.point_num,m.avatar')->where($where)->page($page,$num)->select();
+        if($topic_id == '-1'){
+            $list = Db::name('sharing_circle')->alias('sc')->join('member m','m.id=sc.user_id','LEFT')->field('m.nickname,sc.id,sc.cover,sc.title,sc.point_num,m.avatar,sc.lat,sc.lon')->where($where)->limit(200)->select();
+        }else{
+            $list = Db::name('sharing_circle')->alias('sc')->join('member m','m.id=sc.user_id','LEFT')->field('m.nickname,sc.id,sc.cover,sc.title,sc.point_num,m.avatar')->where($where)->page($page,$num)->select();
+        }
         foreach($list as $key=>$val){
             $list[$key]['avatar'] = substr($val['avatar'],0,1) != 'h'?SITE_URL.$val['avatar']:$val['avatar'];
             $list[$key]['cover'] = $val['cover']?SITE_URL.$val['cover']:'';
             $list[$key]['show'] = false;
             $list[$key]['count'] = $this->getCount('point',$val['id']);
+        }
+
+        //如果是附近的，根据距离排序
+        if($topic_id == '-1'){
+            foreach($list as $key=>$val){
+                $list[$key]['distance'] = getdistance($lon,$lat,$val['lon'],$val['lat']);
+            }
+            //根据字段distance对数组$data进行降序排列
+            $distance = array_column($list,'distance');
+            array_multisort($distance,SORT_ASC,$list);
         }
         $this->ajaxReturn(['status' => 1 , 'msg'=>'成功','data'=>$list]);
     }

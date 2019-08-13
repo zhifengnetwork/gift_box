@@ -926,7 +926,7 @@ function getDelivery($shipping_code, $invoice_no,$order_id=0)
  * @return float 距离，单位米
  * @author www.Alixixi.com 
  */
-function getdistance($lng1, $lat1, $lng2, $lat2) {
+function getdistance($lng1=0, $lat1=0, $lng2=0, $lat2=0) {
     // 将角度转为狐度
     $radLat1 = deg2rad($lat1); //deg2rad()函数将角度转换为弧度
     $radLat2 = deg2rad($lat2);
@@ -935,5 +935,5 @@ function getdistance($lng1, $lat1, $lng2, $lat2) {
     $a = $radLat1 - $radLat2;
     $b = $radLng1 - $radLng2;
     $s = 2 * asin(sqrt(pow(sin($a / 2), 2) + cos($radLat1) * cos($radLat2) * pow(sin($b / 2), 2))) * 6378.137 * 1000;
-    return $s;
+    return intval($s);
 } 
