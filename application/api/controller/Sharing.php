@@ -114,7 +114,8 @@ class Sharing extends ApiBase
         $topic_id = input('topic_id',0);//0推荐 -1附近
         $where['sc.status'] = 1;
         if($topic_id == '-1'){
-            $where['sc.is_rec'] = 1;//待完善
+            // $where['sc.is_rec'] = 1;//待完善
+
         }else if($topic_id){
             $where['sc.topic_id'] = $topic_id;
         }else{
@@ -872,20 +873,23 @@ class Sharing extends ApiBase
     //获取视频的配乐
     public function get_sharing_music()
     {
-        $type = input('type',0);
         $pid = input('pid',0);
         $page = input('page',1);
         $num = input('num',10);
-        if($type){
+        if($pid == '-1'){
             $sharing_music = Db::name('sharing_music')->field('id,name,url,desc')->where(['status'=>0,'pid'=>array('neq',0)])->select();
         }else{
             $sharing_music = Db::name('sharing_music')->field('id,name,url,desc')->where(['status'=>0,'pid'=>$pid])->select();
         }
-        foreach($sharing_music as $key=>$val){
-            $sharing_music[$key]['url'] = $val['url']?SITE_URL.$val['url']:'';
-
+        $data = array();
+        if(!$pid){
+            $data[] = ['id'=>-1,'name'=>'all','url'=>'','desc'=>''];
         }
-        $this->ajaxReturn(['status' => 1 , 'msg'=>'成功','data'=>$sharing_music]);
+        foreach($sharing_music as $key=>$val){
+            $val['url'] = $val['url']?SITE_URL.$val['url']:'';
+            $data[] = $val;
+        }
+        $this->ajaxReturn(['status' => 1 , 'msg'=>'成功','data'=>$data]);
     }
 
     
