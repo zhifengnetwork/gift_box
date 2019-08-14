@@ -48,7 +48,10 @@ class Gift extends ApiBase
         $order = Db::name('order')->field('order_status,shipping_status,pay_status,parent_id,order_type,lottery_time,giving_time,overdue_time,gift_uid')->where(['order_id'=>$order_id,'deleted'=>0])->find();
 
         $join_status = Db::name('gift_order_join')->where(['order_id'=>$order_id,'user_id'=>$user_id])->value('join_status');
-
+        //后面加的判断
+        if($join_status > 0){
+            $this->ajaxReturn(['status' => -1 , 'msg'=>'您已领取了该礼物','data'=>'']);
+        }
         if(!$order){
             $this->ajaxReturn(['status' => -1 , 'msg'=>'订单不存在','data'=>'']);
         }elseif(($order['parent_id'] > 0) && ($join_type == 2)){
@@ -76,11 +79,6 @@ class Gift extends ApiBase
             $this->ajaxReturn(['status' => -1 , 'msg'=>'该订单已有领取人啦！','data'=>'']);
         }elseif($order['giving_time'] == 0){
             $this->ajaxReturn(['status' => -1 , 'msg'=>'该订单未赠送！','data'=>'']);
-        }
-        
-        //后面加的判断
-        if($join_status > 0){
-            $this->ajaxReturn(['status' => -1 , 'msg'=>'您已领取了该礼物','data'=>'']);
         }
 
         $gojnum = Db::name('gift_order_join')->where(['order_id'=>$order_id,'user_id'=>$user_id,'join_status'=>['neq',4]])->count();
