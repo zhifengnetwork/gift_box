@@ -73,9 +73,9 @@ class Gift extends ApiBase
                 $this->ajaxReturn(['status' => -1 , 'msg'=>'该群抢已经开奖啦！','data'=>'']);
             elseif(($order['order_type'] == 2) && ($order['overdue_time'] < time()))
                 $this->ajaxReturn(['status' => -1 , 'msg'=>'该订单赠送已过期啦！','data'=>'']);
-            elseif($order['gift_uid'] && $order['gift_uid'] != $user_id)
+            elseif($order['gift_uid'] && $order['gift_uid'] != $user_id && $order['gift_uid'] > 0)
                 $this->ajaxReturn(['status' => -1 , 'msg'=>'该订单已有领取人啦！','data'=>'']);
-        }elseif($order['gift_uid'] && $order['gift_uid'] != $user_id){
+        }elseif($order['gift_uid'] && $order['gift_uid'] != $user_id && $order['gift_uid'] > 0){
             $this->ajaxReturn(['status' => -1 , 'msg'=>'该订单已有领取人啦！','data'=>'']);
         }elseif($order['giving_time'] == 0){
             $this->ajaxReturn(['status' => -1 , 'msg'=>'该订单未赠送！','data'=>'']);
@@ -105,7 +105,7 @@ class Gift extends ApiBase
                 //领取成功则将 赠送时间，赠送/群抢过期时间，群抢开奖时间 设置为空，以转赠
                 // M('Order')->where(['order_id'=>$order_id])->update(['lottery_time'=>0,'giving_time'=>0,'overdue_time'=>0,'gift_uid'=>$user_id]);
                 M('Order')->where(['order_id'=>$order_id])->update(['gift_uid'=>$user_id]);
-                
+
                 Db::name('gift_order_join')->where(['id'=>['neq',$res],'order_id'=>$order_id,'order_type'=>1])->update(['join_status'=>4]);
                 // 提交事务
                 Db::commit(); 
