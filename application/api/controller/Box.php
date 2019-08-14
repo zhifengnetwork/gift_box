@@ -35,7 +35,7 @@ class Box extends ApiBase
     {
         //获取分类列表
         // $list = Db::name('box_cate')->field('id,name,picture')->order('id desc')->limit(3)->select();
-        $list = Db::name('box_scene')->field('id,name,picture')->order('id desc')->limit(8)->select();
+        $list = Db::name('box_scene')->field('id,name,picture')->where(['status'=>1,'pid'=>array('neq',0)])->order('id desc')->limit(8)->select();
         foreach($list as $key=>$val){
             $list[$key]['picture'] = $val['picture']?SITE_URL.$val['picture']:'';
         }
