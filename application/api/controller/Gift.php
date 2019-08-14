@@ -73,10 +73,10 @@ class Gift extends ApiBase
                 $this->ajaxReturn(['status' => -1 , 'msg'=>'该群抢已经开奖啦！','data'=>'']);
             elseif(($order['order_type'] == 2) && ($order['overdue_time'] < time()))
                 $this->ajaxReturn(['status' => -1 , 'msg'=>'该订单赠送已过期啦！','data'=>'']);
-            elseif($order['gift_uid'] && $order['gift_uid'] != $user_id && $order['gift_uid'] > 0)
-                $this->ajaxReturn(['status' => -1 , 'msg'=>'该订单已有领取人啦！','data'=>'']);
-        }elseif($order['gift_uid'] && $order['gift_uid'] != $user_id && $order['gift_uid'] > 0){
-            $this->ajaxReturn(['status' => -1 , 'msg'=>'该订单已有领取人啦！','data'=>'']);
+            elseif($order['gift_uid'] && $order['gift_uid'] != $user_id)
+                $this->ajaxReturn(['status' => -1 , 'msg'=>'该订单已有领取人啦！2','data'=>'']);
+        }elseif($order['gift_uid'] && $order['gift_uid'] != $user_id){
+            $this->ajaxReturn(['status' => -1 , 'msg'=>'该订单已有领取人啦！1','data'=>'']);
         }elseif($order['giving_time'] == 0){
             $this->ajaxReturn(['status' => -1 , 'msg'=>'该订单未赠送！','data'=>'']);
         }
