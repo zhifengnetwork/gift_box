@@ -201,6 +201,7 @@ class Gift extends ApiBase
             if(!$joininfo)
                 $this->ajaxReturn(['status' => -1 , 'msg'=>'该礼物已领取，不能转赠！','data'=>'']);
                 // $this->ajaxReturn(['status' => -1 , 'msg'=>'您不能转赠该礼物啦！','data'=>'']);
+            Db::name('order')->where($where)->update(['gift_uid'=>0]);
         }
 
         if(in_array($act,[1,2]))
