@@ -199,7 +199,8 @@ class Gift extends ApiBase
                 $this->ajaxReturn(['status' => -1 , 'msg'=>'该礼物已经被转赠过一次啦！','data'=>'']);
             
             if(!$joininfo)
-                $this->ajaxReturn(['status' => -1 , 'msg'=>'您不能转赠该礼物啦！','data'=>'']);
+                $this->ajaxReturn(['status' => -1 , 'msg'=>'该礼物已领取，不能转赠！','data'=>'']);
+                // $this->ajaxReturn(['status' => -1 , 'msg'=>'您不能转赠该礼物啦！','data'=>'']);
         }
 
         if(in_array($act,[1,2]))
