@@ -149,7 +149,7 @@ class Box extends ApiBase
         if(!$id){
             $last_box_id = Db::name('box')->where(['user_id'=>$user_id])->order('addtime desc')->limit(1)->value('id');
             if($last_box_id){
-            $last_box_id = Db::name('box')->where(['user_id'=>$user_id])->order('addtime desc')->limit(1)->value('id');
+                $last_box_id = Db::name('box')->where(['user_id'=>$user_id])->order('addtime desc')->limit(1)->value('id');
                 $count = Db::name('order')->where(['box_id'=>$last_box_id,'user_id'=>$user_id])->count();
                 if(!$count){
                     $id = $last_box_id;
@@ -162,10 +162,12 @@ class Box extends ApiBase
         }else{
             $data['addtime'] = time();
             $data['cate_id'] = $cate_id;
+            $data['photo_url'] = '/image/default.png';
+            $data['music_id'] = Db::table('box_music')->where('status',1)->value('id');
             $id = Db::table('box')->insertGetId($data);
             $result['data']['id'] = $id;
-            $result['data']['music_id'] = 0;
-            $result['data']['photo_url'] = '';
+            $result['data']['music_id'] = $data['music_id'];
+            $result['data']['photo_url'] =  SITE_URL.$data['photo_url'];
             $result['data']['voice_url'] = '';
             $result['data']['content'] = '';
             $result['status'] = 1;
