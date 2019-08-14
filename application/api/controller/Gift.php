@@ -189,7 +189,7 @@ class Gift extends ApiBase
             $this->ajaxReturn(['status' => -1 , 'msg'=>'您不能转赠该礼物！','data'=>'']);
 
         if(in_array($act,[2,3])){ //查看是否可以转赠
-            $joininfo = M('gift_order_join')->field('id')->where(['order_id'=>$order_id,'status'=>1,'user_id'=>$user_id,'join_status'=>6,'addressid'=>0])->find();
+            $joininfo = M('gift_order_join')->field('id')->where(['order_id'=>$order_id,'status'=>1,'user_id'=>$user_id,'join_status'=>array('in','0,6'),'addressid'=>0])->find();
 
             //只能转赠一次
             $joinnum = M('gift_order_join')->where(['order_id'=>$order_id,'join_status'=>5])->count();
