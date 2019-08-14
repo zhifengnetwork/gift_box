@@ -77,11 +77,12 @@ class Gift extends ApiBase
         }elseif($order['giving_time'] == 0){
             $this->ajaxReturn(['status' => -1 , 'msg'=>'该订单未赠送！','data'=>'']);
         }
+        
         //后面加的判断
         if($join_status > 0){
             $this->ajaxReturn(['status' => -1 , 'msg'=>'您已领取了该礼物','data'=>'']);
         }
-        
+
         $gojnum = Db::name('gift_order_join')->where(['order_id'=>$order_id,'user_id'=>$user_id,'join_status'=>['neq',4]])->count();
         if($gojnum){
             $this->ajaxReturn(['status' => 1 , 'msg'=>'您已参与过啦！','data'=>['type'=>1]]);

@@ -40,6 +40,17 @@
                             </div>
                         </div>
                         <div class="form-group">
+                            <label class="col-sm-2 control-label">动图</label>
+                            <div class="img-preview2" style="display:{$info.gif? 'block':'none'};margin-left:-20%">
+                                <img src="{$info.gif|default=''}" id='img_show2' style=" max-width: 300px; max-height: 300px">
+                            </div>
+                            <div class="form-group" style="margin-left:18%;">
+                                <label title="上传动图" for="pictur_btn2" class="btn btn-primary" id="pictur">上传动图
+                                    <input type="file" accept="image/jpg,image/jpeg,image/bmp,image/png,image/gif/*" name="file2" id="pictur_btn2" class="hide" />
+                                </label>
+                            </div>
+                        </div>
+                        <div class="form-group">
                             <label class="col-sm-2 control-label">排序</label>
                             <div class="col-sm-9">
                                 <input type="text" name="sort" value="" class="form-control">
@@ -102,6 +113,32 @@
                 reader.onload = function(e) {
                     $('.img-preview').show();
                     $("#img_show").attr('src', this.result);
+                }
+            }
+        });
+        $('#pictur_btn2').change(function() {
+            if (!this.value) {
+                $("#img_show2").attr('src', '');
+                filedata = '';
+                pictur = '';
+                return false;
+            }
+            var file = this.files[0];
+            var ext = file.name.substr(-3, 3);
+            if (ext != 'jpg' && ext != 'gif' && ext != 'png') {
+                layer.msg("文件格式不正确", { icon: 5 });
+                window.location.reload();
+                return false;
+            }
+            if (file.size > 10240000) {
+                layer.msg("该文件太大无法上传", { icon: 5 });
+            } else {
+                var reader = new FileReader();
+                //将文件以Data URL形式读入页面  
+                reader.readAsDataURL(file);
+                reader.onload = function(e) {
+                    $('.img-preview2').show();
+                    $("#img_show2").attr('src', this.result);
                 }
             }
         });
