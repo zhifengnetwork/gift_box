@@ -83,7 +83,7 @@ class Gift extends ApiBase
 
         $gojnum = Db::name('gift_order_join')->where(['order_id'=>$order_id,'user_id'=>$user_id,'join_status'=>['neq',4]])->value('id');
         if($gojnum){
-            $this->ajaxReturn(['status' => 1 , 'msg'=>'您已参与过啦！','data'=>['type'=>1,'join_id'=>$gojnum]]);
+            $this->ajaxReturn(['status' => 1 , 'msg'=>'您已参与过啦！','data'=>$gojnum]);
         }
 
         $data = [
