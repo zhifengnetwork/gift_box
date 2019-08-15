@@ -124,6 +124,8 @@ class Sharing extends ApiBase
             $topic_arr = Db::name('sharing_topic')->where('pid',$topic_id)->column('id');
             if($topic_arr){
                 $where['sc.topic_id'] = array('in',$topic_arr);
+            }else{
+                $where['sc.topic_id'] = $topic_id;
             }
         }else{
             $where['sc.is_rec'] = 1;
