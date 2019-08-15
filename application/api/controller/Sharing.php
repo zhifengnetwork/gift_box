@@ -121,7 +121,10 @@ class Sharing extends ApiBase
         if($topic_id == '-1'){
             // $where['sc.is_rec'] = 1;//附近不处理
         }else if($topic_id){
-            $where['sc.topic_id'] = $topic_id;
+            $topic_arr = Db::name('sharing_topic')->where('pid',$topic_id)->column('id');
+            if($topic_arr){
+                $where['sc.topic_id'] = array('in',$topic_arr);
+            }
         }else{
             $where['sc.is_rec'] = 1;
         }
