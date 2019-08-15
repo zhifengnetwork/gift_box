@@ -58,11 +58,11 @@ class Sharing extends ApiBase
             $topic_id = Db::name('sharing_topic')->insertGetId($topic);
             $data['topic_id'] = $topic_id;
         }
+        $data['cover'] = input('cover','');
         if($data['type']){
             $data['cover'] = $data['priture'];
             $data['cover'] = str_replace(SITE_URL,'',$data['cover']);
         }
-        // $data['cover'] = input('cover');
         // $data['priture'] = implode(',',$data['priture']);
         $data['priture'] = str_replace(SITE_URL,'',$data['priture']);
         if(!$data['priture'] && $data['type'] == 0  && !$status){
@@ -910,6 +910,8 @@ class Sharing extends ApiBase
         }
         $this->ajaxReturn(['status' => 1 , 'msg'=>'成功','data'=>$data]);
     }
+
+    
 
     
 }
