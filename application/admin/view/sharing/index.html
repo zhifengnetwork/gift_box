@@ -14,14 +14,14 @@
                 <div class="ibox-content">
                     <div class="row" style="margin-left:0px;" >
                         <form method="get" action="">
-                            <div class="col-sm-2 m-b-xs">
+                            <!-- <div class="col-sm-2 m-b-xs">
                                 <select name="status_ed" class="input-sm form-control input-s-sm inline">
                                     <option value="">全部</option>
                                     <option value="0" {if condition="$status_ed heq '0'"}selected{/if}>未审核</option>
                                     <option value="1" {if condition="$status_ed eq '1'"}selected{/if}>审核通过</option>
                                     <option value="2" {if condition="$status_ed eq '2'"}selected{/if}>未通过</option>
                                 </select>
-                            </div>
+                            </div> -->
                             
                             <div class="col-sm-2">
                                 <div class="input-group"><input type="text" name="keyword" value="{$keyword}" placeholder="搜索标题名称" class="input-sm form-control"> </div>
@@ -75,7 +75,7 @@
                                 </td>
                                 <td>{$vo.addtime|date="Y-m-d H:i:s",###}</td>
                                 <td>
-                                    <a class="btn btn-default delete" href="{:url('edit',['id'=>$vo.id],false)}" >审核</i></a>
+                                    <a class="btn btn-default delete" href="{:url('edit',['id'=>$vo.id],false)}" >查看详情</i></a>
                                     <a class="btn btn-default delete" onclick="del(this,{$vo.id})" href="javascript:;" >删除</i></a>
                                 </td>
                             </tr>
