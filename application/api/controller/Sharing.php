@@ -58,8 +58,11 @@ class Sharing extends ApiBase
             $topic_id = Db::name('sharing_topic')->insertGetId($topic);
             $data['topic_id'] = $topic_id;
         }
-        $data['cover'] = input('cover');
-        $data['cover'] = str_replace(SITE_URL,'',$data['cover']);
+        if($data['type']){
+            $data['cover'] = $data['priture'];
+            $data['cover'] = str_replace(SITE_URL,'',$data['cover']);
+        }
+        // $data['cover'] = input('cover');
         // $data['priture'] = implode(',',$data['priture']);
         $data['priture'] = str_replace(SITE_URL,'',$data['priture']);
         if(!$data['priture'] && $data['type'] == 0  && !$status){
@@ -123,9 +126,9 @@ class Sharing extends ApiBase
             $where['sc.is_rec'] = 1;
         }
         if($topic_id == '-1'){
-            $list = Db::name('sharing_circle')->alias('sc')->join('member m','m.id=sc.user_id','LEFT')->field('m.nickname,sc.id,sc.cover,sc.title,sc.point_num,m.avatar,sc.lat,sc.lon')->where($where)->limit(200)->select();
+            $list = Db::name('sharing_circle')->alias('sc')->join('member m','m.id=sc.user_id','LEFT')->field('m.nickname,sc.id,sc.cover,sc.title,sc.point_num,m.avatar,sc.lat,sc.lon,sc.type')->where($where)->limit(200)->select();
         }else{
-            $list = Db::name('sharing_circle')->alias('sc')->join('member m','m.id=sc.user_id','LEFT')->field('m.nickname,sc.id,sc.cover,sc.title,sc.point_num,m.avatar')->where($where)->page($page,$num)->select();
+            $list = Db::name('sharing_circle')->alias('sc')->join('member m','m.id=sc.user_id','LEFT')->field('m.nickname,sc.id,sc.cover,sc.title,sc.point_num,m.avatar,sc.type')->where($where)->page($page,$num)->select();
         }
         foreach($list as $key=>$val){
             $list[$key]['avatar'] = substr($val['avatar'],0,1) != 'h'?SITE_URL.$val['avatar']:$val['avatar'];
@@ -315,7 +318,7 @@ class Sharing extends ApiBase
         $page = input('page',1);
         $num = input('num',10);
         $content_num = input('content_num',20);
-        $list = Db::name('sharing_circle')->alias('s')->join('sharing_comment sc','sc.sharing_id=s.id')->where('s.user_id',$user_id)->join('member m','m.id=s.user_id')->field('sc.id,sc.sharing_id,sc.content as comment_content,sc.addtime,m.nickname,m.avatar,s.title,s.cover,s.content')->page($page,$num)->select();
+        $list = Db::name('sharing_circle')->alias('s')->join('sharing_comment sc','sc.sharing_id=s.id')->where('s.user_id',$user_id)->join('member m','m.id=s.user_id')->field('sc.id,sc.sharing_id,sc.content as comment_content,sc.addtime,m.nickname,m.avatar,s.title,s.cover,s.content,s.type')->page($page,$num)->select();
         foreach($list as $key=>$val){
             $list[$key]['avatar'] = substr($list[$key]['avatar'],0,1) != 'h'?SITE_URL.$list[$key]['avatar']:$list[$key]['avatar'];
             $list[$key]['addtime'] = date('Y-m-d H:i:s',$val['addtime']);
@@ -332,7 +335,7 @@ class Sharing extends ApiBase
         $page = input('page',1);
         $num = input('num',10);
         $content_num = input('content_num',20);
-        $list = Db::name('sharing_circle')->alias('s')->join('sharing_point sp','sp.sharing_id=s.id')->where('s.user_id',$user_id)->join('member m','m.id=s.user_id')->field('sp.id,sp.sharing_id,sp.addtime,m.nickname,m.avatar,s.title,s.cover,s.content')->page($page,$num)->select();
+        $list = Db::name('sharing_circle')->alias('s')->join('sharing_point sp','sp.sharing_id=s.id')->where('s.user_id',$user_id)->join('member m','m.id=s.user_id')->field('sp.id,sp.sharing_id,sp.addtime,m.nickname,m.avatar,s.title,s.cover,s.content,s.type')->page($page,$num)->select();
         foreach($list as $key=>$val){
             $list[$key]['avatar'] = substr($list[$key]['avatar'],0,1) != 'h'?SITE_URL.$list[$key]['avatar']:$list[$key]['avatar'];
             $list[$key]['addtime'] = date('Y-m-d H:i:s',$val['addtime']);
@@ -349,7 +352,7 @@ class Sharing extends ApiBase
         $page = input('page',1);
         $num = input('num',10);
         $content_num = input('content_num',20);
-        $list = Db::name('sharing_circle')->alias('s')->join('sharing_collection sc','sc.sharing_id=s.id')->where('s.user_id',$user_id)->join('member m','m.id=s.user_id')->field('sc.id,sc.sharing_id,sc.addtime,m.nickname,m.avatar,s.title,s.cover,s.content')->page($page,$num)->select();
+        $list = Db::name('sharing_circle')->alias('s')->join('sharing_collection sc','sc.sharing_id=s.id')->where('s.user_id',$user_id)->join('member m','m.id=s.user_id')->field('sc.id,sc.sharing_id,sc.addtime,m.nickname,m.avatar,s.title,s.cover,s.content,s.type')->page($page,$num)->select();
         foreach($list as $key=>$val){
             $list[$key]['avatar'] = substr($list[$key]['avatar'],0,1) != 'h'?SITE_URL.$list[$key]['avatar']:$list[$key]['avatar'];
             $list[$key]['addtime'] = date('Y-m-d H:i:s',$val['addtime']);
@@ -428,7 +431,7 @@ class Sharing extends ApiBase
         }
         $where['sc.status'] = 1;
         $where['sc.title'] = array('like','%'.$keyword.'%');
-        $list = Db::name('sharing_circle')->alias('sc')->join('member m','m.id=sc.user_id','LEFT')->field('m.nickname,sc.id,sc.cover,sc.title,sc.point_num,m.avatar')->where($where)->page($page,$num)->select();
+        $list = Db::name('sharing_circle')->alias('sc')->join('member m','m.id=sc.user_id','LEFT')->field('m.nickname,sc.id,sc.cover,sc.title,sc.point_num,m.avatar,sc.type')->where($where)->page($page,$num)->select();
         foreach($list as $key=>$val){
             $list[$key]['avatar'] = substr($val['avatar'],0,1) != 'h'?SITE_URL.$val['avatar']:$val['avatar'];
             $list[$key]['cover'] = $val['cover']?SITE_URL.$val['cover']:'';
@@ -664,7 +667,7 @@ class Sharing extends ApiBase
         $page = input('page',1);
         $num = input('num',10);
         $where['sc.user_id'] = $user_id;
-        $list = Db::name('sharing_circle')->alias('sc')->join('member m','m.id=sc.user_id','LEFT')->field('m.nickname,sc.id,sc.cover,sc.title,sc.point_num,m.avatar,sc.read_num,sc.status')->order('sc.addtime desc')->where($where)->page($page,$num)->select();
+        $list = Db::name('sharing_circle')->alias('sc')->join('member m','m.id=sc.user_id','LEFT')->field('m.nickname,sc.id,sc.cover,sc.title,sc.point_num,m.avatar,sc.read_num,sc.status,sc.type')->order('sc.addtime desc')->where($where)->page($page,$num)->select();
         foreach($list as $key=>$val){
             $list[$key]['avatar'] = substr($val['avatar'],0,1) != 'h'?SITE_URL.$val['avatar']:$val['avatar'];
             $list[$key]['cover'] = $val['cover']?SITE_URL.$val['cover']:'';
@@ -689,7 +692,7 @@ class Sharing extends ApiBase
                 ->alias('sc')
                 ->join('member m','m.id=sc.user_id','LEFT')
                 ->join('sharing_collection cc','sc.id=cc.sharing_id')
-                ->field('m.nickname,sc.id,sc.cover,sc.title,sc.point_num,m.avatar')
+                ->field('m.nickname,sc.id,sc.cover,sc.title,sc.point_num,m.avatar,sc.type')
                 ->order('cc.addtime desc')
                 ->where($where)
                 ->page($page,$num)
@@ -718,7 +721,7 @@ class Sharing extends ApiBase
                 ->alias('sc')
                 ->join('member m','m.id=sc.user_id','LEFT')
                 ->join('sharing_point sul','sc.id=sul.sharing_id')
-                ->field('m.nickname,sc.id,sc.cover,sc.title,sc.point_num,m.avatar')
+                ->field('m.nickname,sc.id,sc.cover,sc.title,sc.point_num,m.avatar,sc.type')
                 ->order('sul.addtime desc')
                 ->where($where)
                 ->page($page,$num)
