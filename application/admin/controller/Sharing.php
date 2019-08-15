@@ -303,4 +303,35 @@ class Sharing extends Common
         Db::name('sharing_music')->where('id',$id)->delete();
         return json(['status'=>1,'msg'=>'删除成功']);
     }
+
+    //贴纸管理
+    public function sticker_list()
+    {
+        $list = Db::name('sharing_sticker')->order('sort,addtime desc')->paginate(10);
+        $this->assign('list',$list);
+        return $this->fetch();
+    }
+
+    //添加文章
+    public function add_sticker()
+    {
+        $id = input('id',0);
+        if(Request::instance()->isPost()){
+            $post = input('post.');
+            if($id){
+                Db::name('sharing_sticker')->where('id',$id)->update($post);
+            }else{
+                $post['addtime'] = time();
+                Db::name('sharing_sticker')->insert($post);
+            }
+            $this->success('操作成功','sticker_list');
+        }
+        if($id){
+            $info = Db::name('sharing_sticker')->where('id',$id)->find();
+        }else{
+            $info = getTableField('sharing_sticker');
+        }
+        $this->assign('info',$info);
+        return $this->fetch();
+    }
 }

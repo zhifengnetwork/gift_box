@@ -442,13 +442,21 @@ class Sharing extends ApiBase
     //获取表情包列表
     public function emojis()
     {
-        $route = 'static/emojis';
-        $url = SITE_URL.'/'. $route.'/';
-        $list = scandir($route);
+        // $route = 'static/emojis';
+        // $url = SITE_URL.'/'. $route.'/';
+        // $list = scandir($route);
+        // $result = array();
+        // foreach($list as $key=>$val){
+        //     if(substr($val,0,1) != '.' && $val){
+        //         $result[] = $url.$val;
+        //     }
+        // }
+
         $result = array();
+        $list = Db::name('sharing_sticker')->order('sort,addtime desc')->column('img');
         foreach($list as $key=>$val){
-            if(substr($val,0,1) != '.' && $val){
-                $result[] = $url.$val;
+            if($val){
+                $result[] = SITE_URL.$val;
             }
         }
         $this->ajaxReturn(['status' => 1 , 'msg'=>'成功','data'=>$result]);
