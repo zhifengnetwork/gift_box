@@ -183,6 +183,7 @@ class Sharing extends ApiBase
             $info['priture'][$key] = SITE_URL.$val;
         }
         $info['music'] = Db::name('sharing_music')->where('id',$info['music_id'])->value('url');
+        $info['music'] = $info['music']?SITE_URL.$info['music']:'';
         $info['point_count'] = $this->getCount('point',$id);
         $info['follow_count'] = Db::name('sharing_follow')->where(['user_id'=>$user_id,'follow_user_id'=>$info['user_id']])->count();
         $info['collection_count'] = $this->getCount('collection',$id);
