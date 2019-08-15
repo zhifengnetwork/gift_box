@@ -24,20 +24,30 @@
                                 <textarea name="" id="" cols="30" readonly rows="10" style="width: 100%;">{$info.content}</textarea>
                             </div>
                         </div>
+                        {if condition="$info.type eq 0"}
+                            <div class="form-group">
+                                <label class="col-sm-2 control-label">封面图</label>
+                                <div class="col-sm-9">
+                                    <img src="{$info.cover}" style="max-height:100px;max-width:100px;" alt="">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-sm-2 control-label">图片</label>
+                                <div class="col-sm-9">
+                                    {volist name="info['priture']" id="vo"}
+                                        <img src="{$vo}" style="max-height:100px;max-width:100px;" alt="">
+                                    {/volist}
+                                </div>
+                            </div>
+                        {else/}
                         <div class="form-group">
                             <label class="col-sm-2 control-label">封面图</label>
                             <div class="col-sm-9">
-                                <img src="{$info.cover}" style="max-height:100px;max-width:100px;" alt="">
+                                <video src="{$info.cover}" style="max-width: 300px;max-height: 300px;"></video>
+                                <!-- <img src="{$info.cover}" style="max-height:100px;max-width:100px;" alt=""> -->
                             </div>
                         </div>
-                        <div class="form-group">
-                            <label class="col-sm-2 control-label">图片</label>
-                            <div class="col-sm-9">
-                                {volist name="info['priture']" id="vo"}
-                                    <img src="{$vo}" style="max-height:100px;max-width:100px;" alt="">
-                                {/volist}
-                            </div>
-                        </div>
+                        {/if}
                         <div class="form-group">
                             <label class="col-sm-2 control-label">话题类型</label>
                             <div class="col-sm-9" style="line-height: 35px;">
