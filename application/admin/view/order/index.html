@@ -16,9 +16,9 @@
                                     <div class="form-group">
                                         <label class="control-label" for="status">订单状态</label>
                                         <select name="orderstatus" class="form-control" style="width:180px;">
-                                                <option value="-1" >默认全部</option>
+                                                <option value="-1" {if condition="$orderstatus eq -1"}selected{/if}>默认全部</option>
                                                 {foreach $order_status as $key => $vo}
-                                                    <option value="{$key}" {$Think.get.orderstatus==$key?='selected' }>{$vo}</option>
+                                                    <option value="{$key}" {if condition="$orderstatus eq $key"}selected{/if}>{$vo}</option>
                                                 {/foreach}
                                             </select>
                                     </div> 
@@ -27,9 +27,9 @@
                                 <div class="form-group">
                                     <label class="control-label" for="status">支付状态</label>
                                     <select name="paystatus" class="form-control" style="width:180px;">
-                                            <option value="-1" >默认全部</option>
+                                            <option value="-1" {if condition="$paystatus eq -1"}selected{/if} >默认全部</option>
                                             {foreach $pay_status as $key => $vo}
-                                              <option value="{$key}" {$Think.get.paystatus==$key?='selected' }>{$vo}</option>
+                                              <option value="{$key}" {if condition="$paystatus eq $key"}selected{/if}>{$vo}</option>
                                             {/foreach}
                                         </select>
                                 </div>
