@@ -69,7 +69,7 @@ class Team extends ApiBase{
     }    
 
     private function set_gift_time($Order,$GiftOrderJoin,$v){
-        $info = $GiftOrderJoin->field('id,address_id')->where(['order_id'=>$v['order_id'],'order_type'=>$order_type,'status'=>1,'join_status'=>['neq',4]])->find();
+        $info = $GiftOrderJoin->field('id,address_id')->where(['order_id'=>$v['order_id'],'order_type'=>$v['order_type'],'status'=>1,'join_status'=>['neq',4]])->find();
         //已过期且没填地址
         if(($v['overdue_time'] < time()) && !$info['address_id']){ 
             // 启动事务
