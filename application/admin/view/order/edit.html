@@ -14,9 +14,9 @@
                 <div class="m-b-md" style=" position:relative;">
                     <h3>基础内容</h3>
                     <div style=" position:absolute; right:0; top:-10px;">
-                        <a class="btn btn-sm btn-info" id="add_virtual_num" data-toggle="modal" data-target="#edit" style="margin-left: 20px;">
+                        <!-- <a class="btn btn-sm btn-info" id="add_virtual_num" data-toggle="modal" data-target="#edit" style="margin-left: 20px;">
                             打印订单 <i class="fa fa-edit"></i>
-                        </a>
+                        </a> -->
                     </div>
                 </div>
                 <table class="table  table-bordered" align="right">
@@ -54,7 +54,7 @@
                             </td>
                             <td class="col-lg-1 active text-right">下单时间</td>
                             <td class="col-lg-2">
-                                {$order_info.add_time}
+                                {$order_info.add_time|date="Y-m-d H:i:s",###}
                             </td>
                         </tr>
                         <tr>
