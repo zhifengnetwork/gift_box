@@ -107,7 +107,28 @@ class Category extends ApiBase
         if(!$user_id){
             $this->ajaxReturn(['status' => -1 , 'msg'=>'用户不存在','data'=>'']);
         }
-
+        $order = input('order','goods_id');
+        //判断排序方式
+        switch ($order)
+        {
+        case 'goods_id':
+            $order = 'g.goods_id';
+            break;  
+        case 'new':
+            $order = 'g.add_time desc';
+            break;
+        case 'sales_volume':
+            $order = 'g.number_sales desc';
+            break;
+        case 'price':
+            $order = 'g.price';
+            break;
+        case 'price_desc':
+            $order = 'g.price desc';
+            break;
+        default:
+            $order = 'g.goods_id';
+        }
         $page = input('page',1);
         $num = input('num',10);
         $cat_id2 = input('cat_id2');
@@ -118,7 +139,6 @@ class Category extends ApiBase
         $where['g.is_del'] = 0;
         $where['i.main'] = 1;
         $where['g.cat_id2'] = $cat_id2;
-        $order = 'add_time desc';
         $list = Db::table('goods')->alias('g')
                 ->join('goods_brand b','g.brand_id=b.id','LEFT')
                 ->join('goods_img i','i.goods_id=g.goods_id','LEFT')

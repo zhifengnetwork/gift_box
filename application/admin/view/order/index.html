@@ -13,33 +13,33 @@
             <div class="row">
                <form  method="get" action="{:url()}">
                             <div class="col-sm-2">
-                                    <div class="form-group">
-                                        <label class="control-label" for="status">订单状态</label>
-                                        <select name="orderstatus" class="form-control" style="width:180px;">
-                                                <option value="-1" {if condition="$orderstatus eq -1"}selected{/if}>默认全部</option>
-                                                {foreach $order_status as $key => $vo}
-                                                    <option value="{$key}" {if condition="$orderstatus eq $key"}selected{/if}>{$vo}</option>
-                                                {/foreach}
-                                            </select>
-                                    </div> 
+                                <div class="form-group">
+                                    <label class="control-label" for="status">订单状态</label>
+                                    <select name="orderstatus" class="form-control" style="width:180px;">
+                                            <option value="-1" {if condition="$orderstatus eq -1"}selected{/if}>默认全部</option>
+                                            {foreach $order_status as $key => $vo}
+                                                <option value="{$key}" {if condition="$orderstatus eq $key"}selected{/if}>{$vo}</option>
+                                            {/foreach}
+                                        </select>
+                                </div> 
                              </div>
                              <div class="col-sm-2">
                                 <div class="form-group">
                                     <label class="control-label" for="status">支付状态</label>
                                     <select name="paystatus" class="form-control" style="width:180px;">
-                                            <option value="-1" {if condition="$paystatus eq -1"}selected{/if} >默认全部</option>
-                                            {foreach $pay_status as $key => $vo}
-                                              <option value="{$key}" {if condition="$paystatus eq $key"}selected{/if}>{$vo}</option>
-                                            {/foreach}
-                                        </select>
+                                        <option value="-1" {if condition="$paystatus eq -1"}selected{/if} >默认全部</option>
+                                        {foreach $pay_status as $key => $vo}
+                                            <option value="{$key}" {if condition="$paystatus eq $key"}selected{/if}>{$vo}</option>
+                                        {/foreach}
+                                    </select>
                                 </div>
                             </div>
                          
                             <div class="col-sm-2">
-                                    <div class="form-group">
-                                        <label class="control-label" for="order_id">订单号</label>
-                                        <input type="text" placeholder="订单号" name="order_id" value="{$order_id}" class="form-control">
-                                    </div>
+                                <div class="form-group">
+                                    <label class="control-label" for="order_id">订单号</label>
+                                    <input type="text" placeholder="订单号" name="order_id" value="{$order_id}" class="form-control">
+                                </div>
                              </div>
                             <div class="col-sm-2">
                                 <div class="form-group">
