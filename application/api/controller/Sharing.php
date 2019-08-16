@@ -28,13 +28,16 @@ class Sharing extends ApiBase
         }
         $data['title'] = input('title');
         $data['text'] = input('text');
+
+        write_log("text:::::".$data['text']);
+
         $data['type'] = input('type',0);
         $data['content'] = input('content');
         $data['user_id'] = $user_id;
         $data['lat'] = input('lat');
         $data['lon'] = input('lon');
         $data['priture'] = input('priture');
-        $data['text'] = input('text');
+       
         $data['text2'] = input('text2');
         $data['music_id'] = input('music_id',0);
         $topic_name = input('topic_name');

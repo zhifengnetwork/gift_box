@@ -17,6 +17,7 @@ class Index extends Controller
         $type = input('type');
         $order_id = input('order_id');
         $pwdstr = input('pwdstr');
+        $preview =  input('preview',0);
 
         write_log(SITE_URL.'/card?card_id='.$card_id.'&type='.$type.'&order_id='.$order_id.'&pwdstr='.$pwdstr);
 
@@ -76,6 +77,13 @@ class Index extends Controller
         $this->assign('type', $type);
         $this->assign('order_id', $order_id);
         $this->assign('pwdstr', $pwdstr);
+        $this->assign('preview', $preview);
+        if($preview == 1){
+            $text = '返回';
+        }else{
+            $text = '直接跳過';
+        }
+        $this->assign('text', $text);
 
         $lottery_time = '';
         if($type == '2' && $order_id){
