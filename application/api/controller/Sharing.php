@@ -82,6 +82,9 @@ class Sharing extends ApiBase
             $res = Db::name('sharing_circle')->insert($data);
         }
         if($res){
+            if(!$status){
+                Db::name('sharing_circle')->where(['user_id'=>$user_id,'status'=>3])->delete();
+            }
             $this->ajaxReturn(['status' => 1 , 'msg'=>'成功','data'=>'']);
         }else{
             $this->ajaxReturn(['status' => -1 , 'msg'=>'失败','data'=>'']);
