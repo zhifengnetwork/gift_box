@@ -97,4 +97,35 @@ class Category extends ApiBase
         $result['history'] = $data;
         $this->ajaxReturn(['status'=>1,'msg'=>'获取数据成功','data'=>$result]);
     }
+
+    /**
+    * 分类商品
+    */
+    public function category_goods()
+    {
+        $user_id = $this->get_user_id();
+        if(!$user_id){
+            $this->ajaxReturn(['status' => -1 , 'msg'=>'用户不存在','data'=>'']);
+        }
+
+        $page = input('page',1);
+        $num = input('num',10);
+        $cat_id2 = input('cat_id2');
+        if(!$cat_id2){
+            $this->ajaxReturn(['status' => -1 , 'msg'=>'分类id不存在','data'=>'']);
+        }
+        $where['g.is_show'] = 1;
+        $where['g.is_del'] = 0;
+        $where['i.main'] = 1;
+        $where['g.cat_id2'] = $cat_id2;
+        $order = 'add_time desc';
+        $list = Db::table('goods')->alias('g')
+                ->join('goods_brand b','g.brand_id=b.id','LEFT')
+                ->join('goods_img i','i.goods_id=g.goods_id','LEFT')
+                ->field('g.goods_id,g.goods_name,g.price,i.picture,b.name')
+                ->where($where)->order($order)->page($page,$num)
+                ->select();
+        $list = $this->setGoodsList($list);
+        $this->ajaxReturn(['status'=>1,'msg'=>'获取数据成功','data'=>$list]);
+    }
 }
