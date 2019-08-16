@@ -16,16 +16,18 @@
                                     <div class="form-group">
                                         <label class="control-label" for="status">订单状态</label>
                                         <select name="orderstatus" class="form-control" style="width:180px;">
+                                                <option value="-1" >默认全部</option>
                                                 {foreach $order_status as $key => $vo}
                                                     <option value="{$key}" {$Think.get.orderstatus==$key?='selected' }>{$vo}</option>
                                                 {/foreach}
                                             </select>
-                                    </div>
+                                    </div> 
                              </div>
                              <div class="col-sm-2">
                                 <div class="form-group">
                                     <label class="control-label" for="status">支付状态</label>
                                     <select name="paystatus" class="form-control" style="width:180px;">
+                                            <option value="-1" >默认全部</option>
                                             {foreach $pay_status as $key => $vo}
                                               <option value="{$key}" {$Think.get.paystatus==$key?='selected' }>{$vo}</option>
                                             {/foreach}

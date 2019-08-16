@@ -36,7 +36,7 @@ class Order extends Common
             $where['uo.order_sn']    = array('like','%'.$order_id.'%');
         }
         if (!empty($invoice_no)) {
-            $where['d.invoice_no']   = array('like','%'.$invoice_no.'%');
+            $where['uo.invoice_no']   = array('like','%'.$invoice_no.'%');
         }
         if($orderstatus >= 0){
             $where['uo.order_status'] = $orderstatus;
@@ -70,13 +70,14 @@ class Order extends Common
         // 模板变量赋值
         //订单状态
         $order_status     = config('ORDER_STATUS');
-        $order_status['-1'] = '默认全部';
+        // $order_status['-1'] = '默认全部';
+        
         //支付方式
         $pay_type         = config('PAY_TYPE');
-        $pay_type['-1']     = '默认全部';
+        // $pay_type['-1']     = '默认全部';
         //支付状态
         $pay_status         = config('PAY_STATUS');
-        $pay_status['-1']     = '默认全部';
+        // $pay_status['-1']     = '默认全部';
 
         // 导出
         $exportParam            = $carryParameter;
@@ -97,6 +98,7 @@ class Order extends Common
             }
             export_to_csv($str, '订单列表', $exportParam);
         }
+
         return $this->fetch('',[ 
             'list'         => $list,
             'exportParam'  => $exportParam,
@@ -106,7 +108,7 @@ class Order extends Common
             'kw'           => $kw,
             'invoice_no'   => $invoice_no,
             'paystatus'    => $paystatus,
-            'orderstatus'  => $orderstatus,
+            'orderstatus'  => $orderstatus, 
             'paycode'      => $paycode,
             'order_id'     => $order_id,
             'begin_time'   => empty($begin_time)?date('Y-m-d'):$begin_time,
