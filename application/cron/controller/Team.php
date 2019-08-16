@@ -50,7 +50,7 @@ class Team extends ApiBase{
         $GiftOrderJoin = M('gift_order_join');
         foreach($list as $v){
             //开奖推送
-            $join_list = $GiftOrderJoin->where(['order_id'=>$v['order_id'],'order_type'=>2,'join_status'=>['neq',4]])->column('user_id');
+            $join_list = $GiftOrderJoin->where(['order_id'=>$v['order_id'],'order_type'=>2,'join_status'=>['neq',4],'push_status'=>0])->column('user_id');
             if($join_list){
                 $openid_arr = Db::name('member')->where('id','in',$join_list)->column('id,openid');
                 $formid_arr = Db::name('member_formid')->where('user_id','in',$join_list)->where('status',0)->column('user_id,formid');
