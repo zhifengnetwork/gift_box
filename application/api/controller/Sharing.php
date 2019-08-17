@@ -3,13 +3,9 @@
  * 享物圈
  */
 namespace app\api\controller;
-require_once './vendor/aliyun-oss-php-sdk/autoload.php';
 
 use think\Request;
 use think\Db;
-use OSS\OssClient;
-use OSS\Core\OssException;
-
 
 class Sharing extends ApiBase
 {
@@ -938,26 +934,7 @@ class Sharing extends ApiBase
     //视频上传
     public function video_path()
     {
-        $accessKeyId = "LTAIbCn21XhxrFOA"; ;
-        $accessKeySecret = "wnFOS3lqYAew9HKCPhBqauv113JLmr";
-        $endpoint = "oss-cn-guangzhou.aliyuncs.com";
-
-        // 存储空间名称
-        $bucket= "sharing";
-        // 文件名称
-        $object = "123456.png";
-        $filePath = "/image/1.png";
-        try{
-            $ossClient = new OssClient($accessKeyId, $accessKeySecret, $endpoint);
-        
-            $ossClient->uploadFile($bucket, $object, $filePath);
-        } catch(OssException $e) {
-            printf(__FUNCTION__ . ": FAILED\n");
-            printf($e->getMessage() . "\n");
-            return;
-        }
-        print(__FUNCTION__ . ": OK" . "\n");
-        dump((array)$ossClient);
+        aliyun_upload('1.png');
     }
 
     

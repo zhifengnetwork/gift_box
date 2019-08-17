@@ -1,4 +1,8 @@
 <?php
+require_once './vendor/aliyun-oss-php-sdk/autoload.php';
+
+use OSS\OssClient;
+use OSS\Core\OssException;
 use think\Db;
 
 function pre($data){
@@ -937,3 +941,32 @@ function getdistance($lng1=0, $lat1=0, $lng2=0, $lat2=0) {
     $s = 2 * asin(sqrt(pow(sin($a / 2), 2) + cos($radLat1) * cos($radLat2) * pow(sin($b / 2), 2))) * 6378.137 * 1000;
     return intval($s);
 } 
+
+function aliyun_upload($savePath,$category='',$isunlink=false,$bucket="sharing"){
+    $accessKeyId ='LTAIbCn21XhxrFOA';//去阿里云后台获取秘钥
+    $accessKeySecret = 'wnFOS3lqYAew9HKCPhBqauv113JLmr';//去阿里云后台获取秘钥
+    $endpoint = 'http://oss-cn-shengzhen.aliyuncs.com';//你的阿里云OSS地址
+    $ossClient = new OssClient($accessKeyId, $accessKeySecret, $endpoint);
+    //        判断bucketname是否存在，不存在就去创建
+    if( !$ossClient->doesBucketExist($bucket)){
+        $ossClient->createBucket($bucket);
+    }
+    $category=empty($category)?$bucket:$category;
+
+    $savePath = str_replace("\\","/",$savePath);
+
+    $object = $category.'/'.$savePath;//想要保存文件的名称
+    // $file =  './uploads/'.$savePath;//文件路径，必须是本地的。
+    $file =  './image/'.$savePath;//文件路径，必须是本地的。
+
+    try{
+        $ossClient->uploadFile($bucket,$object,$file);
+        if ($isunlink==true){
+            unlink($file);
+        }
+    }catch (OssException $e){
+        $e->getErrorMessage();
+    }
+    // $oss=config('aliyun_oss.url');
+    return $object;
+}
