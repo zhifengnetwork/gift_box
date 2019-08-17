@@ -50,6 +50,7 @@
                                 <th>点赞数</th>
                                 <th>排序</th>
                                 <th>是否推荐</th>
+                                <th>是否首页推荐</th>
                                 <th>发布时间</th>
                                 <th>操作</th>
                             </tr>
@@ -71,6 +72,17 @@
                                                     <i class="fa fa-check-circle"></i>是</span>
                                         {else/}
                                         <span onClick="changeTableVal('sharing_circle','id','{$vo.id}','is_rec',this)">
+                                                    <i class="fa fa-ban"></i>否</span>
+                                        {/if}
+                                    </div>
+                                </td>
+                                <td align="left" axis="col0">
+                                    <div style="text-align: left; width: 30px;">
+                                        {if condition='$vo.is_home eq 1'}
+                                        <span onClick="changeTableVal('sharing_circle','id','{$vo.id}','is_home',this)">
+                                                    <i class="fa fa-check-circle"></i>是</span>
+                                        {else/}
+                                        <span onClick="changeTableVal('sharing_circle','id','{$vo.id}','is_home',this)">
                                                     <i class="fa fa-ban"></i>否</span>
                                         {/if}
                                     </div>
