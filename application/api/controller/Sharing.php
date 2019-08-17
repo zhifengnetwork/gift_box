@@ -938,5 +938,21 @@ class Sharing extends ApiBase
         // dump($res);
     }
 
+    //删除文章
+    public function del_sharing()
+    {
+        $id = input('id');
+        if(!$id){
+            $this->ajaxReturn(['status' => -1 , 'msg'=>'文章id不存在','data'=>'']);
+        }
+        $user_id =  $this->get_user_id();
+        $res = Db::name('sharing_circle')->where(['id'=>$id,'user_id'=>$user_id])->delete();
+        if($res){
+            $this->ajaxReturn(['status' => 1 , 'msg'=>'删除成功','data'=>'']);
+        }else{
+            $this->ajaxReturn(['status' => -1 , 'msg'=>'删除失败','data'=>'']);
+        }
+    }
+
     
 }
