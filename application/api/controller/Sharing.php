@@ -6,6 +6,7 @@ namespace app\api\controller;
 use think\Request;
 use think\Db;
 
+
 class Sharing extends ApiBase
 {
     //添加分享
@@ -930,7 +931,19 @@ class Sharing extends ApiBase
         $this->ajaxReturn(['status' => 1 , 'msg'=>'成功','data'=>$data]);
     }
 
-    
+    //视频上传
+    public function video_path()
+    {
+        Vendor('path.autoload');
+        $accessKeyId = "LTAIbCn21XhxrFOA"; ;
+        $accessKeySecret = "wnFOS3lqYAew9HKCPhBqauv113JLmr";
+        $endpoint = "<您选定的OSS数据中心访问域名，例如oss-cn-hangzhou.aliyuncs.com>";
+        try {
+            $ossClient = new OssClient($accessKeyId, $accessKeySecret, $endpoint);
+        } catch (OssException $e) {
+            print $e->getMessage();
+        }
+    }
 
     
 }

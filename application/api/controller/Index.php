@@ -75,7 +75,9 @@ class Index extends ApiBase
                 $sharing[$key]['cover'] = $val['cover']?SITE_URL.$val['cover']:'';
             }
         }
+        $sharing_name = ['id'=>1,'name'=>'享物圈','english'=>'Enjoyment Circle'];
         $data['sharing'] = $sharing;
+        $data['sharing_name'] = $sharing_name;
         //组装返回的数据
         $data['jializhixuan'] = $goods_attr[0];
         $data['jializhixuan']['goods_list'] = $this->setGoodsList($goods_list1);
