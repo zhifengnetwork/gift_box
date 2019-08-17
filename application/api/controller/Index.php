@@ -68,6 +68,7 @@ class Index extends ApiBase
         //享物圈8条数据
         $where = array();
         $where['is_rec'] = 1;
+        $where['is_home'] = 1;
         $sharing = Db::name('sharing_circle')->field('id,cover,title,type')->where($where)->limit(8)->select();
         foreach($sharing as $key=>$val){
             if($val['cover']){
