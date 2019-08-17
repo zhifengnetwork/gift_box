@@ -942,10 +942,10 @@ function getdistance($lng1=0, $lat1=0, $lng2=0, $lat2=0) {
     return intval($s);
 } 
 
-function aliyun_upload($savePath,$category='',$isunlink=false,$bucket="sharing"){
+function aliyun_upload($savePath,$category='',$isunlink=false,$bucket="zhifeng-giftbox"){
     $accessKeyId ='LTAIbCn21XhxrFOA';//去阿里云后台获取秘钥
     $accessKeySecret = 'wnFOS3lqYAew9HKCPhBqauv113JLmr';//去阿里云后台获取秘钥
-    $endpoint = 'http://oss-cn-shengzhen.aliyuncs.com';//你的阿里云OSS地址
+    $endpoint = 'oss-cn-shenzhen.aliyuncs.com';//你的阿里云OSS地址
     $ossClient = new OssClient($accessKeyId, $accessKeySecret, $endpoint);
     //        判断bucketname是否存在，不存在就去创建
     if( !$ossClient->doesBucketExist($bucket)){

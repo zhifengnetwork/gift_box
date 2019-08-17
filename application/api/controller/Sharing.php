@@ -63,10 +63,10 @@ class Sharing extends ApiBase
             $data['topic_id'] = $topic_id;
         }
         $data['cover'] = input('cover','');
-        if($data['type']){
+        if($data['type'] && !$data['cover']){
             $data['cover'] = $data['priture'];
-            $data['cover'] = str_replace(SITE_URL,'',$data['cover']);
         }
+        $data['cover'] = str_replace(SITE_URL,'',$data['cover']);
         // $data['priture'] = implode(',',$data['priture']);
         $data['priture'] = str_replace(SITE_URL,'',$data['priture']);
         if(!$data['priture'] && $data['type'] == 0  && !$status){
@@ -934,7 +934,8 @@ class Sharing extends ApiBase
     //视频上传
     public function video_path()
     {
-        aliyun_upload('1.png');
+        $res = aliyun_upload('1.png');
+        // dump($res);
     }
 
     
