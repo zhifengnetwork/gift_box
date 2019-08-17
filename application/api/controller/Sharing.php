@@ -946,13 +946,17 @@ class Sharing extends ApiBase
         $bucket= "sharing";
         // 文件名称
         $object = "123456.png";
-        $content = "/image/1.png";
-        try {
+        $filePath = "/image/1.png";
+        try{
             $ossClient = new OssClient($accessKeyId, $accessKeySecret, $endpoint);
-            $ossClient->uploadFile($bucket, $object, $content);
-        } catch (OssException $e) {
-            print $e->getMessage();
+        
+            $ossClient->uploadFile($bucket, $object, $filePath);
+        } catch(OssException $e) {
+            printf(__FUNCTION__ . ": FAILED\n");
+            printf($e->getMessage() . "\n");
+            return;
         }
+        print(__FUNCTION__ . ": OK" . "\n");
         dump((array)$ossClient);
     }
 
