@@ -65,6 +65,16 @@ class Index extends ApiBase
         $goods_list7 = Db::table('goods')->alias('g')->join('goods_img i','g.goods_id=i.goods_id','LEFT')->field('g.goods_id,g.goods_name,g.price,i.picture')->where(['goods_attr1'=>7,'g.is_recommend'=>1,'is_del'=>0,'is_show'=>1,'i.main'=>1])->order('add_time desc')->limit(8)->select();
         //佳礼只选-猜你喜欢的商品
 
+        //享物圈8条数据
+        $where = array();
+        $where['is_rec'] = 1;
+        $sharing = Db::name('sharing_circle')->field('id,cover,title')->where($where)->limit(8)->select();
+        foreach($sharing as $key=>$val){
+            if($val['cover']){
+                $sharing[$key]['cover'] = $val['cover']?SITE_URL.$val['cover']:'';
+            }
+        }
+        $data['sharing'] = $sharing;
         //组装返回的数据
         $data['jializhixuan'] = $goods_attr[0];
         $data['jializhixuan']['goods_list'] = $this->setGoodsList($goods_list1);
