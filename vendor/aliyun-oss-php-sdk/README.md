@@ -4,8 +4,6 @@
 [![Build Status](https://travis-ci.org/aliyun/aliyun-oss-php-sdk.svg?branch=master)](https://travis-ci.org/aliyun/aliyun-oss-php-sdk)
 [![Coverage Status](https://coveralls.io/repos/github/aliyun/aliyun-oss-php-sdk/badge.svg?branch=master)](https://coveralls.io/github/aliyun/aliyun-oss-php-sdk?branch=master)
 
-## [README of English](https://github.com/aliyun/aliyun-oss-php-sdk/blob/master/README.md)
-
 ## 概述
 
 阿里云对象存储（Object Storage Service，简称OSS），是阿里云对外提供的海量、安全、低成本、高可靠的云存储服务。用户可以通过调用API，在任何应用、任何时间、任何地点上传和下载数据，也可以通过用户Web控制台对数据进行简单的管理。OSS适合存放任意文件类型，适合各种网站、开发企业及开发者使用。
@@ -134,9 +132,14 @@ foreach($bucketList as $bucket) {
 
 3. 执行 `php vendor/bin/phpunit`
 
-## License
+## 贡献代码
 
-- MIT
+0. 开发流程参考：https://github.com/rockuw/oss-sdk-status#development-oss-members-only
+1. 提交代码后，确保travis CI是PASS的
+2. 每发布一个新的版本：
+  - 运行`build-phar.sh`生成相应的phar包（需要安装[phar-composer][phar-composer])
+  - 在[Release页面][releases-page]发布一个版本
+  - 将生成的phar包上传到相应的Release下面
 
 ## 联系我们
 

@@ -3,8 +3,12 @@
  * 享物圈
  */
 namespace app\api\controller;
+require_once './vendor/aliyun-oss-php-sdk/autoload.php';
+
 use think\Request;
 use think\Db;
+use OSS\OssClient;
+use OSS\Core\OssException;
 
 
 class Sharing extends ApiBase
@@ -934,15 +938,22 @@ class Sharing extends ApiBase
     //视频上传
     public function video_path()
     {
-        Vendor('path.autoload');
         $accessKeyId = "LTAIbCn21XhxrFOA"; ;
         $accessKeySecret = "wnFOS3lqYAew9HKCPhBqauv113JLmr";
-        $endpoint = "<您选定的OSS数据中心访问域名，例如oss-cn-hangzhou.aliyuncs.com>";
+        $endpoint = "oss-cn-guangzhou.aliyuncs.com";
+
+        // 存储空间名称
+        $bucket= "sharing";
+        // 文件名称
+        $object = "123456.png";
+        $content = "/image/1.png";
         try {
             $ossClient = new OssClient($accessKeyId, $accessKeySecret, $endpoint);
+            $ossClient->uploadFile($bucket, $object, $content);
         } catch (OssException $e) {
             print $e->getMessage();
         }
+        dump((array)$ossClient);
     }
 
     
