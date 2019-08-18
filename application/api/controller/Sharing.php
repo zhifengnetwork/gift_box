@@ -29,10 +29,7 @@ class Sharing extends ApiBase
         }
         $data['title'] = input('title');
         $data['text'] = input('text');
-
-        // write_log("text:::::".$data['text']);
-
-        $data['type'] = input('type',0);
+        $data['type'] = input('type');
         $data['content'] = input('content');
         $data['user_id'] = $user_id;
         $data['lat'] = input('lat');
@@ -42,6 +39,7 @@ class Sharing extends ApiBase
         $data['text2'] = input('text2');
         $data['music_id'] = input('music_id',0);
         $topic_name = input('topic_name');
+
         if(!$data['title'] && !$status){
             $this->ajaxReturn(['status' => -1 , 'msg'=>'请输入标题','data'=>'']);
         }
@@ -219,6 +217,7 @@ class Sharing extends ApiBase
         foreach($info['comment'] as $key=>$val){
             $info['comment'][$key]['nickname'] = Db::name('member')->where('id',$val['user_id'])->value('nickname');
         }
+        $info['topic_name'] = Db::name('sharing_topic')->where('id',$data['topic_id'])->value('topic_name');
         $this->ajaxReturn(['status' => 1 , 'msg'=>'成功','data'=>$info]);
     }
 
