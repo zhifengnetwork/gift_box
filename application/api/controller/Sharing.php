@@ -217,7 +217,7 @@ class Sharing extends ApiBase
         foreach($info['comment'] as $key=>$val){
             $info['comment'][$key]['nickname'] = Db::name('member')->where('id',$val['user_id'])->value('nickname');
         }
-        $info['topic_name'] = Db::name('sharing_topic')->where('id',$data['topic_id'])->value('topic_name');
+        $info['topic_name'] = Db::name('sharing_topic')->where('id',$info['topic_id'])->value('topic_name');
         $this->ajaxReturn(['status' => 1 , 'msg'=>'成功','data'=>$info]);
     }
 
