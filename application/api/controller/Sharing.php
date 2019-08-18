@@ -954,5 +954,14 @@ class Sharing extends ApiBase
         }
     }
 
-    
+    //删除草稿
+    public function del_caogao(){
+        $user_id = $this->get_user_id();
+        $res = Db::name('sharing_circle')->where(['status'=>3,'user_id'=>$user_id])->delete();
+        if($res){
+            $this->ajaxReturn(['status' => 1 , 'msg'=>'删除成功','data'=>'']);
+        }else{
+            $this->ajaxReturn(['status' => -1 , 'msg'=>'删除失败','data'=>'']);
+        }
+    }
 }
