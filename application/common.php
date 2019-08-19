@@ -879,7 +879,7 @@ function update_pay_status($order_sn='',$data=array())
 */
 function getDelivery($shipping_code, $invoice_no,$order_id=0)
 {
-    if(!$order_id){
+    if(!$order_id || !$invoice_no){
         return false;
     }
     $result = db('order_logistics')->where(['order_id'=>$order_id,'addtime'=>array('gt',time())])->value('text');
