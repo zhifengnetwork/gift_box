@@ -129,7 +129,7 @@
                                     <td>{$vo.add_time|date="y-m-d H:i:s",###}</td>
                                     <td>
                                         {if ($vo['parent_id'] == 0) && ($vo['order_type'] == 2)}
-                                        <a class="btn btn-default" href="{:url('order/join_list',['order_id'=>$vo.order_id])}"><i class="fa fa-list"></i> 查看参与名单</a>
+                                        <!-- <a class="btn btn-default" href="{:url('order/join_list',['order_id'=>$vo.order_id])}"><i class="fa fa-list"></i> 查看参与名单</a> -->
                                         {/if}
 
                                         <a class="btn btn-default" href="{:url('order/edit',['order_id'=>$vo.order_id])}"><i class="fa fa-list"></i> 查看订单</a>
