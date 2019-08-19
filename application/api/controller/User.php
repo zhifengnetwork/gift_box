@@ -584,7 +584,7 @@ class User extends ApiBase
         }
         if(isset($post['avatar'])){
             $data['avatar'] =  str_replace(SITE_URL,'',$post['avatar']);
-            // $data['avatar'] = user_thum_images($user_id,132,132);
+            $data['avatar'] = user_thum_images($user_id,132,132,$data['avatar']);
         }
         if(isset($post['sex'])){
             $data['sex'] = $post['sex'];

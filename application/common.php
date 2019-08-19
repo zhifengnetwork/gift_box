@@ -977,7 +977,7 @@ function aliyun_upload($savePath,$category='',$isunlink=false,$bucket="zhifeng-g
  * @param type $width     生成缩略图的宽度
  * @param type $height    生成缩略图的高度
  */
-function user_thum_images($user_id, $width, $height)
+function user_thum_images($user_id, $width, $height,$avatar)
 {
 
     if (empty($user_id)) {
@@ -1005,7 +1005,7 @@ function user_thum_images($user_id, $width, $height)
         return '/' . $path . $goods_thumb_name . '.png';
     }
 
-    $original_img = ''; //先定义空字符变量
+    $original_img = $avatar; //先定义空字符变量
     
     if (empty($original_img)) {
         $original_img = Db::name('member')->where("id", $user_id)->value('avatar');
