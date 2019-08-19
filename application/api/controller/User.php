@@ -584,6 +584,7 @@ class User extends ApiBase
         }
         if(isset($post['avatar'])){
             $data['avatar'] =  str_replace(SITE_URL,'',$post['avatar']);
+            $data['avatar'] = user_thum_images($user_id,132,132);
         }
         if(isset($post['sex'])){
             $data['sex'] = $post['sex'];
@@ -626,6 +627,14 @@ class User extends ApiBase
         $info['city'] = Db::name('region')->where('area_id',$info['city'])->value('area_name');
         $info['district'] = Db::name('region')->where('area_id',$info['district'])->value('area_name');
         $this->ajaxReturn(['status' => 1 , 'msg'=>'成功','data'=>$info]);
+    }
+
+    //设置默认地址
+    public function edit_default()
+    {
+        $address_id = input('address_id',0);
+        $user_id = $this->get_user_id();
+        // Db::name('user_address')->
     }
 
 

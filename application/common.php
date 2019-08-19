@@ -983,20 +983,20 @@ function user_thum_images($user_id, $width, $height)
     if (empty($user_id)) {
         return '';
     }
-
+    
     //判断缩略图是否存在
-    $path = "/public/upload/user/";
+    $path = "public/upload/user/";
     $goods_thumb_name = "user_thumb_{$user_id}_{$width}_{$height}";
 
     // 这个商品 已经生成过这个比例的图片就直接返回了
     if (is_file($path . $goods_thumb_name . '.jpg')) {
         return '/' . $path . $goods_thumb_name . '.jpg';
     }
-
+    
     if (is_file($path . $goods_thumb_name . '.jpeg')) {
         return '/' . $path . $goods_thumb_name . '.jpeg';
     }
-
+    
     if (is_file($path . $goods_thumb_name . '.gif')) {
         return '/' . $path . $goods_thumb_name . '.gif';
     }
@@ -1006,7 +1006,7 @@ function user_thum_images($user_id, $width, $height)
     }
 
     $original_img = ''; //先定义空字符变量
-
+    
     if (empty($original_img)) {
         $original_img = Db::name('member')->where("id", $user_id)->value('avatar');
     }
@@ -1023,7 +1023,6 @@ function user_thum_images($user_id, $width, $height)
     if (!is_file($original_img)) {
         return $original_img;
     }
-
     try {
         require_once 'vendor/topthink/think-image/src/Image.php';
         require_once 'vendor/topthink/think-image/src/image/Exception.php';
@@ -1038,9 +1037,8 @@ function user_thum_images($user_id, $width, $height)
         // 生成缩略图
         !is_dir($path) && mkdir($path, 0777, true);
         // 参考文章 http://www.mb5u.com/biancheng/php/php_84533.html  改动参考 http://www.thinkphp.cn/topic/13542.html
-        $image->thumb($width, $height, 2)->save($path . $goods_thumb_name, null, 100); //按照原图的比例生成一个最大为$width*$height的缩略图并保存
+        $res = $image->thumb($width, $height, 2)->save($path . $goods_thumb_name); //按照原图的比例生成一个最大为$width*$height的缩略图并保存
         $img_url = '/' . $path . $goods_thumb_name;
-
         return $img_url;
     } catch (think\Exception $e) {
 

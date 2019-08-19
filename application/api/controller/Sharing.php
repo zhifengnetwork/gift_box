@@ -758,14 +758,15 @@ class Sharing extends ApiBase
     public function my_user()
     {
         $user_id = input('user_id',0);
-        $new_user_id = $this->get_user_id();
+        $new_user_id = 91;
         if(!$user_id){
-            $user_id = $this->get_user_id();
+            $user_id = 91;
         }
         $user = Db::name('member')->field('id,nickname,avatar,follow_num as fans_num')->where('id',$user_id)->find();
         $user['follow_num'] = Db::name('sharing_follow')->where('user_id',$user_id)->count();
         $user['article_num'] = Db::name('sharing_circle')->where('user_id',$user_id)->where('status',1)->count();
         $user['user_no'] = 'NO.'.str_pad($user_id,6,"0",STR_PAD_LEFT);
+        $user['avatar'] = user_thum_images($user['id'],132,132);
         $user['avatar'] = substr($user['avatar'],0,1)!='h'?SITE_URL.$user['avatar']:$user['avatar'];
         if($new_user_id != $user_id){
             $user['follow_count'] = Db::name('sharing_follow')->where('user_id',$new_user_id)->where('follow_user_id',$user_id)->count();
@@ -961,11 +962,4 @@ class Sharing extends ApiBase
         }
     }
 
-    //
-    public function test()
-    {
-        $user_id = 87;
-        $res = user_thum_images($user_id,100,100);
-        dump($res);
-    }
 }
