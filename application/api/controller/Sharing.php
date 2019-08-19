@@ -845,11 +845,8 @@ class Sharing extends ApiBase
             $list[$key]['avatar'] = substr($val['avatar'],0,1)!='h'?SITE_URL.$val['avatar']:$val['avatar'];
             $list[$key]['article_num'] = Db::name('sharing_circle')->where('user_id',$val['user_id'])->where('status',1)->count();
             $list[$key]['fans_num'] = Db::name('sharing_follow')->where('follow_user_id',$val['user_id'])->count();
-            if($new_user_id != $user_id){
-                $list[$key]['follow_count'] = Db::name('sharing_follow')->where('user_id',$new_user_id)->where('follow_user_id',$val['user_id'])->count();
-            }else{
-                $list[$key]['follow_count'] = 0;
-            }
+            $list[$key]['follow_count'] = Db::name('sharing_follow')->where('user_id',$new_user_id)->where('follow_user_id',$val['user_id'])->count();
+            
         }
         $this->ajaxReturn(['status' => 1 , 'msg'=>'成功','data'=>$list]);
     }
