@@ -1837,6 +1837,10 @@ class Order extends ApiBase
                         $val['title'] = '派件中';
                     }else if(strpos($val['status'],'已收件') !== false){
                         $val['title'] = '已收件';
+                    }else if(strpos($val['status'],'已取件') !== false){
+                        $val['title'] = '已取件';
+                    }else if(strpos($val['status'],'派件') !== false){
+                        $val['title'] = '已取件';
                     }else{
                         $val['title'] = '运输中';
                     }
