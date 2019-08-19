@@ -840,13 +840,13 @@ function update_pay_status($order_sn='',$data=array())
         Db::name('order')->where(['parent_id' => $order_id])->update($update);
 
         $order = Db::table('order')->where(['order_sn' => $order_sn])->field('order_id,user_id')->find();
-        $goods_res = Db::table('order_goods')->field('goods_id,goods_name,goods_num,spec_key_name,goods_price,sku_id')->where('order_id',$order['order_id'])->select();
+        $goods_res = Db::table('order_goods')->field('user_id,goods_name,goods_num,spec_key_name,goods_price,sku_id')->where('order_id',$order['order_id'])->select();
         foreach($goods_res as $key=>$value){
-            $goods = Db::table('goods')->where('goods_id',$value['goods_id'])->field('less_stock_type,gift_points')->find();
+            $goods = Db::table('goods')->where('user_id',$value['user_id'])->field('less_stock_type,gift_points')->find();
             //付款减库存
             // if($goods['less_stock_type']==2){
                 Db::table('goods_sku')->where('sku_id',$value['sku_id'])->setDec('inventory',$value['goods_num']);
-                Db::table('goods')->where('goods_id',$value['goods_id'])->setDec('stock',$value['goods_num']);
+                Db::table('goods')->where('user_id',$value['user_id'])->setDec('stock',$value['goods_num']);
             // }
         }
         // 执行业务逻辑，成功后返回true
@@ -969,4 +969,81 @@ function aliyun_upload($savePath,$category='',$isunlink=false,$bucket="zhifeng-g
     }
     // $oss=config('aliyun_oss.url');
     return $object;
+}
+
+/**
+ *  用户缩略图 给于标签调用 拿出商品表的 original_img 原始图来裁切出来的
+ * @param type $user_id   用户id
+ * @param type $width     生成缩略图的宽度
+ * @param type $height    生成缩略图的高度
+ */
+function user_thum_images($user_id, $width, $height)
+{
+
+    if (empty($user_id)) {
+        return '';
+    }
+
+    //判断缩略图是否存在
+    $path = "/public/upload/user/";
+    $goods_thumb_name = "user_thumb_{$user_id}_{$width}_{$height}";
+
+    // 这个商品 已经生成过这个比例的图片就直接返回了
+    if (is_file($path . $goods_thumb_name . '.jpg')) {
+        return '/' . $path . $goods_thumb_name . '.jpg';
+    }
+
+    if (is_file($path . $goods_thumb_name . '.jpeg')) {
+        return '/' . $path . $goods_thumb_name . '.jpeg';
+    }
+
+    if (is_file($path . $goods_thumb_name . '.gif')) {
+        return '/' . $path . $goods_thumb_name . '.gif';
+    }
+
+    if (is_file($path . $goods_thumb_name . '.png')) {
+        return '/' . $path . $goods_thumb_name . '.png';
+    }
+
+    $original_img = ''; //先定义空字符变量
+
+    if (empty($original_img)) {
+        $original_img = Db::name('member')->where("id", $user_id)->value('avatar');
+    }
+
+    if (substr($original_img,0,1) == 'h') {
+        return $original_img;
+    }
+
+    if (empty($original_img)) {
+        return $original_img;
+    }
+
+    $original_img = '.' . $original_img; // 相对路径
+    if (!is_file($original_img)) {
+        return $original_img;
+    }
+
+    try {
+        require_once 'vendor/topthink/think-image/src/Image.php';
+        require_once 'vendor/topthink/think-image/src/image/Exception.php';
+        if (strstr(strtolower($original_img), '.gif')) {
+            require_once 'vendor/topthink/think-image/src/image/gif/Encoder.php';
+            require_once 'vendor/topthink/think-image/src/image/gif/Decoder.php';
+            require_once 'vendor/topthink/think-image/src/image/gif/Gif.php';
+        }
+        $image = \think\Image::open($original_img);
+
+        $goods_thumb_name = $goods_thumb_name . '.' . $image->type();
+        // 生成缩略图
+        !is_dir($path) && mkdir($path, 0777, true);
+        // 参考文章 http://www.mb5u.com/biancheng/php/php_84533.html  改动参考 http://www.thinkphp.cn/topic/13542.html
+        $image->thumb($width, $height, 2)->save($path . $goods_thumb_name, null, 100); //按照原图的比例生成一个最大为$width*$height的缩略图并保存
+        $img_url = '/' . $path . $goods_thumb_name;
+
+        return $img_url;
+    } catch (think\Exception $e) {
+
+        return $original_img;
+    }
 }

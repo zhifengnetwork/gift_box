@@ -960,4 +960,12 @@ class Sharing extends ApiBase
             $this->ajaxReturn(['status' => -1 , 'msg'=>'删除失败','data'=>'']);
         }
     }
+
+    //
+    public function test()
+    {
+        $user_id = 87;
+        $res = user_thum_images($user_id,100,100);
+        dump($res);
+    }
 }
