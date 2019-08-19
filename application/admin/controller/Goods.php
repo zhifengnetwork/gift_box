@@ -57,12 +57,19 @@ class Goods extends Common
             $pageParam['query']['goods_attr1'] = $goods_attr1;
         }
 
+        $brand_id = input('brand_id');
+        if( $brand_id ){
+            $where['g.brand_id'] = $brand_id;
+            $pageParam['query']['brand_id'] = $brand_id;
+        }
+
         $list  = Db::table('goods')->alias('g')
                 ->join('category c1','c1.cat_id=g.cat_id1','LEFT')
                 ->join('category c2','c2.cat_id=g.cat_id2','LEFT')
                 ->join('goods_attr t1','t1.id=g.goods_attr1','LEFT')
+                ->join('goods_brand gb','gb.id=g.brand_id','LEFT')
                 ->order('goods_id DESC')
-                ->field('g.*,c1.cat_name c1_name,c2.cat_name c2_name,t1.name t1_name')
+                ->field('g.*,c1.cat_name c1_name,c2.cat_name c2_name,t1.name t1_name,gb.name as brand_name')
                 ->where($where)
                 ->paginate(10,false,$pageParam);
 
@@ -72,6 +79,9 @@ class Goods extends Common
         $cat_id22 = Db::table('category')->where('level',2)->select();
         //商品1级栏目
         $goods_attr = Db::name('goods_attr')->field('id,name')->where('pid',0)->select();
+        //商品1级栏目
+        $goods_brand = Db::name('goods_brand')->field('id,name')->select();
+
         return $this->fetch('goods/index',[
             'list'          =>  $list,
             'is_show'       =>  $is_show,
@@ -82,6 +92,8 @@ class Goods extends Common
             'cat_id22'      =>  $cat_id22,
             'goods_attr'    =>  $goods_attr,
             'goods_attr1'    =>  $goods_attr1,
+            'goods_brand'    =>  $goods_brand,
+            'brand_id'    =>  $brand_id,
             'meta_title'    =>  '商品列表',
         ]);
     }

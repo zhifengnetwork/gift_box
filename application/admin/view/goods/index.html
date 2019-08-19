@@ -45,9 +45,18 @@
                             </select>
                         </div>
 
+                        <div class="col-sm-2 m-b-xs">
+                            <select name="brand_id" class="input-sm form-control input-s-sm inline">
+                                <option value="0">选择品牌</option>
+                                {volist name="goods_brand" id="vo"}
+                                    <option {if condition="$vo.id eq $brand_id"} selected {/if} value="{$vo.id}">{$vo.name}</option>
+                                {/volist}
+                            </select>
+                        </div>
 
 
-                        <div class="col-sm-3">
+
+                        <div class="col-sm-3" style="width:10%;">
                             <div class="input-group"> 
                                 <span class="input-group-btn">
                                     <button type="submit" class="btn btn-sm btn-primary"> 搜索</button> 
@@ -75,6 +84,7 @@
                                 <th>一级分类 </th>
                                 <th>一级栏目 </th>
                                 <th>商品 </th>
+                                <th>品牌 </th>
                                 <th>商品状态 </th>
                                 <th>商品价格（元）</th>
                                 <th>库存</th>
@@ -91,6 +101,7 @@
                                 <td>{$vo.c1_name}</td>
                                 <td>{$vo.t1_name}</td>
                                 <td>{$vo.goods_name}</td>
+                                <td>{$vo.brand_name}</td>
                                 <td>{if condition="$vo.is_show"}已上架{else /}未上架{/if}</td>
                                 <td>{$vo.price}</td>
                                 <td>{$vo.stock}</td>
@@ -108,7 +119,7 @@
                                         </div>
                                     </td>
                                 <td>
-                                    <a class="btn btn-default delete" href="{:url('Goods/comment_list',['goods_id'=>$vo.goods_id],false)}" >评论 </i></a>
+                                    <!-- <a class="btn btn-default delete" href="{:url('Goods/comment_list',['goods_id'=>$vo.goods_id],false)}" >评论 </i></a> -->
                                     <a class="btn btn-default delete" href="{:url('Goods/edit',['goods_id'=>$vo.goods_id],false)}" >编辑 </i></a>
                                     <a class="btn btn-default delete" is_show="{$vo.is_show}" onclick="is_show(this,{$vo.goods_id})" href="javascript:;" >{if condition="$vo.is_show"}下架{else /}上架{/if} </i></a>
                                     <a class="btn btn-default delete" onclick="del(this,{$vo.goods_id})" href="javascript:;" >删除 </i></a>
