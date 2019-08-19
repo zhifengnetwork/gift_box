@@ -584,7 +584,7 @@ class User extends ApiBase
         }
         if(isset($post['avatar'])){
             $data['avatar'] =  str_replace(SITE_URL,'',$post['avatar']);
-            $data['avatar'] = user_thum_images($user_id,132,132);
+            // $data['avatar'] = user_thum_images($user_id,132,132);
         }
         if(isset($post['sex'])){
             $data['sex'] = $post['sex'];
@@ -633,7 +633,7 @@ class User extends ApiBase
     public function edit_address_default()
     {
         $address_id = input('address_id',0);
-        if($address_id){
+        if(!$address_id){
             $this->ajaxReturn(['status' => -1 , 'msg'=>'地址不存在','data'=>'']);
         }
         $user_id = $this->get_user_id();
