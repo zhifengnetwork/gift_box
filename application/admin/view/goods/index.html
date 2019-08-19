@@ -36,6 +36,14 @@
                                 {/volist}
                             </select>
                         </div>
+                        <div class="col-sm-2 m-b-xs">
+                            <select name="goods_attr1" class="input-sm form-control input-s-sm inline">
+                                <option value="0">选择一级栏目</option>
+                                {volist name="goods_attr" id="vo"}
+                                    <option {if condition="$vo.id eq $goods_attr1"} selected {/if} value="{$vo.id}">{$vo.name}</option>
+                                {/volist}
+                            </select>
+                        </div>
 
 
 

@@ -51,6 +51,12 @@ class Goods extends Common
             $pageParam['query']['cat_id2'] = $cat_id2;
         }
 
+        $goods_attr1 = input('goods_attr1');
+        if( $goods_attr1 ){
+            $where['g.goods_attr1'] = $goods_attr1;
+            $pageParam['query']['goods_attr1'] = $goods_attr1;
+        }
+
         $list  = Db::table('goods')->alias('g')
                 ->join('category c1','c1.cat_id=g.cat_id1','LEFT')
                 ->join('category c2','c2.cat_id=g.cat_id2','LEFT')
@@ -64,7 +70,8 @@ class Goods extends Common
         $cat_id11 = Db::table('category')->where('level',1)->select();
         //商品二级分类
         $cat_id22 = Db::table('category')->where('level',2)->select();
-
+        //商品1级栏目
+        $goods_attr = Db::name('goods_attr')->field('id,name')->where('pid',0)->select();
         return $this->fetch('goods/index',[
             'list'          =>  $list,
             'is_show'       =>  $is_show,
@@ -73,7 +80,8 @@ class Goods extends Common
             'cat_id2'       =>  $cat_id2,
             'cat_id11'      =>  $cat_id11,
             'cat_id22'      =>  $cat_id22,
-            
+            'goods_attr'    =>  $goods_attr,
+            'goods_attr1'    =>  $goods_attr1,
             'meta_title'    =>  '商品列表',
         ]);
     }
