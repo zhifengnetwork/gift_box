@@ -70,7 +70,9 @@
                             </td>
                             <td class="col-lg-1 active text-right">支付时间</td>
                             <td class="col-lg-2">
-                                {$order_info.pay_time|date='Y-m-d H:i:s',###}
+                                {if condition="$order_info.pay_time"}
+                                    {$order_info.pay_time|date='Y-m-d H:i:s',###}
+                                {/if}
                             </td>
                         </tr>
                     </tbody>

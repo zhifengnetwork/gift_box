@@ -18,10 +18,10 @@
                                     <div class="form-group">
                                         <label class="control-label" for="status">发货状态</label>
                                         <select name="shipping_status" class="form-control" style="width:180px;">
-                                                <option value="-1" {$Think.get.shipping_status==-1?='selected' }>默认全部</option>
-                                                <option value="0" {$Think.get.shipping_status==0?='selected' }>待发货</option>
-                                                <option value="1" {$Think.get.shipping_status==1?='selected' }>已发货</option>
-                                                <option value="2" {$Think.get.shipping_status==2?='selected' }>部分发货</option>
+                                                <option value="-1" {$shipping_status==-1?='selected' }>默认全部</option>
+                                                <option value="0" {$shipping_status==0?='selected' }>待发货</option>
+                                                <option value="1" {$shipping_status==1?='selected' }>已发货</option>
+                                                <option value="2" {$shipping_status==2?='selected' }>部分发货</option>
                                          </select>
                                     </div>
                              </div>

@@ -391,7 +391,8 @@ class Order extends Common
             'meta_title'  => '发货单列表', 
             'list'        => $list,
             'consignee'   => $consignee,
-            'order_sn'    => $order_sn
+            'order_sn'    => $order_sn,
+            'shipping_status'    => $shipping_status,
         ]);
         
 
