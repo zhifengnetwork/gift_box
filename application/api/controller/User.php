@@ -630,11 +630,16 @@ class User extends ApiBase
     }
 
     //设置默认地址
-    public function edit_default()
+    public function edit_address_default()
     {
         $address_id = input('address_id',0);
+        if($address_id){
+            $this->ajaxReturn(['status' => -1 , 'msg'=>'地址不存在','data'=>'']);
+        }
         $user_id = $this->get_user_id();
-        // Db::name('user_address')->
+        Db::name('user_address')->where('user_id',$user_id)->update(['is_default'=>0]);
+        Db::name('user_address')->where('address_id',$address_id)->update(['is_default'=>1]);
+        $this->ajaxReturn(['status' => 1 , 'msg'=>'成功','data'=>'']);
     }
 
 
