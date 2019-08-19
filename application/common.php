@@ -989,21 +989,21 @@ function user_thum_images($user_id, $width, $height,$avatar)
     $goods_thumb_name = "user_thumb_{$user_id}_{$width}_{$height}";
 
     // 这个商品 已经生成过这个比例的图片就直接返回了
-    if (is_file($path . $goods_thumb_name . '.jpg')) {
-        return '/' . $path . $goods_thumb_name . '.jpg';
-    }
+    // if (is_file($path . $goods_thumb_name . '.jpg')) {
+    //     return '/' . $path . $goods_thumb_name . '.jpg';
+    // }
     
-    if (is_file($path . $goods_thumb_name . '.jpeg')) {
-        return '/' . $path . $goods_thumb_name . '.jpeg';
-    }
+    // if (is_file($path . $goods_thumb_name . '.jpeg')) {
+    //     return '/' . $path . $goods_thumb_name . '.jpeg';
+    // }
     
-    if (is_file($path . $goods_thumb_name . '.gif')) {
-        return '/' . $path . $goods_thumb_name . '.gif';
-    }
+    // if (is_file($path . $goods_thumb_name . '.gif')) {
+    //     return '/' . $path . $goods_thumb_name . '.gif';
+    // }
 
-    if (is_file($path . $goods_thumb_name . '.png')) {
-        return '/' . $path . $goods_thumb_name . '.png';
-    }
+    // if (is_file($path . $goods_thumb_name . '.png')) {
+    //     return '/' . $path . $goods_thumb_name . '.png';
+    // }
 
     $original_img = $avatar; //先定义空字符变量
     
