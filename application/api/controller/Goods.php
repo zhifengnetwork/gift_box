@@ -690,6 +690,11 @@ class Goods extends ApiBase
             $this->ajaxReturn(['status' => -1 , 'msg'=>'goods_id不存在','data'=>'']);
         }
 
+        $user_id = $this->get_user_id();
+        if(!$user_id){
+            $this->ajaxReturn(['status' => -1 , 'msg'=>'用户不存在','data'=>'']);
+        }
+        $cart_num = Db::name('cart')->where('user_id',$user_id)->count();
         $data = Db::table('goods')->alias('g')
         ->join('goods_attr ga','FIND_IN_SET(ga.id,g.goods_attr)','LEFT')
         ->field('g.goods_id,g.goods_name,g.price,g.goods_spec,g.desc,g.content,g.goods_attr,GROUP_CONCAT(ga.name) attr_name')
@@ -752,6 +757,7 @@ class Goods extends ApiBase
             }
             sort($goods_spec_list);
         }
+        $data['cart_num'] = $cart_num;
         $data['spec_goods_price'] = $spec_goods_price;
         $data['goods_spec_list'] = $goods_spec_list;
         $data['gift_notice'] = $goodsRes['gift_notice'] = Db::name('config')->where(['name'=>'gift_notice','status'=>1])->value('value');
