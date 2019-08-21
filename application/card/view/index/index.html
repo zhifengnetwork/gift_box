@@ -1041,7 +1041,7 @@ body,html{
     <!-- 播放音乐 -->
     {if condition="$info.music_url"}
     <div id="audio_btn" class="rotate">
-        <audio loop src="{$info.music_url}" id="media" autoplay="autoplay"></audio>
+        <audio loop src="{$info.music_url}" id="media" autoplay="autoplay" ></audio>
     </div>
     {/if}
     <!-- 播放录音 -->
@@ -1057,24 +1057,23 @@ body,html{
 <!-- <script src="https://res.wx.qq.com/open/js/jweixin-1.0.0.js"></script>  -->
 
 <script>
-    var x = document.getElementById("media"); 
-    var y = document.getElementById("media2"); 
 
+var x = document.getElementById("media"); //音乐
+var y = document.getElementById("media2"); //录音
 
 document.addEventListener("visibilitychange", () => { 
     if(document.hidden) {
     // 页面被挂起,暂停播放
         console.log("页面被挂起,暂停播放")
         x.pause();
-        y.pause();        
+        if(y){
+            y.pause();        
+        }
      }else {
     // 页面呼出
                    
      }
 });
-
-
-
 
 
 function test(){
@@ -1156,12 +1155,22 @@ function isWeiXin(){
 
 <script>
 
-var x = document.getElementById("media"); 
+var x = document.getElementById("media"); //音乐
+
+var y = document.getElementById("media2"); //录音
+
+//点击音乐按钮
 $('#audio_btn').on('click', function() {
+    console.log('点击audio_btn按钮');
+    console.log(this);
     $(this).toggleClass("rotate-pause");
     if(!$(this).hasClass("rotate-pause")){
+        console.log(x)
         x.play();
-        y.pause();
+        if(y){
+            console.log(y)
+            y.pause();
+        }
         $('#audio_btn2').addClass("rotate-pause2");
     }else{
         x.pause();
@@ -1170,7 +1179,8 @@ $('#audio_btn').on('click', function() {
     }
 });
 
-var y = document.getElementById("media2"); 
+
+// 点击录音按钮
 $('#audio_btn2').on('click', function() {
     $(this).toggleClass("rotate-pause2");
     if($(this).hasClass("rotate-pause2")){
@@ -1202,16 +1212,16 @@ $('#audio_btn2').on('click', function() {
 
 
 //--创建页面监听，等待微信端页面加载完毕 触发音频播放
-// document.addEventListener('DOMContentLoaded', function () {
-//     function audioAutoPlay() {
-//         var audio = document.getElementById('media');
-//             audio.play();
-//         document.addEventListener("WeixinJSBridgeReady", function () {
-//             audio.play();
-//         }, false);
-//     }
-//     audioAutoPlay();
-// });
+document.addEventListener('DOMContentLoaded', function () {
+    function audioAutoPlay() {
+        var audio = document.getElementById('media');
+            audio.play();
+        document.addEventListener("WeixinJSBridgeReady", function () {
+            audio.play();
+        }, false);
+    }
+    audioAutoPlay();
+});
 //--创建触摸监听，当浏览器打开页面时，触摸屏幕触发事件，进行音频播放
 // document.addEventListener('touchstart', function () {
 //     function audioAutoPlay() {
