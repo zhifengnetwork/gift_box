@@ -1493,9 +1493,12 @@ class Goods extends Common
 
     //品牌列表
     public function goods_brand()
-    {
-        $list = Db::table('goods_brand')->paginate(10);
+    {   
+        $order = input('order','id');
+        $pageParam['query']['order'] = $order;
+        $list = Db::table('goods_brand')->order($order)->paginate(10,false,$pageParam);
         $this->assign('list',$list);
+        $this->assign('order',$order);
         return $this->fetch();
     }
 
