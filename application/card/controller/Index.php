@@ -98,6 +98,14 @@ class Index extends Controller
     }
 
 
+
+    public function diy(){
+
+
+        return $this->fetch();
+    }
+
+
      //微信Jssdk 操作类 用分享朋友圈 JS
      public function ajaxGetWxConfig()
      {
