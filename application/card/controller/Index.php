@@ -48,7 +48,7 @@ class Index extends Controller
         $info['scene_url'] = '';
         //类别
         if($info['cate_id']){
-            $info['cate_url'] = Db::name('box_cate')->where('id',$info['cate_id'])->value('picture');
+            $info['cate_url'] = Db::name('box_scene')->where('id',$info['cate_id'])->value('picture');
         }
         //音乐
         if($info['music_id']){
