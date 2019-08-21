@@ -94,96 +94,21 @@ class Index extends Controller
         $this->assign('lottery_time', $lottery_time);
 
 
-        return $this->fetch();
+        //判断是不是  花
+        // 不是花的话，就加载  gif.html
+
+        $template = 'index';
+
+
+        // $template = 'gif';
+        // $gif_url = '';
+        // $this->assign('gif_url', $gif_url);
+
+        
+        return $this->fetch($template);
     }
 
-
-
-    public function diy(){
-
-		
-        $card_id = input('card_id');
-        $type = input('type');
-        $order_id = input('order_id');
-        $pwdstr = input('pwdstr');
-        $preview =  input('preview',0);
-
-        write_log(SITE_URL.'/card?card_id='.$card_id.'&type='.$type.'&order_id='.$order_id.'&pwdstr='.$pwdstr);
-
-        if(!$card_id){
-            echo "<h1>card_id不存在</h1>";
-            $protocol = ((!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] != 'off') || $_SERVER['SERVER_PORT'] == 443) ? "https://": "http://";
-            $nowurl = $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
-            echo $nowurl;//输出完整的url
-            exit;
-        }
-        $info = Db::name('box')->where('id',$card_id)->find();
-        if(!$info){
-            echo "<h1>礼盒不存在</h1>";
-            exit;
-            $info['cate_url'] = '';
-            $info['music_url'] = '';
-            $info['video_url'] = '';
-            $info['scene_url'] = '';
-            $info['photo_url'] = '';
-            $info['content'] = '';
-            $info['voice_url'] = '';
-            $this->assign('info',$info);
-            return $this->fetch();
-        }
-        $info['cate_url'] = '';
-        $info['music_url'] = '';
-        $info['video_url'] = '';
-        $info['scene_url'] = '';
-        //类别
-        if($info['cate_id']){
-            $info['cate_url'] = Db::name('box_cate')->where('id',$info['cate_id'])->value('picture');
-        }
-        //音乐
-        if($info['music_id']){
-            $info['music_url'] = Db::name('box_music')->where('id',$info['music_id'])->value('music_url');
-        }
-        //相框
-        if($info['video_id']){
-            $info['video_url'] = Db::name('box_video')->where('id',$info['video_id'])->value('video_url');
-        }
-        //场景
-        if($info['scene_id']){
-            $info['scene_url'] = Db::name('box_scene')->where('id',$info['scene_id'])->value('scene_url');
-        }
-        $info['cate_url'] = $info['cate_url']?SITE_URL.$info['cate_url']:'';//类别
-        $info['music_url'] = $info['music_url']?SITE_URL.$info['music_url']:'';//音乐
-        $info['video_url'] = $info['video_url']?SITE_URL.$info['video_url']:'';//相框
-        $info['scene_url'] = $info['scene_url']?SITE_URL.$info['scene_url']:'';//场景
-        $info['photo_url'] = $info['photo_url']?SITE_URL.$info['photo_url']:'';//照片
-        $info['voice_url'] = $info['voice_url']?SITE_URL.$info['voice_url']:'';//录音
-        $this->assign('info',$info);
-
-        // $url = "{url: '/pages/commodity/detalis/payment/award/award?id=459'}";
-        // $this->assign('url',$url);
-
-        $this->assign('card_id', $card_id);
-        $this->assign('type', $type);
-        $this->assign('order_id', $order_id);
-        $this->assign('pwdstr', $pwdstr);
-        $this->assign('preview', $preview);
-        if($preview == 1){
-            $text = '返回';
-        }else{
-            $text = '直接跳過';
-        }
-        $this->assign('text', $text);
-
-        $lottery_time = '';
-        if($type == '2' && $order_id){
-            $lottery_time = M('order')->where(['order_id'=>$order_id])->value('lottery_time');
-            $lottery_time = date('Y-m-d H:i:s',$lottery_time);
-        }
        
-        $this->assign('lottery_time', $lottery_time);
-        return $this->fetch();
-    }
-
 
      //微信Jssdk 操作类 用分享朋友圈 JS
      public function ajaxGetWxConfig()
