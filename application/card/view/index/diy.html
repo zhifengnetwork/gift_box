@@ -1,6 +1,784 @@
-<!-- 显示 gif 图 作为 底图 -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0,user-scalable=0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title> </title>
+</head>
+<style>
+*{
+    margin: 0;
+    padding: 0;
+}
+body,html{
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+}
+.box{
+    opacity: 0;
+    width: 100%;
+    height: 100%;
+    position: relative;
+    overflow: hidden;
+    transform: scale(2);
+    animation:box 7s;
+    overflow-y: hidden;
+    overflow-x: hidden;
+}
+@keyframes box
+{
+0%   {opacity: 1;transform: scale(1);}
+80%  {opacity: 1;transform: scale(1);}
+100% {opacity: 0;transform: scale(2);}
+}
 
-<!-- 歌曲播放暂停按钮，录音播放暂停按钮 -->
+.xiaobox{
+    position: absolute;
+    z-index: 2;
+    overflow-y: hidden;
+    overflow-x: hidden;
+}
+/* 场景三 */
+.box3{
+    opacity: 0;
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    overflow: hidden;
+    animation:box3 3600s;
+    /* 等待12.5秒后开始执行动画 */
+    /*animation-delay:19.5s;*/
+}
+@keyframes box3
+{
+0%   {opacity: 1;}
+80%  {opacity: 1;}
+100% {opacity: 1;}
+}
 
-<!-- 过几秒 显示 一张图片  在上面 -->
+/* 背景3 */
+.box3beijingbox{
+    top: 0;
+    left: 0;
+    z-index: 1;
+    /* transform: scale(1); */
+    animation:box3beijing 1.6s;
+    /*animation-delay:19.5s;*/
+}
+.box3beijing{
+    width: 100%;
+    height: 100%;
+}
+
+@keyframes box3beijing
+{
+0%  {opacity: 0;transform: scale(0);}
+50% {opacity: 1;}
+100% {opacity: 1;transform: scale(1);}
+}
+
+
+/* 上左花 */
+.szhuabox{
+    top: 0;
+    left: 0;
+    z-index: 2;
+    /* transform: scale(1); */
+    animation:szhua 3.2s;
+    /* animation-delay:7s; */
+    /*animation-delay:19.5s;*/
+}
+.szhua{
+    width: 100%;
+    height: 100%;
+}
+
+@keyframes szhua
+{
+0%  {opacity: 0;}
+50% {opacity: 0;top: -25%;transform: translate(-25%) scale(0.6);}
+100% {opacity: 1;top: 0;transform: translate(0) scale(1);}
+}
+
+/* 上中花 */
+.szhonghuabox{
+    top: 0;
+    left: 0;
+    z-index: 2;
+    /* transform: scale(1); */
+    animation:szhonghua 3.2s;
+    /*animation-delay:19.5s;*/
+}
+.szhonghua{
+    width: 100%;
+    height: 100%;
+}
+
+@keyframes szhonghua
+{
+0%  {opacity: 0;}
+50% {opacity: 0;top: -25%;transform: scale(0.6);}
+100% {opacity: 1;top: 0;transform: scale(1);}
+}
+
+/* 上右花 */
+.syhuabox{
+    top: 0;
+    left: 0;
+    z-index: 2;
+    /* transform: scale(1); */
+    animation:syhua 3.2s;
+    /*animation-delay:19.5s;*/
+}
+.syhua{
+    width: 100%;
+    height: 100%;
+}
+
+@keyframes syhua
+{
+0%  {opacity: 0;}
+50% {opacity: 0;top: -25%;transform: translate(25%) scale(0.6);}
+100% {opacity: 1;top: 0;transform: translate(0%) scale(1);}
+}
+
+/* 头像 */
+.touxiangbox{
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    z-index: 2;
+    /* transform: scale(1); */
+   
+    
+}
+.touxiang{
+    width: 10.5rem;
+    height: 10.5rem;
+    position: absolute;
+    top: 17.5%;
+    left: 50%;
+    transform: translate(-49%);
+    border-radius: 50%;
+    background: yellow;
+    overflow: hidden;
+    animation:touxiang 3.8s;
+    /*animation-delay:19.5s;*/
+}
+
+.touxiangimg{
+    width: 100%;
+    height: 100%;
+}
+
+@keyframes touxiang
+{
+0% {opacity: 0;}
+74% {opacity: 0;transform: translate(-49%) rotate(0deg) scale(0.1);}
+75% {opacity: 1;transform: translate(-49%) rotate(0deg) scale(0.1);}
+100% {opacity: 1;transform: translate(-49%) rotate(360deg) scale(1);}
+}
+
+
+/* 头像边框 */
+.txborderbox{
+    top: 0;
+    left: 0;
+    z-index: 2;
+    /* transform: scale(1); */
+    animation:txborder 6.4s;
+    /*animation-delay:19.5s;*/
+}
+.txborder{
+    width: 100%;
+    height: 100%;
+}
+
+@keyframes txborder
+{
+0%  {opacity: 0;}
+75% {opacity: 0;}
+100% {opacity: 1;}
+}
+
+/* 头像花 */
+.txhuabox{
+    top: 0;
+    left: 0;
+    z-index: 2;
+    /* transform: scale(1); */
+    animation:txhua 6.4s;
+    /*animation-delay:19.5s;*/
+}
+.txhua{
+    width: 100%;
+    height: 100%;
+}
+
+@keyframes txhua
+{
+0%  {opacity: 0;}
+75% {opacity: 0;transform: scale(0.6);}
+100% {opacity: 1;transform: scale(1);}
+}
+
+/* 头像字 */
+.txzibox{
+    top: 0;
+    left: 0;
+    z-index: 2;
+    /* transform: scale(1); */
+    animation:txzi 6.4s;
+    /*animation-delay:19.5s;*/
+}
+.txzi{
+    width: 100%;
+    height: 100%;
+}
+
+@keyframes txzi
+{
+0%  {opacity: 0;}
+75% {opacity: 0;top: -10%;}
+100% {opacity: 1;top: 0;}
+}
+
+/* 心 */
+.xinbox{
+    top: 8%;
+    left: 0;
+    z-index: 2;
+    transform: scale(0.4);
+    animation:xin 6.4s;
+    /*animation-delay:19.5s;*/
+}
+.xin{
+    width: 100%;
+    height: 100%;
+}
+
+@keyframes xin
+{
+0%  {opacity: 0;}
+75% {opacity: 0;top: 20%;}
+100% {opacity: 1;top: 8%;}
+}
+
+/* 文字四 */
+.wenzisibox{
+    top: 0%;
+    left: 0;
+    z-index: 2;
+    animation:wenzisi 6.8s;
+    /*animation-delay:19.5s;*/
+}
+.wenzisi{
+    width: 100%;
+    height: 100%;
+    visibility:hidden;
+}
+.wenzispan{
+    position: absolute;
+    width: 50%;
+    text-align: center;
+    top: 70%;
+    left: 25%;
+    color: #999999;
+    font-family: Helvetica, 'Hiragino Sans GB', 'Microsoft Yahei', '微软雅黑', Arial, sans-serif;
+}
+
+@keyframes wenzisi
+{
+0%  {opacity: 0;}
+75% {opacity: 0;top: 10%;}
+100% {opacity: 1;top: 0%;}
+}
+/* 文字五 */
+.wenziwubox{
+    top: 0%;
+    left: 0;
+    z-index: 2;
+    animation:wenziwu 7.2s;
+    /*animation-delay:19.5s;*/
+}
+.wenziwu{
+    width: 100%;
+    height: 100%;
+}
+
+@keyframes wenziwu
+{
+0%  {opacity: 0;}
+75% {opacity: 0;top: 10%;}
+100% {opacity: 1;top: 0%;}
+}
+
+/* 文字六 */
+.wenziliubox{
+    top: 0%;
+    left: 0;
+    z-index: 2;
+    animation:wenziliu 7.6s;
+    /*animation-delay:19.5s;*/
+}
+.wenziliu{
+    width: 100%;
+    height: 100%;
+}
+
+@keyframes wenziliu
+{
+0%  {opacity: 0;}
+75% {opacity: 0;top: 10%;}
+100% {opacity: 1;top: 0%;}
+}
+
+/* 下花 */
+.bhuabox{
+    top: 0%;
+    left: 0;
+    z-index: 2;
+    animation:bhua 8.8s;
+    /*animation-delay:19.5s;*/
+}
+.bhua{
+    width: 100%;
+    height: 100%;
+}
+
+@keyframes bhua
+{
+0%  {opacity: 0;}
+75% {opacity: 0;top: 25%;transform: scale(0.6);}
+100% {opacity: 1;top: 0%;transform: scale(1);}
+}
+
+.bos3_a{
+    position: fixed;
+    bottom: 10%;
+    right: 10%;
+    text-decoration:none;
+    z-index: 1001;
+    font-family: Helvetica, 'Hiragino Sans GB', 'Microsoft Yahei', '微软雅黑', Arial, sans-serif;
+    animation:bhua 6s;
+    /* animation-delay:30.5s; */
+}
+
+@keyframes bhua
+{
+0%  {opacity: 0;}
+75% {opacity: 0;}
+100% {opacity: 1;}
+}
+
+/* 音乐播放 */
+.audio{
+    position: absolute;
+    top: 1%;
+    right: 2%;
+    width: 2rem;
+    height: 2rem;
+    border-radius: 50%;
+    border: none;
+    outline: none;
+    animation:xuanzhuan 10s;
+    transform: rotate(0deg);
+}
+.audio>img{
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+}
+@keyframes xuanzhuan
+{
+0%  {transform: rotate(0deg);}
+100% {transform: rotate(360deg);}
+}
+
+#audio_btn{
+    position: absolute;
+    top: 1%;
+    right: 2%;
+    width: 2rem;
+    height: 2rem;
+    border-radius: 50%;
+    border: none;
+    outline: none;
+    /* animation:xuanzhuan 10s;
+    transform: rotate(0deg); */
+    background-image: url(/image/timg.jpg);
+    background-repeat: no-repeat;
+    background-size: contain;
+}
+
+.rotate {
+    -webkit-animation: rotating 3s linear infinite;
+    animation: rotating 3s linear infinite;
+
+    animation-play-state:running;
+    -webkit-animation-play-state:running; /* Safari 和 Chrome */
+}
+
+.rotate-pause {
+    animation-play-state:paused;
+    -webkit-animation-play-state:paused; /* Safari 和 Chrome */
+}
+
+@-webkit-keyframes rotating {
+    from { -webkit-transform: rotate(0) }
+    to { -webkit-transform: rotate(360deg) }
+}
+
+@keyframes rotating {
+    from { transform: rotate(0) }
+    to { transform: rotate(360deg) }
+}
+@-moz-keyframes rotating {
+    from { -moz-transform: rotate(0) }
+    to { -moz-transform: rotate(360deg) }
+}
+
+/* 录音 */
+#audio_btn2{
+    position: absolute;
+    top: 69.5%;
+    right: 15%;
+    width: 2rem;
+    height: 2rem;
+    border-radius: 50%;
+    border: none;
+    outline: none;
+    /* animation:xuanzhuan 10s;
+    transform: rotate(0deg); */
+    background-image: url(https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1563776478397&di=6c787388b5d9ac3675c31bdbdce543dd&imgtype=0&src=http%3A%2F%2Fbpic.588ku.com%2Felement_origin_min_pic%2F18%2F01%2F02%2F665765c1f5c69383b4ec4ba83d0d891a.jpg);
+    background-repeat: no-repeat;
+    background-size: contain;
+}
+
+.rotate2 {
+    -webkit-animation: rotating2 3s linear infinite;
+    animation: rotating2 3s linear infinite;
+
+    animation-play-state:running;
+    -webkit-animation-play-state:running; /* Safari 和 Chrome */
+}
+
+.rotate-pause2 {
+    animation-play-state:paused;
+    -webkit-animation-play-state:paused; /* Safari 和 Chrome */
+}
+
+@-webkit-keyframes rotating2 {
+    from { -webkit-transform: rotate(0) }
+    to { -webkit-transform: rotate(360deg) }
+}
+
+@keyframes rotating2 {
+    from { transform: rotate(0) }
+    to { transform: rotate(360deg) }
+}
+@-moz-keyframes rotating2 {
+    from { -moz-transform: rotate(0) }
+    to { -moz-transform: rotate(360deg) }
+}
+
+#mask-kk{
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1002;
+    background: #666;
+    opacity: 0.7;
+    display: none;
+   
+}
+.popup-kk{
+    position: absolute;
+    left: 50%;
+    top:50%;
+    transform: translate(-50%,-50%);
+    width: 18rem;
+    height: 18rem;
+    background: #fff;
+    z-index: 1003;
+    display: none;
+    border-radius:5px;
+    background-image: url(/image/share.png);
+    background-size: 100% 100%;
+}
+.span1{
+    position: absolute;
+    top: 70%;
+    font-size: 1rem;
+    line-height: 2rem;
+    margin-left: 2rem;
+}
+.span2{
+    position: absolute;
+    top: 80%;
+    font-size: 1rem;
+    line-height: 2rem;
+    margin-left: 2rem;
+}
+
+.close {
+    position: absolute;
+    left: 50%;
+    transform: translate(-50%);
+    cursor: pointer;
+    font-size: 2rem;
+    bottom: -20%;
+    width: 2rem;
+    height: 2rem;
+    border-radius: 50%;
+    color: white;
+    line-height: 2rem;
+    text-align: center;
+    background: url('/image/close.jpg');
+    z-index:1006;
+    background-size: 100% 100%
+
+}
+
+
+
+
+
+
+</style>
+<body>
+   
+    <!-- 场景三 -->
+    <div class="box3">
+        <!-- 背景3 -->
+        <div class="box3beijingbox xiaobox">
+            <image class="box3beijing" src="http://pic.962.net/up/2015-3/2015030811094598582.gif" />
+        </div>
+        <!-- 头像 -->
+        <div class="touxiangbox xiaobox">
+                <!-- <image class="touxiang" src="{$info.photo_url}" /> -->
+                <div class="touxiang">
+                    <image class="touxiangimg" src="{$info.photo_url}" />
+                </div>
+            </div>
+        
+        <!-- 文字四 -->
+        <div class="wenzisibox xiaobox">
+            <image class="wenzisi" src="/image/wenzisi.png" />
+            <span class="wenzispan">{$info.content}</span>
+        </div> 
+    </div>
+
+    <a onclick="test()" class="bos3_a" >{$text}></a>
+    
+    {if condition="$type == 2 "}
+        <!-- 抽奖时间 -->
+        <div id="mask-kk"></div>     
+        <div class="popup-kk">
+            <span class="span1">開獎時間：</span>
+            <span class="span2">{$lottery_time}</span>
+            <span class="close"></span>
+        </div>
+    {/if}
+
+    <!-- 播放音乐 -->
+    {if condition="$info.music_url"}
+    <div id="audio_btn" class="rotate">
+        <audio loop src="{$info.music_url}" id="media" autoplay="autoplay" ></audio>
+    </div>
+    {/if}
+    <!-- 播放录音 -->
+    {if condition="$info.voice_url"}
+    <div id="audio_btn2" class="rotate-pause2 rotate2">
+        <audio loop src="{$info.voice_url}" id="media2"></audio>
+    </div>
+    {/if}
+</body>
+</html>
+<script src="/static/inspinia/js/jquery-2.1.1.js"></script>
+<script type="text/javascript" src="https://res.wx.qq.com/open/js/jweixin-1.3.2.js"></script>
+<!-- <script src="https://res.wx.qq.com/open/js/jweixin-1.0.0.js"></script>  -->
+
+<script>
+
+var x = document.getElementById("media"); //音乐
+var y = document.getElementById("media2"); //录音
+
+document.addEventListener("visibilitychange", () => { 
+    if(document.hidden) {
+    // 页面被挂起,暂停播放
+        console.log("页面被挂起,暂停播放")
+        x.pause();
+        if(y){
+            y.pause();        
+        }
+     }else {
+    // 页面呼出
+                   
+     }
+});
+
+
+function test(){
+
+    console.log(66)
+    if(isWeiXin()){
+
+
+        if("{$preview}" == '1'){
+            // 预览
+            var url = "/pages/card/makecard/makecard";
+            gominiprogram(url);
+
+        }else{
+            
+            //不是预览
+            if("{$type}" == '1'){
+                var url = "/pages/commodity/detalis/give/GetTheGift/GetTheGift?id={$card_id}&order_type={$type}&order_id={$order_id}&pwdstr={$pwdstr}"
+                // 礼盒
+                gominiprogram(url);
+            }else{
+
+                $("#mask-kk").show();
+                $(".popup-kk").show();
+
+                //var url =  '/pages/turntable/turntable?id={$card_id}&order_type={$type}&order_id={$order_id}&pwdstr={$pwdstr}';
+                //转盘
+                //开奖时间到了吗
+                //gominiprogram(url);
+            }
+        }
+
+
+        
+    }else{
+        alert('请在微信打开')
+    }
+   
+    x.pause();
+    y.pause();
+    
+}
+
+function gominiprogram(url){
+
+    wx.miniProgram.navigateTo({
+        url:url,
+        success: function(){
+            console.log('success')
+        },
+        fail: function(){
+            console.log('fail');
+        },
+        complete:function(){
+            console.log('complete');
+        }
+    });
+
+}
+
+
+
+$(".close").click(function(){
+   
+    $("#mask-kk").hide();
+    $(".popup-kk").hide();
+})
+function isWeiXin(){
+    var ua = window.navigator.userAgent.toLowerCase();
+    if(ua.match(/MicroMessenger/i) == 'micromessenger'){
+        return true;
+    }else{
+        return false;
+    }
+}
+
+</script>
+
+
+<script>
+
+var x = document.getElementById("media"); //音乐
+
+var y = document.getElementById("media2"); //录音
+
+//点击音乐按钮
+$('#audio_btn').on('click', function() {
+    console.log('点击audio_btn按钮');
+    console.log(this);
+    $(this).toggleClass("rotate-pause");
+    if(!$(this).hasClass("rotate-pause")){
+        console.log(x)
+        x.play();
+        if(y){
+            console.log(y)
+            y.pause();
+        }
+        $('#audio_btn2').addClass("rotate-pause2");
+    }else{
+        x.pause();
+        // y.play();
+        // $('#audio_btn2').toggleClass("rotate-pause2");
+    }
+});
+
+
+// 点击录音按钮
+$('#audio_btn2').on('click', function() {
+    $(this).toggleClass("rotate-pause2");
+    if($(this).hasClass("rotate-pause2")){
+        y.pause();
+        x.play();
+        $('#audio_btn').removeClass("rotate-pause");
+        // $('#audio_btn').toggleClass("rotate-pause");
+        // if($('#audio_btn').hasClass("rotate-pause")){
+        //     x.play();
+        //     $('#audio_btn').toggleClass("rotate-pause");
+        // }else{
+        //     x.pause();
+        //     $('#audio_btn').toggleClass("rotate-pause");
+        // }
+    }else{
+        y.play();
+        x.pause();
+        $('#audio_btn').addClass("rotate-pause");
+        // if($('#audio_btn').hasClass("rotate-pause")){
+        // //     x.play();
+           
+        //     $('#audio_btn').removeClass("rotate-pause");
+        // }else{
+        //     // x.pause();
+        //     $('#audio_btn').addClass("rotate-pause");
+        // }
+    }
+});
+
+
+//--创建页面监听，等待微信端页面加载完毕 触发音频播放
+document.addEventListener('DOMContentLoaded', function () {
+    function audioAutoPlay() {
+        var audio = document.getElementById('media');
+            audio.play();
+        document.addEventListener("WeixinJSBridgeReady", function () {
+            audio.play();
+        }, false);
+    }
+    audioAutoPlay();
+});
+//--创建触摸监听，当浏览器打开页面时，触摸屏幕触发事件，进行音频播放
+// document.addEventListener('touchstart', function () {
+//     function audioAutoPlay() {
+//         var audio = document.getElementById('media');
+//             audio.play();
+//     }
+//     audioAutoPlay();
+// });
+</script>
 
