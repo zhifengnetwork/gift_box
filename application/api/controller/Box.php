@@ -158,6 +158,9 @@ class Box extends ApiBase
             }
         }
         if($id){
+            if($cate_id){
+                Db::name('box')->where('id',$id)->uodate(array('cate_id'=>$cate_id));
+            }
             $box_info = Db::table('box')->field('id,music_id,photo_url,voice_url,content')->where('id',$id)->find();
             $box_info['music_name'] = Db::name('box_music')->where('id',$box_info['music_id'])->value('name');
         }else{
