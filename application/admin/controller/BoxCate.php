@@ -73,6 +73,9 @@ class BoxCate extends Common
     public function del()
     {
         $id = input('id');
+        if($id == 28){
+            return json(['status'=>0,'msg'=>'花这个不能删除']);
+        }
         $count = Db::table('box_scene')->where('pid',$id)->count();
         if($count){
             return json(['status'=>0,'msg'=>'该分类有下级，请先删除其下级']);

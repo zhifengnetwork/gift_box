@@ -97,13 +97,13 @@ class Index extends Controller
         //判断是不是  花
         // 不是花的话，就加载  gif.html
 
-        $template = 'index';
-
-
-        // $template = 'gif';
-        // $gif_url = '';
-        // $this->assign('gif_url', $gif_url);
-
+        if($info['cate_id'] == 28){
+            $template = 'index';
+        }else{
+            $template = 'gif';
+            $gif_url = $info['cate_url'];
+            $this->assign('gif_url', $gif_url);
+        }
         
         return $this->fetch($template);
     }
