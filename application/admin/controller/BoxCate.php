@@ -48,16 +48,6 @@ class BoxCate extends Common
                 !empty($pictureName) && $post['picture'] = '/public'.$pictureName;
             }
             unset($post['file']);
-            // 图片验证2
-            $res = Advertise::pictureUpload('box_scene', 0,'file2');
-            if ($res[0] == 1) {
-                $this->error($res[0]);
-            } else {
-                $pictureName                             = $res[1];
-                !empty($pictureName) && $post['gif'] = '/public'.$pictureName;
-            }
-            unset($post['file']);
-
             $id = input('post.id');
             if($id){
                 Db::table('box_scene')->where('id',$id)->update($post);

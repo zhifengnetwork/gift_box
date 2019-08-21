@@ -10,7 +10,8 @@
                     <h5>添加场景</h5>
                 </div>
                 <div class="ibox-content">
-                    <form method="post" class="form-horizontal" id="ajaxForm" action="{:url('box_cate/cate_post')}" enctype="multipart/form-data">
+                    <form method="post" class="form-horizontal" id="ajaxForm2" action="{:url('box_cate/cate_post')}" enctype="multipart/form-data">
+                        <input type="hidden" name="gif" value="">
                         <div class="form-group">
                             <label class="col-sm-2 control-label">名称</label>
                             <div class="col-sm-9">
@@ -45,8 +46,7 @@
                                 <img src="{$info.gif|default=''}" id='img_show2' style=" max-width: 300px; max-height: 300px">
                             </div>
                             <div class="form-group" style="margin-left:18%;">
-                                <label title="上传动图" for="pictur_btn2" class="btn btn-primary" id="pictur">上传动图
-                                    <input type="file" accept="image/*" name="file2" id="pictur_btn2" class="hide" />
+                                <label title="上传动图" for="image_file" class="btn btn-primary" id="pictur">上传动图
                                 </label>
                             </div>
                         </div>
@@ -75,6 +75,10 @@
                                 <button class="btn btn-white" onclick="javascript:history.back(-1);return false;">取消</button>
                             </div> 
                         </div>
+                    </form>
+                     <!-- 图片上传 -->
+                     <form method="post" class="form-horizontal" id="ajaxForm" action="{:url('goods/upload_file')}" enctype="multipart/form-data">
+                        <input type="file" id="image_file" value="" accept="image/*" name="file" onchange="upload_file()" style="display: none">
                     </form>
                 </div>
             </div>
@@ -116,32 +120,45 @@
                 }
             }
         });
-        $('#pictur_btn2').change(function() {
-            if (!this.value) {
-                $("#img_show2").attr('src', '');
-                filedata = '';
-                pictur = '';
-                return false;
-            }
-            var file = this.files[0];
-            var ext = file.name.substr(-3, 3);
-            if (ext != 'jpg' && ext != 'gif' && ext != 'png' && ext != 'jpeg') {
-                layer.msg("文件格式不正确", { icon: 5 });
-                window.location.reload();
-                return false;
-            }
-            if (file.size > 10240000) {
-                layer.msg("该文件太大无法上传", { icon: 5 });
-            } else {
-                var reader = new FileReader();
-                //将文件以Data URL形式读入页面  
-                reader.readAsDataURL(file);
-                reader.onload = function(e) {
-                    $('.img-preview2').show();
-                    $("#img_show2").attr('src', this.result);
-                }
+        // $('#pictur_btn2').change(function() {
+        //     if (!this.value) {
+        //         $("#img_show2").attr('src', '');
+        //         filedata = '';
+        //         pictur = '';
+        //         return false;
+        //     }
+        //     var file = this.files[0];
+        //     var ext = file.name.substr(-3, 3);
+        //     if (ext != 'jpg' && ext != 'gif' && ext != 'png' && ext != 'jpeg') {
+        //         layer.msg("文件格式不正确", { icon: 5 });
+        //         window.location.reload();
+        //         return false;
+        //     }
+        //     if (file.size > 10240000) {
+        //         layer.msg("该文件太大无法上传", { icon: 5 });
+        //     } else {
+        //         var reader = new FileReader();
+        //         //将文件以Data URL形式读入页面  
+        //         reader.readAsDataURL(file);
+        //         reader.onload = function(e) {
+        //             $('.img-preview2').show();
+        //             $("#img_show2").attr('src', this.result);
+        //         }
+        //     }
+        // });
+    });
+
+    //文件上传
+    function upload_file(){
+        $("#ajaxForm").ajaxSubmit(function (data) {
+            if(data.status == 1){
+                $('.img-preview2').show();
+                $('input[name="gif"]').val(data.data);
+                $('#img_show2').attr('src',data.data);
+            }else{
+                alert(data.msg);
             }
         });
-    });
+    }
 </script>
 {/block}

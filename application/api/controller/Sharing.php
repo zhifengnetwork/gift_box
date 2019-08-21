@@ -930,8 +930,8 @@ class Sharing extends ApiBase
     //视频上传
     public function video_path()
     {
-        $res = aliyun_upload('1.png');
-        // dump($res);
+        $res = aliyun_upload('timg.gif');
+        dump($res);
     }
 
     //删除文章

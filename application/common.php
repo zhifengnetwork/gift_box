@@ -1,6 +1,8 @@
 <?php
 
 use think\Db;
+use OSS\OssClient;
+use OSS\Core\OssException;
 
 function pre($data){
     echo '<pre>';
@@ -940,9 +942,7 @@ function getdistance($lng1=0, $lat1=0, $lng2=0, $lat2=0) {
 } 
 
 function aliyun_upload($savePath,$category='',$isunlink=false,$bucket="zhifeng-giftbox"){
-    // require_once './vendor/aliyun-oss-php-sdk/autoload.php';
-    // use OSS\OssClient;
-    // use OSS\Core\OssException;
+    require_once './vendor/aliyun-oss-php-sdk/autoload.php';
     $accessKeyId ='LTAIbCn21XhxrFOA';//去阿里云后台获取秘钥
     $accessKeySecret = 'wnFOS3lqYAew9HKCPhBqauv113JLmr';//去阿里云后台获取秘钥
     $endpoint = 'oss-cn-shenzhen.aliyuncs.com';//你的阿里云OSS地址
@@ -967,6 +967,8 @@ function aliyun_upload($savePath,$category='',$isunlink=false,$bucket="zhifeng-g
     }catch (OssException $e){
         $e->getErrorMessage();
     }
+    dump($isunlink);
+    dump($ossClient);
     // $oss=config('aliyun_oss.url');
     return $object;
 }
