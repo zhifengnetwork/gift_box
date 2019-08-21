@@ -46,7 +46,7 @@
                             </div>
                             <div class="form-group" style="margin-left:18%;">
                                 <label title="上传动图" for="pictur_btn2" class="btn btn-primary" id="pictur">上传动图
-                                    <input type="file"  name="file2" id="pictur_btn2" class="hide" />
+                                    <input type="file" accept="image/*" name="file2" id="pictur_btn2" class="hide" />
                                 </label>
                             </div>
                         </div>
@@ -125,7 +125,7 @@
             }
             var file = this.files[0];
             var ext = file.name.substr(-3, 3);
-            if (ext != 'jpg' && ext != 'gif' && ext != 'png') {
+            if (ext != 'jpg' && ext != 'gif' && ext != 'png' && ext != 'jpeg') {
                 layer.msg("文件格式不正确", { icon: 5 });
                 window.location.reload();
                 return false;
