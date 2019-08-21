@@ -274,7 +274,7 @@ class Goods extends Common
         //配送方式
         $delivery = Db::table('goods_delivery')->field('delivery_id,name')->where('is_show',1)->select();
         //获取品牌
-        $brand = Db::table('goods_brand')->where('status',0)->field('id,name')->select();
+        $brand = Db::table('goods_brand')->where('status',0)->field('id,name')->order('name')->select();
         
         return $this->fetch('goods/add',[
             'meta_title'    =>  '添加商品',
@@ -527,7 +527,7 @@ class Goods extends Common
         //配送方式
         $delivery = Db::table('goods_delivery')->field('delivery_id,name')->where('is_show',1)->select();
          //获取品牌
-         $brand = Db::table('goods_brand')->where('status',0)->field('id,name')->select();
+         $brand = Db::table('goods_brand')->where('status',0)->field('id,name')->order('name')->select();
         return $this->fetch('goods/edit',[
             'meta_title'  =>  '编辑商品',
             'info'        =>  $info,
