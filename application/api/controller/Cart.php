@@ -121,6 +121,7 @@ class Cart extends ApiBase
                 $update_data = array();
                 $update_data['id'] = $cart_res['id'];
                 $update_data['goods_num'] = $new_number;
+                $update_data['add_time'] = time();
                 $update_data['subtotal_price'] = $new_number * $sku_res['price'];//小计
                 $result = Db::table('cart')->where('id',$update_data['id'])->update($update_data);
                 //如果购物车内有该件商品，到这里就完美结束了
