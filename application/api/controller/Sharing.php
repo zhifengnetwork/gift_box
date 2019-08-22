@@ -762,8 +762,9 @@ class Sharing extends ApiBase
         if(!$user_id){
             $user_id = $this->get_user_id();
         }
-        $user = Db::name('member')->field('id,nickname,avatar,follow_num as fans_num')->where('id',$user_id)->find();
+        $user = Db::name('member')->field('id,nickname,avatar')->where('id',$user_id)->find();
         $user['follow_num'] = Db::name('sharing_follow')->where('user_id',$user_id)->count();
+        $user['fans_num'] = Db::name('sharing_follow')->where('follow_user_id',$user_id)->count();
         $user['article_num'] = Db::name('sharing_circle')->where('user_id',$user_id)->where('status',1)->count();
         $user['user_no'] = 'NO.'.str_pad($user_id,6,"0",STR_PAD_LEFT);        
         $user['avatar'] = substr($user['avatar'],0,1)!='h'?SITE_URL.$user['avatar']:$user['avatar'];
