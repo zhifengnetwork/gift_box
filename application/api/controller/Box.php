@@ -181,7 +181,7 @@ class Box extends ApiBase
         $info['data'] = $box_info;
         $info['data']['photo_url'] = $box_info['photo_url']?SITE_URL.$box_info['photo_url']:'';
         $info['data']['voice_url'] = $box_info['voice_url']?SITE_URL.$box_info['voice_url']:'';
-        $info['data']['content'] = $box_info['content']?SITE_URL.$box_info['content']:'';
+        $info['data']['content'] = $box_info['content'];
         $info['data']['id'] = $id;
         $info['status'] = 1;
         $info['msg'] = '获取数据成功';
