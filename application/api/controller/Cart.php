@@ -23,7 +23,7 @@ class Cart extends ApiBase
         }
         $page = input('page',1);
         $num = input('num',10);
-        $list = Db::name('cart')->where('user_id',$user_id)->field('id,goods_name,goods_price,goods_num,spec_key_name,sku_id,selected,goods_id')->page($page,$num)->select();
+        $list = Db::name('cart')->where('user_id',$user_id)->field('id,goods_name,goods_price,goods_num,spec_key_name,sku_id,selected,goods_id')->order('add_time desc')->page($page,$num)->select();
         foreach($list as $key=>$val){
             $val['goods_img'] = Db::name('goods_sku')->where('sku_id',$val['sku_id'])->value('img');
             if(!$val['goods_img']){
