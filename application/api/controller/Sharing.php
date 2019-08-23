@@ -41,7 +41,7 @@ class Sharing extends ApiBase
         $topic_name = input('topic_name');
 
         if(!$data['title'] && !$status){
-            $this->ajaxReturn(['status' => -1 , 'msg'=>'请输入标题','data'=>'']);
+            // $this->ajaxReturn(['status' => -1 , 'msg'=>'请输入标题','data'=>'']);
         }
         if(!$topic_name && !$status){
             // $this->ajaxReturn(['status' => -1 , 'msg'=>'请选择话题','data'=>'']);
