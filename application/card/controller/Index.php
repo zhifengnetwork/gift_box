@@ -18,7 +18,11 @@ class Index extends Controller
         $order_id = input('order_id');
         $pwdstr = input('pwdstr');
         $preview =  input('preview',0);
-
+        if(!$card_id){
+            if($order_id){
+                $card_id = Db::name('order')->where('order_id',$order_id)->value('box_id');
+            }
+        }
         write_log(SITE_URL.'/card?card_id='.$card_id.'&type='.$type.'&order_id='.$order_id.'&pwdstr='.$pwdstr);
 
         if(!$card_id){
