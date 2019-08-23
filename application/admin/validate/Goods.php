@@ -14,9 +14,9 @@ class Goods extends Validate
 
     protected $message = [
         'goods_name.require'    => '商品名称必须填写',
-        'cat_id1.require'       => '请选择一级分类',
-        'cat_id2.require'       => '请选择二级分类',
-        'goods_attr1.require'   => '请选择一级栏目',
+        'cat_id1.require'       => '请选择商品一级分类',
+        'cat_id2.require'       => '请选择商品二级分类',
+        'goods_attr1.require'   => '请选择商品一级栏目',
         'type_id.require'       => '类型必须选择',
         'brand_id.require'       => '请选择品牌',
     ];

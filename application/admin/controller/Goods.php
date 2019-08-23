@@ -114,7 +114,7 @@ class Goods extends Common
             }
             
             if($data['goods_attr1'] > 7 && !$data['goods_attr2']){
-                $this->error('请选择二级栏目');
+                $this->error('请选择商品二级栏目');
             }
 
             // 本店售价
@@ -338,7 +338,7 @@ class Goods extends Common
                 $this->error( $validate->getError() );
             }
             if($data['goods_attr1'] > 7 && !$data['goods_attr2']){
-                $this->error('请选择二级栏目');
+                $this->error('请选择商品二级栏目');
             }
             if(isset($_FILES['img_td'])){
                 $data['img_td'] = $_FILES['img_td'];
