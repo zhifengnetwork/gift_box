@@ -59,7 +59,7 @@ class Index extends ApiBase
             $goods_list6[$key]['picture'] = $val['sy_picture']?$val['sy_picture']:$val['picture'];
         }
 
-        $goods_list7 = Db::table('goods')->alias('g')->join('goods_img i','g.goods_id=i.goods_id','LEFT')->field('g.goods_id,g.goods_name,g.price,i.picture')->where(['goods_attr1'=>7,'is_del'=>0,'is_show'=>1,'i.main'=>1])->order('add_time desc')->limit(8)->select();
+        $goods_list7 = Db::table('goods')->alias('g')->join('goods_img i','g.goods_id=i.goods_id','LEFT')->field('g.goods_id,g.goods_name,g.price,i.picture')->where(['goods_attr1'=>7,'is_del'=>0,'is_show'=>1,'i.main'=>1])->order('sort,add_time desc')->limit(8)->select();
         //佳礼只选-猜你喜欢的商品
 
         //享物圈8条数据
@@ -259,7 +259,7 @@ class Index extends ApiBase
         $page = input('page',1);
         $num = input('num',8);
         $goods_attr1 = input('goods_attr1',7);
-        $goods_list = Db::table('goods')->alias('g')->join('goods_img i','g.goods_id=i.goods_id','LEFT')->field('g.goods_id,g.goods_name,g.price,i.picture')->where(['goods_attr1'=>$goods_attr1,'is_del'=>0,'is_show'=>1,'i.main'=>1])->order('add_time desc')->page($page,$num)->select();
+        $goods_list = Db::table('goods')->alias('g')->join('goods_img i','g.goods_id=i.goods_id','LEFT')->field('g.goods_id,g.goods_name,g.price,i.picture')->where(['goods_attr1'=>$goods_attr1,'is_del'=>0,'is_show'=>1,'i.main'=>1])->order('sort,add_time desc')->page($page,$num)->select();
         $goods_list = $this->setGoodsList($goods_list);
         $this->ajaxReturn(['status' => 1, 'msg' => '成功','data'=>$goods_list]);
     }
