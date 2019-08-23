@@ -44,7 +44,7 @@ class Sharing extends ApiBase
             $this->ajaxReturn(['status' => -1 , 'msg'=>'请输入标题','data'=>'']);
         }
         if(!$topic_name && !$status){
-            $this->ajaxReturn(['status' => -1 , 'msg'=>'请选择话题','data'=>'']);
+            // $this->ajaxReturn(['status' => -1 , 'msg'=>'请选择话题','data'=>'']);
         }
         $topic_id = Db::name('sharing_topic')->where('name',$topic_name)->value('id');
         if($topic_id){
