@@ -421,7 +421,7 @@ function ajaxGetAttr(obj){
     getSyfm();
     $.post("{:url('goods/ajaxGetAttr')}",{'id':id},function(data){
         if(data.status){
-            var option = '<option>请选择二级栏目</option>';
+            var option = '<option  value="">请选择二级栏目</option>';
             $.each(data.data,function(k,v){
                 option += '<option value="'+v.id+'">'+v.name+'</option>';
             })
@@ -455,7 +455,7 @@ function ajaxGetCategory(obj){
     }
     $.post("{:url('goods/ajaxGetCategory')}",{'id':id},function(data){
         if(data.status){
-            var option = '<option>请选择二级分类</option>';
+            var option = '<option value="">请选择二级分类</option>';
             $.each(data.data,function(k,v){
                 option += '<option value="'+v.cat_id+'">'+v.cat_name+'</option>';
             })
@@ -525,8 +525,8 @@ $('#goods_table thead tr').on('mouseout', 'th', function(){
 
     //实例化富文本编辑器
     var ue = UE.getEditor('editor',{
-        initialFrameWidth:650,
-        initialFrameHeight:180,
+        // initialFrameWidth:650,
+        // initialFrameHeight:180,
         toolbars: [[
             'fullscreen', 'source', '|', 'undo', 'redo', '|', 'searchreplace' ,
             'bold', 'italic', 'underline', 'fontborder', 'strikethrough', 'superscript', 'subscript', 'removeformat', 'formatmatch','pasteplain', '|', 'forecolor', 'backcolor', 'insertorderedlist', 'insertunorderedlist', 'selectall', 'cleardoc', '|',
