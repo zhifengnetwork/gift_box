@@ -18,7 +18,14 @@ class Team extends ApiBase{
      */
     public function run()
     {
-        $this->lottery();   //群抢开奖
+        $h = 60;
+        $i = 0;
+        for($i<$h;$i++){
+            $this->lottery();   //群抢开奖
+            sleep(1);
+        }
+        
+
         $this->setGiving();   ///检测过期时间
     }
 
