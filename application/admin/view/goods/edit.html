@@ -187,7 +187,7 @@
                                         {/volist}
                                     </select>
                                 </div>
-                                <div style="line-height:34px;float:left;margin:0 10px 0 0;" id="nmgb" {if condition="$info.goods_attr1 lt 8"}style="display:none;"{/if}>
+                                <div style="line-height:34px;float:left;margin:0 10px 0 0;{if condition="$info.goods_attr1 lt 8"}display:none;{/if}" id="nmgb" >
                                     <select class="form-control" name="goods_attr2">
                                         {volist name="goods_attr2" id="vo"}
                                         <option value="{$vo.id}" {if condition="$info.goods_attr2 eq $vo.id"}selected{/if} >{$vo.name}</option>
