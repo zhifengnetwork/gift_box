@@ -113,6 +113,10 @@ class Goods extends Common
                 $this->error( $validate->getError() );
             }
             
+            if($data['goods_attr1'] > 7 && !$data['goods_attr2']){
+                $this->error('请选择商品二级栏目');
+            }
+
             // 本店售价
             $pri = $data['pri_td']['pri'];
             $pri_count = count($pri);
@@ -333,7 +337,9 @@ class Goods extends Common
             if(!$validate->scene('edit')->check($data)){
                 $this->error( $validate->getError() );
             }
-
+            if($data['goods_attr1'] > 7 && !$data['goods_attr2']){
+                $this->error('请选择商品二级栏目');
+            }
             if(isset($_FILES['img_td'])){
                 $data['img_td'] = $_FILES['img_td'];
             }else{
@@ -1665,5 +1671,18 @@ class Goods extends Common
             }    
         }
         return json($data);
+    }
+
+    //修改排序
+    public function edit_sort()
+    {
+        $goods_id = input('goods_id',0);
+        $sort = input('sort',0);
+        $res = Db::name('goods')->where('goods_id',$goods_id)->update(['sort'=>$sort]);
+        if($res){
+            return ['status'=>1,'msg'=>'修改成功'];
+        }else{
+            return ['status'=>0,'msg'=>'修改失败'];
+        }
     }
 }

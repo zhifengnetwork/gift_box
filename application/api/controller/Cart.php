@@ -23,7 +23,7 @@ class Cart extends ApiBase
         }
         $page = input('page',1);
         $num = input('num',10);
-        $list = Db::name('cart')->where('user_id',$user_id)->field('id,goods_name,goods_price,goods_num,spec_key_name,sku_id,selected,goods_id')->page($page,$num)->select();
+        $list = Db::name('cart')->where('user_id',$user_id)->field('id,goods_name,goods_price,goods_num,spec_key_name,sku_id,selected,goods_id')->order('add_time desc')->page($page,$num)->select();
         foreach($list as $key=>$val){
             $val['goods_img'] = Db::name('goods_sku')->where('sku_id',$val['sku_id'])->value('img');
             if(!$val['goods_img']){
@@ -121,6 +121,7 @@ class Cart extends ApiBase
                 $update_data = array();
                 $update_data['id'] = $cart_res['id'];
                 $update_data['goods_num'] = $new_number;
+                $update_data['add_time'] = time();
                 $update_data['subtotal_price'] = $new_number * $sku_res['price'];//小计
                 $result = Db::table('cart')->where('id',$update_data['id'])->update($update_data);
                 //如果购物车内有该件商品，到这里就完美结束了

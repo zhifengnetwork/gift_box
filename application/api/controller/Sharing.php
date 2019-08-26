@@ -41,10 +41,10 @@ class Sharing extends ApiBase
         $topic_name = input('topic_name');
 
         if(!$data['title'] && !$status){
-            $this->ajaxReturn(['status' => -1 , 'msg'=>'请输入标题','data'=>'']);
+            // $this->ajaxReturn(['status' => -1 , 'msg'=>'请输入标题','data'=>'']);
         }
         if(!$topic_name && !$status){
-            $this->ajaxReturn(['status' => -1 , 'msg'=>'请选择话题','data'=>'']);
+            // $this->ajaxReturn(['status' => -1 , 'msg'=>'请选择话题','data'=>'']);
         }
         $topic_id = Db::name('sharing_topic')->where('name',$topic_name)->value('id');
         if($topic_id){
@@ -150,6 +150,8 @@ class Sharing extends ApiBase
         //如果是附近的，根据距离排序
         if($topic_id == '-1'){
             foreach($list as $key=>$val){
+                $val['lon'] = $val['lon']?$val['lon']:0;
+                $val['lat'] = $val['lat']?$val['lat']:0;
                 $list[$key]['distance'] = getdistance($lon,$lat,$val['lon'],$val['lat']);
             }
             //根据字段distance对数组$data进行降序排列
@@ -762,8 +764,9 @@ class Sharing extends ApiBase
         if(!$user_id){
             $user_id = $this->get_user_id();
         }
-        $user = Db::name('member')->field('id,nickname,avatar,follow_num as fans_num')->where('id',$user_id)->find();
+        $user = Db::name('member')->field('id,nickname,avatar')->where('id',$user_id)->find();
         $user['follow_num'] = Db::name('sharing_follow')->where('user_id',$user_id)->count();
+        $user['fans_num'] = Db::name('sharing_follow')->where('follow_user_id',$user_id)->count();
         $user['article_num'] = Db::name('sharing_circle')->where('user_id',$user_id)->where('status',1)->count();
         $user['user_no'] = 'NO.'.str_pad($user_id,6,"0",STR_PAD_LEFT);        
         $user['avatar'] = substr($user['avatar'],0,1)!='h'?SITE_URL.$user['avatar']:$user['avatar'];

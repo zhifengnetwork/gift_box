@@ -158,7 +158,7 @@
                                         {/volist}
                                     </select>
                                 </div>
-                                <div style="line-height:34px;float:left;margin:0 10px 0 0;">
+                                <div style="line-height:34px;float:left;margin:0 10px 0 0;" id="nmgb">
                                     <select class="form-control" name="goods_attr2">
                                         <option value="" >请选择二级栏目</option>
                                     </select>
@@ -410,7 +410,7 @@ function upload_file2(){
         }
     });
 }
-
+$('#nmgb').css('display','none');
 //ajax获取二级栏目
 function ajaxGetAttr(obj){
     var id = $(obj).val()
@@ -418,10 +418,16 @@ function ajaxGetAttr(obj){
         $('select[name="goods_attr2"]').html('<option>请选择二级栏目</option>');
         return false;
     }
+    if(id < 7){
+        $('#nmgb').css('display','none');
+        return false;
+    }
+    $('#nmgb').css('display','block');
+
     getSyfm();
     $.post("{:url('goods/ajaxGetAttr')}",{'id':id},function(data){
         if(data.status){
-            var option = '<option>请选择二级栏目</option>';
+            var option = '<option  value="">请选择二级栏目</option>';
             $.each(data.data,function(k,v){
                 option += '<option value="'+v.id+'">'+v.name+'</option>';
             })
@@ -455,7 +461,7 @@ function ajaxGetCategory(obj){
     }
     $.post("{:url('goods/ajaxGetCategory')}",{'id':id},function(data){
         if(data.status){
-            var option = '<option>请选择二级分类</option>';
+            var option = '<option value="">请选择二级分类</option>';
             $.each(data.data,function(k,v){
                 option += '<option value="'+v.cat_id+'">'+v.cat_name+'</option>';
             })
@@ -525,8 +531,8 @@ $('#goods_table thead tr').on('mouseout', 'th', function(){
 
     //实例化富文本编辑器
     var ue = UE.getEditor('editor',{
-        initialFrameWidth:650,
-        initialFrameHeight:180,
+        // initialFrameWidth:650,
+        // initialFrameHeight:180,
         toolbars: [[
             'fullscreen', 'source', '|', 'undo', 'redo', '|', 'searchreplace' ,
             'bold', 'italic', 'underline', 'fontborder', 'strikethrough', 'superscript', 'subscript', 'removeformat', 'formatmatch','pasteplain', '|', 'forecolor', 'backcolor', 'insertorderedlist', 'insertunorderedlist', 'selectall', 'cleardoc', '|',

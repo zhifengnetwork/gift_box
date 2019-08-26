@@ -187,7 +187,7 @@
                                         {/volist}
                                     </select>
                                 </div>
-                                <div style="line-height:34px;float:left;margin:0 10px 0 0;">
+                                <div style="line-height:34px;float:left;margin:0 10px 0 0;{if condition="$info.goods_attr1 lt 8"}display:none;{/if}" id="nmgb" >
                                     <select class="form-control" name="goods_attr2">
                                         {volist name="goods_attr2" id="vo"}
                                         <option value="{$vo.id}" {if condition="$info.goods_attr2 eq $vo.id"}selected{/if} >{$vo.name}</option>
@@ -469,10 +469,15 @@ function ajaxGetAttr(obj){
         $('select[name="goods_attr2"]').html('<option>请选择二级栏目</option>');
         return false;
     }
+    if(id < 7){
+        $('#nmgb').css('display','none');
+        return false;
+    }
+    $('#nmgb').css('display','block');
     getSyfm();
     $.post("{:url('goods/ajaxGetAttr')}",{'id':id},function(data){
         if(data.status){
-            var option = '<option>请选择二级栏目</option>';
+            var option = '<option  value="">请选择二级栏目</option>';
             $.each(data.data,function(k,v){
                 option += '<option value="'+v.id+'">'+v.name+'</option>';
             })
@@ -491,7 +496,7 @@ function ajaxGetCategory(obj){
     }
     $.post("{:url('goods/ajaxGetCategory')}",{'id':id},function(data){
         if(data.status){
-            var option = '<option>请选择二级分类</option>';
+            var option = '<option  value="">请选择二级分类</option>';
             $.each(data.data,function(k,v){
                 option += '<option value="'+v.cat_id+'">'+v.cat_name+'</option>';
             })

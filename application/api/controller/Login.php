@@ -40,6 +40,8 @@ class Login extends ApiBase
             $newdata = array(
                 'openid' => $openid,
                 'createtime' => time(),
+                'nickname' => $data['nickname'],
+                'avatar' => $data['head_pic']
             );
 
             Db::table('member')->insert($newdata); 
@@ -56,6 +58,29 @@ class Login extends ApiBase
             
         }
        
+    }
+
+    /**
+     * 获取code 的 url
+     */
+    public function get_code_url() {
+        
+        $baseUrl = I('baseUrl');
+        if(!$baseUrl){
+            $this->ajaxReturn(['status' => -1 , 'msg'=>'当前地址参数baseUrl为空','data'=>'']);
+        }
+
+        $appid = M('config')->where(['name'=>'appid'])->value('value');
+        $appsecret = M('config')->where(['name'=>'appsecret'])->value('value');
+        if(!$appid || !$appsecret){
+            $this->ajaxReturn(['status' => -1 , 'msg'=>'后台参数appid或appsecret配置为空','data'=>'']);
+        }
+    
+        $baseUrl = urlencode($baseUrl);
+
+        $url = $this->__CreateOauthUrlForCode($baseUrl,$appid,$appsecret); // 获取 code地址
+
+        $this->ajaxReturn(['status' => 1 , 'msg'=>'获取成功','data'=>$url]);
     }
 
 }
