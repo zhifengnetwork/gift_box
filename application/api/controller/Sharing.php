@@ -150,6 +150,8 @@ class Sharing extends ApiBase
         //如果是附近的，根据距离排序
         if($topic_id == '-1'){
             foreach($list as $key=>$val){
+                $val['lon'] = $val['lon']?$val['lon']:0;
+                $val['lat'] = $val['lat']?$val['lat']:0;
                 $list[$key]['distance'] = getdistance($lon,$lat,$val['lon'],$val['lat']);
             }
             //根据字段distance对数组$data进行降序排列
