@@ -756,7 +756,11 @@ class Pay extends ApiBase
                 'total_fee'=> $order['order_amount']*100,//订单金额
                 'refund_fee'=> $refund_order['price']*100,//退款金额
             );
-            // if($parma[''])
+            if($parma['transaction_id'] == 'jifen'){
+                $result['return_code'] = 'FAIL';
+                $result['return_msg'] = '积分支付不能退款';
+                return $result;
+            }
             $parma['sign'] = $this->getSign($parma);
             $xmldata = $this->arrayToXml($parma);
             $xmlresult = $this->postXmlSSLCurl($xmldata,'https://api.mch.weixin.qq.com/secapi/pay/refund');
@@ -767,7 +771,6 @@ class Pay extends ApiBase
                 $data['price'] = $refund_order['price'];
                 Db::name('refund_log')->insert($data);
             }
-            dump($result);exit;
             return $result;
         }
         return false;
