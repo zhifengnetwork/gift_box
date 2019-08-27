@@ -48,8 +48,8 @@ class Box extends Common
             $info['nickname'] = Db::table('member')->where('id',$info['user_id'])->value('nickname');
             $info['music_name'] = Db::table('box_music')->where('id',$info['music_id'])->value('name');
             $info['video_name'] = Db::table('box_video')->where('id',$info['video_id'])->value('name');
-            $info['scene_name'] = Db::table('box_scene')->where('id',$info['scene_id'])->value('name');
-            $info['cate_name'] = Db::table('box_cate')->where('id',$info['cate_id'])->value('name');
+            $info['scene_name'] = Db::table('box_scene')->where('id',$info['cate_id'])->value('name');
+            // $info['cate_name'] = Db::table('box_cate')->where('id',$info['cate_id'])->value('name');
             $this->assign('info',$info);
         }else{
             $this->error('礼盒不存在');
