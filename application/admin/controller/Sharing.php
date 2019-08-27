@@ -30,7 +30,7 @@ class Sharing extends Common
             $where['title'] = array('like','%'.$keyword.'%');
             $pageParam['query']['keyword'] = $keyword;
         }
-        $list  = Db::name('sharing_circle')->where($where)->order('sort,addtime desc')->paginate(10,false,$pageParam)->each(function($v,$k) use($status){
+        $list  = Db::name('sharing_circle')->where($where)->order('addtime desc')->paginate(10,false,$pageParam)->each(function($v,$k) use($status){
             $v['nickname'] = Db::name('member')->where('id',$v['user_id'])->value('nickname');
             if(mb_strlen( $v['title'],'UTF8') > 10){
                 $v['title'] = mb_substr($v['title'],0,10).'...';
@@ -49,9 +49,10 @@ class Sharing extends Common
     {
         $id = input('id',0);
         if(Request::instance()->isPost()){
-            $sort = input('sort');
-            $status = input('status');
-            Db::name('sharing_circle')->where('id',$id)->update(['sort'=>$sort,'status'=>$status]);
+            // $sort = input('sort');
+            // $status = input('status');
+            $data = input('post.');
+            Db::name('sharing_circle')->where('id',$id)->update($data);
             $this->success('审核成功','index');
         }
         $info = Db::name('sharing_circle')->where('id',$id)->find();
