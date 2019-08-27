@@ -374,8 +374,7 @@ class Order extends Common
         }
 
         $where['uo.pay_status']   = 1;
-
-        // $where['uo.pay_status']   = 1;
+        $where['uo.mobile']   = array('neq','');
 
         // $where['uo.order_status'] = array('in','0,1,2,4');
 

@@ -134,6 +134,26 @@ class Gift extends ApiBase
             $this->ajaxReturn(['status' => -1 , 'msg'=>'不存在此用户地址','data'=>'']);    
 
         $res = Db::name('gift_order_join')->where(['id'=>$joinid])->update(['join_status'=>1,'addressid'=>$addressid]);
+        //把数据写到群抢子订单中
+        $order_id = Db::name('gift_order_join')->where('id',$joinid)->value('order_id');
+        $order_type = Db::name('order')->field('order_id')->where(['order_id'=>$order_id])->value('order_type');
+        if($order_type == 1){
+            $zi_order_id = $order_id;
+        }
+        $zi_order_id = Db::name('order')->field('order_id')->where(['parent_id'=>$order_id,'gift_uid'=>$user_id])->value('order_id');
+        if(!$zi_order_id){
+            $zi_order_id = Db::name('order')->field('order_id')->where(['parent_id'=>$order_id,'gift_uid'=>0])->order('order_id')->limit(1)->value('order_id');
+        }
+        $address = Db::name('user_address')->where('address_id',$addressid)->find();
+        $data['gift_uid'] = $user_id;
+        $data['consignee'] = $address['consignee'];
+        $data['address'] = $address['address'];
+        $data['mobile'] = $address['mobile'];
+        $data['province'] = $address['province'];
+        $data['city'] = $address['city'];
+        $data['district'] = $address['district'];
+        Db::name('order')->where('order_id',$zi_order_id)->update($data);
+
         if(false !== $res){
             $this->ajaxReturn(['status' => 1 , 'msg'=>'请求成功！','data'=>'']); 
         }else{
