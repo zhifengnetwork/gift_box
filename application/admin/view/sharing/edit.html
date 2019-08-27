@@ -52,13 +52,19 @@
                             <label class="col-sm-2 control-label">话题类型</label>
                             <div class="col-sm-9" style="line-height: 35px;">
                                 <div style="line-height:34px;float:left;margin:0 10px 0 0;width: 45%">
-                                    <select class="form-control" name="pid">
-                                        <option value="" >顶级话题</option>
+                                    <select class="form-control" name="pid" onchange="op_tion(this)">
+                                        <option value="" >未选择话题</option>
+                                        {volist name="topic" id="vo"}
+                                            <option value="{$vo.id}" {if condition="$vo.id eq $info.pid"}selected{/if}>{$vo.name}</option>
+                                        {/volist}
                                     </select>
                                 </div>
                                 <div style="line-height:34px;float:left;margin:0 10px 0 0;width: 45%">
-                                    <select class="form-control" name="pid">
-                                        <option value="" >顶级话题</option>
+                                    <select class="form-control" name="topic_id">
+                                        <option value="" >未选择话题</option>
+                                        {volist name="two_topic" id="vo"}
+                                            <option value="{$vo.id}" {if condition="$vo.id eq $info.topic_id"}selected{/if}>{$vo.name}</option>
+                                        {/volist}
                                     </select>
                                 </div>
                             </div>
@@ -124,4 +130,20 @@
 
 {block name="script"}
 <script src="__STATIC__/js/jquery.form.js" type="text/javascript"></script>
+<script>
+    function op_tion(obj){
+        var pid = $(obj).val();
+        if(!pid){
+            $('select[name="topic_id"]').html('<option value="">未选择话题</option>');
+            return false;
+        }
+        $.get('{:U('get_two_topic')}',{'id':pid},function(data){
+            var option = '<option value="">未选择话题</option>';
+            $.each(data,function(k,v){
+                option += '<option value="'+v.id+'">'+v.name+'</option>';
+            })
+            $('select[name="topic_id"]').html(option);
+        },'json')
+    }
+</script>
 {/block}

@@ -52,13 +52,18 @@ class Sharing extends Common
             // $sort = input('sort');
             // $status = input('status');
             $data = input('post.');
-            Db::name('sharing_circle')->where('id',$id)->update($data);
+            Db::name('sharing_circle')->strict(false)->where('id',$id)->update($data);
             $this->success('审核成功','index');
         }
         $info = Db::name('sharing_circle')->where('id',$id)->find();
         $info['priture'] = explode(',',$info['priture']);
         $info['topic_name'] = Db::name('sharing_topic')->where('id',$info['topic_id'])->value('name');
         $info['nickname'] = Db::name('member')->where('id',$info['user_id'])->value('nickname');
+        $topic = Db::name('sharing_topic')->order('sort')->field('id,name')->where('pid',0)->select();
+        $info['pid'] = Db::name('sharing_topic')->where('id',$info['topic_id'])->value('pid');
+        $two_topic = Db::name('sharing_topic')->field('id,name')->where('pid',$info['pid'])->select();
+        $this->assign('topic',$topic);
+        $this->assign('two_topic',$two_topic);
         $this->assign('info',$info);
         return $this->fetch();
     }
@@ -334,5 +339,13 @@ class Sharing extends Common
         }
         $this->assign('info',$info);
         return $this->fetch();
+    }
+
+    //获取二级话题
+    public function get_two_topic()
+    {
+        $id = input('id');
+        $list = Db::name('sharing_topic')->field('id,name')->where('pid',$id)->select();
+        return json($list);
     }
 }
