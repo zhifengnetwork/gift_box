@@ -366,7 +366,7 @@ class Order extends Common
         }
 
         if(!empty($order_sn)){
-            $where['uo.order_sn']   = $order_sn;
+            $where['uo.order_sn']   = array('like','%'.$order_sn.'%');
         }
 
         if($shipping_status >= 0){
