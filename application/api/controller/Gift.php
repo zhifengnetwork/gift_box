@@ -120,8 +120,7 @@ class Gift extends ApiBase
 
     //添加地址
     public function set_address(){
-        // $user_id = $this->get_user_id();
-        $user_id = 91;
+        $user_id = $this->get_user_id();
         if(!$user_id){
             $this->ajaxReturn(['status' => -1 , 'msg'=>'用户不存在','data'=>'']);
         }
