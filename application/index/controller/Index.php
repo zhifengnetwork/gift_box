@@ -13,17 +13,16 @@ class Index
     /**
      * 获取 gif 图的 播放时长
      */
-    public function test(){
-
-        $dir = rtrim(str_replace('\\', '/', $_SERVER['DOCUMENT_ROOT']), '/') . '/public';
-
-        $gifFilePath = $dir.'/test/1.gif';
-
+    public function getDuration(){
+        $gifFilePath = input('gifFilePath','');
+        if(!$gifFilePath){
+            return false;
+        }
+        $gifFilePath = substr($gifFilePath,1,255);
+        // $dir = rtrim(str_replace('\\', '/', $_SERVER['DOCUMENT_ROOT']), '/') . '/public';
+        // $gifFilePath = $dir.'/test/1.gif';
         $logic = new GifLogic;
         $res = $logic->get_duration_time($gifFilePath);
-
-       dump($res);
-
-
+        return json($res);
     }
 }

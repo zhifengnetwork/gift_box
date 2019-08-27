@@ -53,6 +53,7 @@ class Index extends Controller
         //类别
         if($info['cate_id']){
             $info['cate_url'] = Db::name('box_scene')->where('id',$info['cate_id'])->value('gif');
+            $info['duration'] = Db::name('box_scene')->where('id',$info['cate_id'])->value('duration');
         }
         //音乐
         if($info['music_id']){

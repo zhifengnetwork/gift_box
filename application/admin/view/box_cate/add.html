@@ -51,6 +51,12 @@
                             </div>
                         </div>
                         <div class="form-group">
+                            <label class="col-sm-2 control-label">GIF时长</label>
+                            <div class="col-sm-9">
+                                <input type="text" name="duration" value="" class="form-control">
+                            </div>
+                        </div>
+                        <div class="form-group">
                             <label class="col-sm-2 control-label">排序</label>
                             <div class="col-sm-9">
                                 <input type="text" name="sort" value="" class="form-control">
@@ -155,6 +161,11 @@
                 $('.img-preview2').show();
                 $('input[name="gif"]').val(data.data);
                 $('#img_show2').attr('src',data.data);
+                $.get('{:url('index/index/getDuration')}',{'gifFilePath':data.data},function(res){
+                    if(res.status==1){
+                        $('input[name="duration"]').val(res.data);
+                    }
+                },'json')
             }else{
                 alert(data.msg);
             }
