@@ -108,6 +108,11 @@ class Index extends Controller
             $template = 'gif';
             $gif_url = $info['cate_url'];
             $this->assign('gif_url', $gif_url);
+           
+            //时长
+            $duration = $info['duration'];
+            $this->assign('duration',$duration);
+          
         }
         
         return $this->fetch($template);
