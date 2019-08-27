@@ -4,6 +4,7 @@
 <style>
     th span{margin-left: 20px;cursor:pointer;}
     .red{color: red;}
+    .sort{    height: 24px; line-height: 24px; width: 50px; border: #FC6 solid 1px;}
 </style>
     <div class="row">
         <div class="col-lg-12">
@@ -28,6 +29,7 @@
                                 <th>ID</th>
                                 <th>名称<span data-id="name" onclick="order(this)">↑↑</span><span data-id="name desc" onclick="order(this)">↓↓</span></th>
                                 <th>logo </th>
+                                <th>排序</th>
                                 <th>状态<span data-id="status desc" onclick="order(this)">↑↑</span><span data-id="status" onclick="order(this)">↓↓</span></th>
                                 <th>添加时间<span  data-id="addtime" onclick="order(this)">↑↑</span><span data-id="addtime desc" onclick="order(this)">↓↓</span></th>
                                 <th>操作</th>
@@ -39,6 +41,7 @@
                                 <td>{$vo.id}</td>
                                 <td>{$vo.name}</td>
                                 <td><img src="{$vo.priture}" width="50" alt=""></td>
+                                <td><input type="text" name="1" data-id="{$vo.id}" value="{$vo.sort}" class="sort" onchange="goods_sort(this)"></td>
                                 <td>{if condition="$vo.status eq 0"}启用{else/}禁用{/if}</td>
                                 <td>{$vo.addtime|date="Y-m-d",###}</td>
                                 <td>
@@ -68,7 +71,7 @@
                 if(data.status){
                     $(obj).parents('tr').remove();
                 }
-            },'json');
+            },'json'); 
         }
     }
 
@@ -84,5 +87,17 @@
             $(v).addClass('red');
         }
     })
+
+    function goods_sort(obj){
+        var sort = $(obj).val();
+        var id = $(obj).attr('data-id');
+        $.post('{:url('goods/edit_brand_sort')}',{'sort':sort,'id':id},function(res){
+            if(res.status != 1){
+                layer.msg(res.msg);
+            }else{
+                layer.msg('修改成功',{'icon':1})
+            }
+        },'json')
+    }
 </script>
 {/block}

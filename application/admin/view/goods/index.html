@@ -99,7 +99,7 @@
                                 <th>操作</th>
                             </tr>
                             </thead>
-                            <tbody>
+                            <tbody> 
                             {volist name="list" id="vo"}
                             <tr>
                                 <td><input type="checkbox" class="i-checks ch_item" name="goods_id[]"   value="{$vo.goods_id}">{$vo.goods_id}</td>
@@ -194,6 +194,8 @@
         $.post('{:url('goods/edit_sort')}',{'sort':sort,'goods_id':goods_id},function(res){
             if(res.status != 1){
                 layer.msg(res.msg);
+            }else{
+                layer.msg('修改成功',{'icon':1})
             }
         },'json')
     }

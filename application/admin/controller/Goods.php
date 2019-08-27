@@ -1685,4 +1685,17 @@ class Goods extends Common
             return ['status'=>0,'msg'=>'修改失败'];
         }
     }
+
+    //修改排序
+    public function edit_brand_sort()
+    {
+        $id = input('id',0);
+        $sort = input('sort',0);
+        $res = Db::name('goods_brand')->where('id',$id)->update(['sort'=>$sort]);
+        if($res){
+            return ['status'=>1,'msg'=>'修改成功'];
+        }else{
+            return ['status'=>0,'msg'=>'修改失败'];
+        }
+    }
 }
