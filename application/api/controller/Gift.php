@@ -120,7 +120,8 @@ class Gift extends ApiBase
 
     //添加地址
     public function set_address(){
-        $user_id = $this->get_user_id();
+        // $user_id = $this->get_user_id();
+        $user_id = 91;
         if(!$user_id){
             $this->ajaxReturn(['status' => -1 , 'msg'=>'用户不存在','data'=>'']);
         }
@@ -139,8 +140,9 @@ class Gift extends ApiBase
         $order_type = Db::name('order')->field('order_id')->where(['order_id'=>$order_id])->value('order_type');
         if($order_type == 1){
             $zi_order_id = $order_id;
+        }else{
+            $zi_order_id = Db::name('order')->field('order_id')->where(['parent_id'=>$order_id,'gift_uid'=>$user_id])->value('order_id');
         }
-        $zi_order_id = Db::name('order')->field('order_id')->where(['parent_id'=>$order_id,'gift_uid'=>$user_id])->value('order_id');
         if(!$zi_order_id){
             $zi_order_id = Db::name('order')->field('order_id')->where(['parent_id'=>$order_id,'gift_uid'=>0])->order('order_id')->limit(1)->value('order_id');
         }

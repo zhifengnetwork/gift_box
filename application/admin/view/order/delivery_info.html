@@ -73,7 +73,7 @@
                             <td class="col-lg-1 active text-right">电子邮件：</td>
                             <td class="col-lg-2">{$order.email}</td>
                             <td class="col-lg-1 active text-right">收货地址：</td>
-                            <td class="col-lg-1 active text-right">{$order.address}</td>
+                            <td class="col-lg-1 active text-right">{$order['province_name'].$order['city_name'].$order['district_name']}{$order.address}</td>
                             <td class="col-lg-1 active text-right">邮编：</td>
                             <td class="col-lg-1 active text-right">{if condition="$order.zipcode neq ''"} {$order.zipcode}{else/}N{/if}</td>
                            </tr>

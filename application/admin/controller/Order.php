@@ -400,7 +400,7 @@ class Order extends Common
     /***
      *发货单编辑
      */
-    public function delivery_info($id=''){
+    public function delivery_info($id=''){ 
         if($id){
             $order_id   = $id; 
         }else{
@@ -413,7 +413,9 @@ class Order extends Common
       
         $order          =  $orderObj->append(['full_address'])->toArray();
         $orderGoods     =  $orderGoodsMdel::all(['order_id'=>$order_id,'is_send'=>['lt',2]]);
-       
+        $order['province_name'] = Db::name('region')->where('area_id',$order['province'])->value('area_name');
+        $order['city_name'] = Db::name('region')->where('area_id',$order['city'])->value('area_name');
+        $order['district_name'] = Db::name('region')->where('area_id',$order['district'])->value('area_name');
         
         if($id){
             if(!$orderGoods){
