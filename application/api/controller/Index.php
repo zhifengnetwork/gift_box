@@ -46,7 +46,7 @@ class Index extends ApiBase
         }
 
         // $goods_list3 = Db::table('goods')->alias('g')->join('goods_img i','g.goods_id=i.goods_id','LEFT')->field('g.goods_id,g.goods_name,g.price,i.picture')->where(['goods_attr1'=>3,'g.is_recommend'=>1,'is_del'=>0,'is_show'=>1,'i.main'=>1])->order('add_time desc')->limit(8)->select();
-        $goods_list3 = Db::table('goods_brnd')->field('id,name,priture')->where('status',0)->order('sort')->limit(8)->select();
+        $goods_list3 = Db::table('goods_brand')->field('id,name,priture')->where('status',0)->order('sort')->limit(8)->select();
         foreach($goods_list3 as $key=>$val){
             $goods_list3[$key]['priture'] = $val['priture']?SITE_URL.$val['priture']:'';
         }
@@ -85,7 +85,7 @@ class Index extends ApiBase
         $data['xingxuanyoupin'] = $goods_attr[1];
         $data['xingxuanyoupin']['goods_info'] = $goods_info2;
         $data['shishangdapai'] =  $goods_attr[2];
-        $data['shishangdapai']['goods_list'] = $this->setGoodsList($goods_list3);
+        $data['shishangdapai']['goods_list'] = $goods_list3;
         $data['shishangzhinan'] = $goods_attr[3];
         $data['shishangzhinan']['goods_list'] = $this->setGoodsList($goods_list4);
         $data['xinpinshangshi'] = $goods_attr[4];

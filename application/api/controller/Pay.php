@@ -741,12 +741,12 @@ class Pay extends ApiBase
     }
 
     //微信退款
-    public function wx_refund($order_id='2595')
+    public function wx_refund($order_id='3483')
     {
         $order = Db::name('order')->field('transaction_id,order_sn,order_amount')->where('order_id',$order_id)->find();
         $refund_order = Db::name('refund_apply')->field('price,real_pay_price,status')->where('order_id',$order_id)->find();
         if($order && $refund_order['status'] == 0){
-            $config = config('wx_config');
+            // $config = config('wx_config');
             $parma = array(
                 'appid'=> Db::name('config')->where('name','appid')->value('value'),
                 'mch_id'=> Db::name('config')->where('name','mch_id')->value('value'),
@@ -756,6 +756,7 @@ class Pay extends ApiBase
                 'total_fee'=> $order['order_amount']*100,//订单金额
                 'refund_fee'=> $refund_order['price']*100,//退款金额
             );
+            // if($parma[''])
             $parma['sign'] = $this->getSign($parma);
             $xmldata = $this->arrayToXml($parma);
             $xmlresult = $this->postXmlSSLCurl($xmldata,'https://api.mch.weixin.qq.com/secapi/pay/refund');
@@ -766,6 +767,7 @@ class Pay extends ApiBase
                 $data['price'] = $refund_order['price'];
                 Db::name('refund_log')->insert($data);
             }
+            dump($result);exit;
             return $result;
         }
         return false;
