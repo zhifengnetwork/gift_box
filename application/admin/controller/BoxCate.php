@@ -40,15 +40,15 @@ class BoxCate extends Common
         if(Request::instance()->isPost()){
             $post = input('post.');
             // 图片验证1
-            $res = Advertise::pictureUpload('box_scene', 0,'file');
+            $res = Advertise::pictureUpload('box_scene', 0,'file_img');
             if ($res[0] == 1) {
                 $this->error($res[0]);
             } else {
                 $pictureName                             = $res[1];
                 !empty($pictureName) && $post['picture'] = '/public'.$pictureName;
             }
-            unset($post['file']);
-            $id = input('post.id');
+            unset($post['file_img']);
+            $id = input('post.id'); 
             if($id){
                 Db::table('box_scene')->where('id',$id)->update($post);
             }else{

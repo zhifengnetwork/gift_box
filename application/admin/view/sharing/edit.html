@@ -15,13 +15,13 @@
                         <div class="form-group">
                             <label class="col-sm-2 control-label">标题</label>
                             <div class="col-sm-9" style="line-height: 35px;">
-                                {$info.title}
+                                <input type="text" name="title" value="{$info.title}" class="form-control">
                             </div>
                         </div>
                         <div class="form-group">
                             <label class="col-sm-2 control-label">内容</label>
                             <div class="col-sm-9">
-                                <textarea name="" id="" cols="30" readonly rows="10" style="width: 100%;">{$info.content}</textarea>
+                                <textarea name="" id="" cols="30" rows="10" style="width: 100%;">{$info.content}</textarea>
                             </div>
                         </div>
                         {if condition="$info.type eq 0"}
@@ -51,7 +51,16 @@
                         <div class="form-group">
                             <label class="col-sm-2 control-label">话题类型</label>
                             <div class="col-sm-9" style="line-height: 35px;">
-                                {$info.topic_name}
+                                <div style="line-height:34px;float:left;margin:0 10px 0 0;width: 45%">
+                                    <select class="form-control" name="pid">
+                                        <option value="" >顶级话题</option>
+                                    </select>
+                                </div>
+                                <div style="line-height:34px;float:left;margin:0 10px 0 0;width: 45%">
+                                    <select class="form-control" name="pid">
+                                        <option value="" >顶级话题</option>
+                                    </select>
+                                </div>
                             </div>
                         </div>
                         <div class="form-group">
@@ -63,25 +72,25 @@
                         <div class="form-group">
                             <label class="col-sm-2 control-label">点赞次数</label>
                             <div class="col-sm-9" style="line-height: 35px;">
-                                {$info.point_num}
+                                <input type="text" name="point_num" value="{$info.point_num}"  class="form-control">
                             </div>
                         </div>
                         <div class="form-group">
                             <label class="col-sm-2 control-label">评论次数</label>
                             <div class="col-sm-9" style="line-height: 35px;">
-                                {$info.comment_num}
+                                <input type="text" name="comment_num" value="{$info.comment_num}"  class="form-control">
                             </div>
                         </div>
                         <div class="form-group">
                             <label class="col-sm-2 control-label">收藏次数</label>
                             <div class="col-sm-9" style="line-height: 35px;">
-                                {$info.collection_num}
+                                <input type="text" name="collection_num" value="{$info.collection_num}"  class="form-control">
                             </div>
                         </div>
                         <div class="form-group">
                             <label class="col-sm-2 control-label">转发次数</label>
                             <div class="col-sm-9" style="line-height: 35px;">
-                                {$info.forward_num}
+                                <input type="text" name="forward_num" value="{$info.forward_num}"  class="form-control">
                             </div>
                         </div>
                         <!-- <div class="form-group">

@@ -1822,7 +1822,10 @@ class Order extends ApiBase
         if(!$order){
             $this->ajaxReturn(['status' => -1 , 'msg'=>'订单不存在','data'=>'']);
         }
-        // if($order[''])
+        if($order['order_type'] > 1){
+            $order = Db::name('order')->field('shipping_code,order_id,invoice_no,add_time,pay_time,order_status,order_type')->where(['parent_id'=>$order_id,'gift_uid'=>$user_id])->find();
+            $order_id = $order['order_id'];
+        }
         $status = ['快递收件(揽件)','在途中','正在派件','已签收','派送失败','疑难件','退件签收'];
         $logistics = getDelivery($order['shipping_code'],$order['invoice_no'],$order_id);
         $logistics = json_decode($logistics,true);
