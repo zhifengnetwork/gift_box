@@ -32,7 +32,7 @@
                         </div>
                         <div class="form-group">
                             <label class="col-sm-2 control-label">封面图</label>
-                            <div class="img-preview2" id="img-preview" style="display:{$info.picture? 'block':'none'};margin-left:-20%">
+                            <div class="img-preview2" id="img-preview" style="display:{$info.picture? 'block':'none'};margin-left:-20%"> 
                                 <img src="{$info.picture|default=''}" id='img_show' style=" max-width: 300px; max-height: 300px">
                             </div>
                             <div class="form-group" style="margin-left:18%;margin-top: 20px;">
@@ -57,6 +57,43 @@
                             <div class="col-sm-9" style="display: inline-block;">
                                 <input type="text" name="duration" value="{$info.duration}" class="form-control" style="width:30%;display: inline-block"><span style="padding-left:10px">秒</span> 
                                 <label title="重新计算"  class="btn btn-primary" onclick="cxjs()" style="margin-left:40px">重新计算GIF时长</label>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">祝福语颜色</label>
+                            <div class="col-sm-9">
+                                <input type="text" name="color" value="{$info.color}" class="form-control">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label ">祝福语大小</label>
+                            <div class="col-sm-9">
+                                <select name="font_size"  class="form-control">
+                                    <option value="10" {if condition="$info.font_size eq 10"}selected{/if}value="10">10px</option>
+                                    <option value="11" {if condition="$info.font_size eq 11"}selected{/if}value="11">11px</option>
+                                    <option value="12" {if condition="$info.font_size eq 12"}selected{/if}value="12">12px</option>
+                                    <option value="13" {if condition="$info.font_size eq 13"}selected{/if}value="13">13px</option>
+                                    <option value="14" {if condition="$info.font_size eq 14"}selected{/if}value="14">14px</option>
+                                    <option value="15" {if condition="$info.font_size eq 15"}selected{/if}value="15">15px</option>
+                                    <option value="16" {if condition="$info.font_size eq 16"}selected{/if}value="16">16px</option>
+                                    <option value="17" {if condition="$info.font_size eq 17"}selected{/if}value="17">17px</option>
+                                    <option value="18" {if condition="$info.font_size eq 18"}selected{/if}value="18">18px</option>
+                                    <option value="19" {if condition="$info.font_size eq 19"}selected{/if}value="19">19px</option>
+                                    <option value="20" {if condition="$info.font_size eq 20"}selected{/if}value="20">20px</option>
+                                </select> 
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">是否加粗</label>
+                            <div class="col-sm-9">
+                                <div class="radio radio-success radio-inline">
+                                    <input type="radio" value="1" name="is_strong" checked="true" id="show3" {if condition="$info.is_strong eq 1"}checked="true"{/if} >
+                                    <label for="show1">是</label>
+                                </div>
+                                <div class="radio radio-danger radio-inline">
+                                    <input type="radio" value="0" name="is_strong" id="show4" {if condition="$info.is_strong eq 0"}checked="true"{/if} >
+                                    <label for="show2">否</label>
+                                </div>
                             </div>
                         </div>
                         <div class="form-group">

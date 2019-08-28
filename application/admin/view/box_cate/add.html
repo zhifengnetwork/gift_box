@@ -31,10 +31,10 @@
                         </div>
                         <div class="form-group">
                             <label class="col-sm-2 control-label">图片</label>
-                            <div class="img-preview" style="display:{$info.picture? 'block':'none'};margin-left:-20%">
+                            <div class="img-preview" style="display:{$info.picture? 'block':'none'};margin-left:-20%"> 
                                 <img src="{$info.picture|default=''}" id='img_show' style=" max-width: 300px; max-height: 300px">
                             </div>
-                            <div class="form-group" style="margin-left:18%;">
+                            <div class="form-group" style="margin-left:18%;margin-top: 20px;">
                                 <label title="上传图片" for="pictur_btn" class="btn btn-primary" id="pictur">上传新图像
                                     <input type="file" accept="image/jpg,image/jpeg,image/bmp,image/png,image/gif/*" name="file_img" id="pictur_btn" class="hide" />
                                 </label>
@@ -61,6 +61,43 @@
                             <label class="col-sm-2 control-label">排序</label>
                             <div class="col-sm-9">
                                 <input type="text" name="sort" value="" class="form-control">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">祝福语颜色</label>
+                            <div class="col-sm-9">
+                                <input type="text" name="color" value="" class="form-control">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label ">祝福语大小</label>
+                            <div class="col-sm-9">
+                                <select name="font_size"  class="form-control">
+                                    <option value="10" >10px</option>
+                                    <option value="11" >11px</option>
+                                    <option value="12" >12px</option>
+                                    <option value="13" >13px</option>
+                                    <option value="14" >14px</option>
+                                    <option value="15" >15px</option>
+                                    <option value="16" >16px</option>
+                                    <option value="17" >17px</option>
+                                    <option value="18" >18px</option>
+                                    <option value="19" >19px</option>
+                                    <option value="20" >20px</option>
+                                </select> 
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">是否加粗</label>
+                            <div class="col-sm-9">
+                                <div class="radio radio-success radio-inline">
+                                    <input type="radio" value="1" name="is_strong" checked="true" id="show3" >
+                                    <label for="show1">是</label>
+                                </div>
+                                <div class="radio radio-danger radio-inline">
+                                    <input type="radio" value="0" name="is_strong" id="show4"  >
+                                    <label for="show2">否</label>
+                                </div>
                             </div>
                         </div>
                         <div class="form-group">
