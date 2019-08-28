@@ -50,11 +50,15 @@ class Index extends Controller
         $info['music_url'] = '';
         $info['video_url'] = '';
         $info['scene_url'] = '';
+        
+        // box_scene
+        $box_scene = Db::name('box_scene')->where('id',$info['cate_id'])->find();
+
         //类别
         if($info['cate_id']){
-            $info['cate_url'] = Db::name('box_scene')->where('id',$info['cate_id'])->value('gif');
-            $info['picture'] = Db::name('box_scene')->where('id',$info['cate_id'])->value('picture');
-            $info['duration'] = Db::name('box_scene')->where('id',$info['cate_id'])->value('duration');
+            $info['cate_url'] = $box_scene['gif'];
+            $info['picture'] = $box_scene['picture'];
+            $info['duration'] = $box_scene['duration'];
         }
         //音乐
         if($info['music_id']){
@@ -66,7 +70,7 @@ class Index extends Controller
         }
         //场景
         if($info['scene_id']){
-            $info['scene_url'] = Db::name('box_scene')->where('id',$info['scene_id'])->value('scene_url');
+            $info['scene_url'] = $box_scene['scene_url'];
         }
         $info['cate_url'] = $info['cate_url']?SITE_URL.$info['cate_url']:'';//类别
         $info['picture'] = $info['picture']?SITE_URL.$info['picture']:'';//静图
@@ -119,6 +123,15 @@ class Index extends Controller
             $this->assign('picture',$picture);
         }
         
+        //祝福语处理
+        $font_size =  $box_scene['font_size'] ? $box_scene['font_size'] : '16px';//祝福语颜色
+        //祝福语颜色
+        $color =  $box_scene['color'] ? $box_scene['color'] : '#000000';//祝福语颜色
+        //祝福语文字
+        $is_strong = $box_scene['is_strong'] == 1 ? 'font-weight:bold;' : '';//是否加粗
+
+        $this->assign('style',"font-size:$font_size; color: $color;$is_strong");
+
         return $this->fetch($template);
     }
 
