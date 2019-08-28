@@ -74,6 +74,8 @@
                     <form method="post" class="form-horizontal" action="">
                         <input type="hidden" name="id" value="{$info.id}">
                         <input type="hidden" name="priture" value="{$info.priture}">
+                        <input type="hidden" name="priture2" value="{$info.priture2}">
+                        <input type="hidden" name="priture3" value="{$info.priture3}">
                         <div class="form-group">
                             <label class="col-sm-2 control-label"><span style="color:red;">*</span>品牌名称</label>
                             <div class="col-sm-9">
@@ -81,14 +83,36 @@
                             </div>
                         </div>
                         <div class="form-group">
-                            <label class="col-sm-2 control-label">logo</label>
+                            <label class="col-sm-2 control-label">首页图片</label>
                             <div class="col-sm-9">
-                                    <dd class="upload_area clearfix" style="margin: 0 auto;">
-                                        <ul id="imglist" class="post_imglist">
-                                            <li><img class="wh60" id="image_src" src="{$info.priture|default='/static/images/default.jpg'}"></li>
-                                        </ul>
-                                        <label for="image_file"><div class="upload_btn"></div></label>
-                                    </dd>
+                                <dd class="upload_area clearfix" style="margin: 0 auto;">
+                                    <ul id="imglist" class="post_imglist">
+                                        <li><img class="wh60" id="image_src" src="{$info.priture|default='/static/images/default.jpg'}"></li>
+                                    </ul>
+                                    <label for="image_file"><div class="upload_btn"></div></label>
+                                </dd>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">列表页图片</label>
+                            <div class="col-sm-9">
+                                <dd class="upload_area clearfix" style="margin: 0 auto;">
+                                    <ul id="imglist" class="post_imglist">
+                                        <li><img class="wh60" id="image_src2" src="{$info.priture2|default='/static/images/default.jpg'}"></li>
+                                    </ul>
+                                    <label for="image_file2"><div class="upload_btn"></div></label>
+                                </dd>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">详情页图片</label>
+                            <div class="col-sm-9">
+                                <dd class="upload_area clearfix" style="margin: 0 auto;">
+                                    <ul id="imglist" class="post_imglist">
+                                        <li><img class="wh60" id="image_src3" src="{$info.priture3|default='/static/images/default.jpg'}"></li>
+                                    </ul>
+                                    <label for="image_file3"><div class="upload_btn"></div></label>
+                                </dd>
                             </div>
                         </div>
                         <div class="form-group"> 
@@ -120,6 +144,14 @@
                     <form method="post" class="form-horizontal" id="ajaxForm" action="{:url('goods/upload_file')}" enctype="multipart/form-data">
                         <input type="file" id="image_file" value="" accept="image/*" name="file" onchange="upload_file()" style="display: none">
                     </form>
+                    <!-- 图片上传 -->
+                    <form method="post" class="form-horizontal" id="ajaxForm2" action="{:url('goods/upload_file')}" enctype="multipart/form-data">
+                        <input type="file" id="image_file2" value="" accept="image/*" name="file" onchange="upload_file2()" style="display: none">
+                    </form>
+                    <!-- 图片上传 -->
+                    <form method="post" class="form-horizontal" id="ajaxForm3" action="{:url('goods/upload_file')}" enctype="multipart/form-data">
+                        <input type="file" id="image_file3" value="" accept="image/*" name="file" onchange="upload_file3()" style="display: none">
+                    </form>
                 </div>
             </div>
         </div>
@@ -138,6 +170,28 @@
             if(data.status == 1){
                 $('input[name="priture"]').val(data.data);
                 $('#image_src').attr('src',data.data);
+            }else{
+                alert(data.msg);
+            }
+        });
+    }
+    //文件上传
+    function upload_file2(){
+        $("#ajaxForm2").ajaxSubmit(function (data) {
+            if(data.status == 1){
+                $('input[name="priture2"]').val(data.data);
+                $('#image_src2').attr('src',data.data);
+            }else{
+                alert(data.msg);
+            }
+        });
+    }
+    //文件上传
+    function upload_file3(){
+        $("#ajaxForm3").ajaxSubmit(function (data) {
+            if(data.status == 1){
+                $('input[name="priture3"]').val(data.data);
+                $('#image_src3').attr('src',data.data);
             }else{
                 alert(data.msg);
             }
