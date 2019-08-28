@@ -124,13 +124,13 @@ class Index extends Controller
         }
         
         //祝福语处理
-        $font_size =  $box_scene['font_size'] ? $box_scene['font_size'] : '16px';//祝福语颜色
+        $font_size =  $box_scene['font_size'] ? $box_scene['font_size'] : '16';//祝福语颜色
         //祝福语颜色
         $color =  $box_scene['color'] ? $box_scene['color'] : '#000000';//祝福语颜色
         //祝福语文字
         $is_strong = $box_scene['is_strong'] == 1 ? 'font-weight:bold;' : '';//是否加粗
 
-        $this->assign('style',"font-size:$font_size; color: $color;$is_strong");
+        $this->assign('style',"font-size:$font_size"."px; color: $color;$is_strong");
 
         return $this->fetch($template);
     }
