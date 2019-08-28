@@ -48,6 +48,7 @@
                             <div class="form-group" style="margin-left:18%;">
                                 <label title="上传动图" for="image_file" class="btn btn-primary" id="pictur">上传动图
                                 </label>
+                                <label title="重新计算"  class="btn btn-primary" onclick="cxjs()">重新计算</label>
                             </div>
                         </div>
                         <div class="form-group">
@@ -164,12 +165,31 @@
                 $.get('{:url('index/index/getDuration')}',{'gifFilePath':data.data},function(res){
                     if(res.status==1){
                         $('input[name="duration"]').val(res.data);
+                    }else{
+                        layer.msg(res.msg);
                     }
                 },'json')
             }else{
                 alert(data.msg);
             }
         });
+    }
+    //重新计算
+    function cxjs(){
+        var img = $('#img_show2').attr('src');
+        if(!img){
+            layer.msg('请上传动图',{'icon':2});
+            return false;
+        }
+        $.get('{:url('index/index/getDuration')}',{'gifFilePath':img},function(res){
+            if(res.status==1){
+                $('input[name="duration"]').val(res.data);
+                layer.msg('重新计算成功',{'icon':1});
+            }else{
+                layer.msg(res.msg);
+            }
+        },'json')
+        
     }
 </script>
 {/block}
