@@ -32,30 +32,31 @@
                         </div>
                         <div class="form-group">
                             <label class="col-sm-2 control-label">封面图</label>
-                            <div class="img-preview" style="display:{$info.picture? 'block':'none'};margin-left:-20%">
+                            <div class="img-preview2" id="img-preview" style="display:{$info.picture? 'block':'none'};margin-left:-20%">
                                 <img src="{$info.picture|default=''}" id='img_show' style=" max-width: 300px; max-height: 300px">
                             </div>
-                            <div class="form-group" style="margin-left:18%;">
-                                <label title="上传图片" for="pictur_btn" class="btn btn-primary" id="pictur">上传新图像
+                            <div class="form-group" style="margin-left:18%;margin-top: 20px;">
+                                <label title="上传图片" for="pictur_btn" class="btn btn-primary" id="pictur">重新上传新封面图
                                     <input type="file" accept="image/jpg,image/jpeg,image/bmp,image/png,image/gif/*" name="file_img" id="pictur_btn" class="hide" />
                                 </label>
                             </div>
                         </div>
                         <div class="form-group">
                             <label class="col-sm-2 control-label">动图</label>
-                            <div class="img-preview2" style="display:{$info.gif? 'block':'none'};margin-left:-20%">
+                            <div class="img-preview2" id="img-preview2" style="display:{$info.gif? 'block':'none'};margin-left:-20%">
                                 <img src="{$info.gif|default=''}" id='img_show2' style=" max-width: 300px; max-height: 300px">
                             </div>
-                            <div class="form-group" style="margin-left:18%;">
-                                <label title="上传动图" for="image_file" class="btn btn-primary" id="pictur">上传动图
+                            <div class="form-group" style="margin-left:18%;margin-top: 20px;">
+                                <label title="上传动图" for="image_file" class="btn btn-primary" id="pictur">重新上传动图
                                 </label>
-                                <label title="重新计算"  class="btn btn-primary" onclick="cxjs()">重新计算</label>
+                               
                             </div>
                         </div>
-                        <div class="form-group">
+                        <div class="form-group" style="display: flex">
                             <label class="col-sm-2 control-label">GIF时长</label>
-                            <div class="col-sm-9">
-                                <input type="text" name="duration" value="{$info.duration}" class="form-control">
+                            <div class="col-sm-9" style="display: inline-block;">
+                                <input type="text" name="duration" value="{$info.duration}" class="form-control" style="width:30%;display: inline-block"><span style="padding-left:10px">秒</span> 
+                                <label title="重新计算"  class="btn btn-primary" onclick="cxjs()" style="margin-left:40px">重新计算GIF时长</label>
                             </div>
                         </div>
                         <div class="form-group">
@@ -123,7 +124,7 @@
                 //将文件以Data URL形式读入页面  
                 reader.readAsDataURL(file);
                 reader.onload = function(e) {
-                    $('.img-preview').show();
+                    $('#img-preview').show();
                     $("#img_show").attr('src', this.result);
                 }
             }
@@ -149,7 +150,7 @@
                 //将文件以Data URL形式读入页面  
                 reader.readAsDataURL(file);
                 reader.onload = function(e) {
-                    $('.img-preview2').show();
+                    $('#img-preview2').show();
                     $("#img_show2").attr('src', this.result);
                 }
             }
