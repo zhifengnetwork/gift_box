@@ -41,7 +41,7 @@ class GifLogic
 
             return [
                 'status' => 1,
-                'msg' => 'success',
+                'msg' => '获取GIF图时长 成功',
                 'data' => $getTotalDuration * (0.01)
             ];
 
@@ -49,7 +49,7 @@ class GifLogic
             
             return [
                 'status' => -1,
-                'msg' => 'this is not an animated GIF'
+                'msg' => '这不是GIF图'
             ];
         }
 
