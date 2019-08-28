@@ -53,6 +53,7 @@ class Index extends Controller
         //类别
         if($info['cate_id']){
             $info['cate_url'] = Db::name('box_scene')->where('id',$info['cate_id'])->value('gif');
+            $info['picture'] = Db::name('box_scene')->where('id',$info['cate_id'])->value('picture');
             $info['duration'] = Db::name('box_scene')->where('id',$info['cate_id'])->value('duration');
         }
         //音乐
@@ -68,6 +69,7 @@ class Index extends Controller
             $info['scene_url'] = Db::name('box_scene')->where('id',$info['scene_id'])->value('scene_url');
         }
         $info['cate_url'] = $info['cate_url']?SITE_URL.$info['cate_url']:'';//类别
+        $info['picture'] = $info['picture']?SITE_URL.$info['picture']:'';//静图
         $info['music_url'] = $info['music_url']?SITE_URL.$info['music_url']:'';//音乐
         $info['video_url'] = $info['video_url']?SITE_URL.$info['video_url']:'';//相框
         $info['scene_url'] = $info['scene_url']?SITE_URL.$info['scene_url']:'';//场景
@@ -112,7 +114,9 @@ class Index extends Controller
             //时长
             $duration = $info['duration'];
             $this->assign('duration',$duration);
-          
+
+            $picture = $info['picture'];
+            $this->assign('picture',$picture);
         }
         
         return $this->fetch($template);

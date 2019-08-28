@@ -157,8 +157,6 @@ body,html{
     left: 0;
     z-index: 2;
     /* transform: scale(1); */
-   
-    
 }
 .touxiang{
     width: 10.5rem;
@@ -167,10 +165,10 @@ body,html{
     top: 17.5%;
     left: 50%;
     transform: translate(-49%);
-    border-radius: 50%;
-    background: yellow;
+    /* border-radius: 50%; */
+    /* background: yellow; */
     overflow: hidden;
-    animation:touxiang 3.8s;
+    /* animation:touxiang 3.8s; */
     /*animation-delay:19.5s;*/
 }
 
@@ -277,7 +275,8 @@ body,html{
     top: 0%;
     left: 0;
     z-index: 2;
-    animation:wenzisi 6.8s;
+    display: none;
+    /* animation:wenzisi 6.8s; */
     /*animation-delay:19.5s;*/
 }
 .wenzisi{
@@ -287,14 +286,16 @@ body,html{
 }
 .wenzispan{
     position: absolute;
-    width: 50%;
     text-align: center;
     top: 70%;
-    left: 25%;
+    left: 50%;
+    transform: translate(-50%,0);
     color: #999999;
     font-family: Helvetica, 'Hiragino Sans GB', 'Microsoft Yahei', '微软雅黑', Arial, sans-serif;
 }
-
+.heise{
+    color: #000000;
+}
 @keyframes wenzisi
 {
 0%  {opacity: 0;}
@@ -306,7 +307,7 @@ body,html{
     top: 0%;
     left: 0;
     z-index: 2;
-    animation:wenziwu 7.2s;
+    /* animation:wenziwu 7.2s; */
     /*animation-delay:19.5s;*/
 }
 .wenziwu{
@@ -362,13 +363,15 @@ body,html{
 }
 
 .bos3_a{
+    display: none;
     position: fixed;
     bottom: 10%;
     right: 10%;
     text-decoration:none;
     z-index: 1001;
     font-family: Helvetica, 'Hiragino Sans GB', 'Microsoft Yahei', '微软雅黑', Arial, sans-serif;
-    animation:bhua 6s;
+
+    /* animation:bhua 6s; */
     /* animation-delay:30.5s; */
 }
 
@@ -557,17 +560,17 @@ body,html{
     <div class="box3">
         <!-- 背景3 -->
         <div class="box3beijingbox xiaobox">
-            <image class="box3beijing" src="{$gif_url}" />
+            <image class="box3beijing" src="{$gif_url}" id="gif_url" />
         </div>
         <!-- 头像 -->
 
 
-        <!--<div class="touxiangbox xiaobox">-->
-                <!-- <image class="touxiang" src="{$info.photo_url}" /> -->
-                <!--<div class="touxiang">
-                    <image class="touxiangimg" src="{$info.photo_url}" />
-                </div>
-            </div>-->
+        <div class="touxiangbox xiaobox" id="touxiangbox" style="display: none;">
+            <image class="touxiang" src="{$info.photo_url}" />
+            <div class="touxiang">
+                <image class="touxiangimg" src="{$info.photo_url}" />
+            </div>
+        </div>
 
         
         <!-- 文字四 -->
@@ -577,7 +580,7 @@ body,html{
         </div> 
     </div>
 
-    <a onclick="test()" class="bos3_a" >{$text}></a>
+    <a onclick="test()" class="bos3_a">{$text}></a>
     
     {if condition="$type == 2 "}
         <!-- 抽奖时间 -->
@@ -606,6 +609,30 @@ body,html{
 <script src="/static/inspinia/js/jquery-2.1.1.js"></script>
 <script type="text/javascript" src="https://res.wx.qq.com/open/js/jweixin-1.3.2.js"></script>
 <!-- <script src="https://res.wx.qq.com/open/js/jweixin-1.0.0.js"></script>  -->
+
+
+<script>
+    var duration = "{$duration}";//秒数
+
+    setTimeout(function () {
+        // $('#gif_url').hide();
+
+        $("#gif_url").attr('src','{$picture}'); 
+
+        console.log('关掉')
+        $("#touxiangbox").show();
+
+        $(".wenzisibox").show();
+
+        $(".wenzispan").addClass("heise");
+        $(".bos3_a").show();
+      
+        
+        
+    }, duration * 1000);
+
+</script>
+
 
 <script>
 
