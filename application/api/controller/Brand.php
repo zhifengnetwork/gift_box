@@ -22,7 +22,7 @@ class Brand extends ApiBase
         if(!$info){
             $this->ajaxReturn(['status' => -1 , 'msg'=>'该品牌不存在','data'=>[]]);
         }
-        $info['priture'] =  $info['priture']?SITE_URL.$info['priture']:'';
+        $info['priture'] =  $info['priture3']?SITE_URL.$info['priture3']:'';
         $where['g.is_show'] = 1;
         $where['g.is_del'] = 0;
         $where['i.main'] = 1;
@@ -66,7 +66,7 @@ class Brand extends ApiBase
     */
     public function getGoodsBrand()
     {
-        $list = Db::name('goods_brand')->field('id,name,priture')->where('status',0)->select();
+        $list = Db::name('goods_brand')->field('id,name,priture2 as priture')->where('status',0)->select();
         $new_list = array();
         foreach($list as $key=>$val){
             $val['key'] = getFirstChar($val['name']);
