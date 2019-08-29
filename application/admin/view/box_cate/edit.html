@@ -22,7 +22,7 @@
                         <div class="form-group">
                             <label class="col-sm-2 control-label ">选择上级分类</label>
                             <div class="col-sm-9">
-                                <select name="pid"  class="form-control">
+                                <select name="pid"  class="form-control"  onchange="is_top()">
                                     <option value="0">顶级分类</option>
                                     {volist name="cate_list" id="vo"}
                                         <option value="{$vo.id}" {if condition="$vo.id eq $info.pid"}selected="true"{/if}>{$vo.name}</option>
@@ -31,7 +31,7 @@
                             </div>
                         </div>
                         <div class="form-group">
-                            <label class="col-sm-2 control-label">封面图</label>
+                            <label class="col-sm-2 control-label tubiao">封面图</label>
                             <div class="img-preview2" id="img-preview" style="display:{$info.picture? 'block':'none'};margin-left:-20%"> 
                                 <img src="{$info.picture|default=''}" id='img_show' style=" max-width: 300px; max-height: 300px">
                             </div>
@@ -42,7 +42,7 @@
                             </div>
                         </div>
                         <div class="form-group">
-                            <label class="col-sm-2 control-label">动图</label>
+                            <label class="col-sm-2 control-label tubiao_ed">动图</label>
                             <div class="img-preview2" id="img-preview2" style="display:{$info.gif? 'block':'none'};margin-left:-20%">
                                 <img src="{$info.gif|default=''}" id='img_show2' style=" max-width: 300px; max-height: 300px">
                             </div>
@@ -52,7 +52,7 @@
                                
                             </div>
                         </div>
-                        <div class="form-group" style="display: flex">
+                        <div class="form-group top" style="display: flex">
                             <label class="col-sm-2 control-label">GIF时长</label>
                             <div class="col-sm-9" style="display: inline-block;">
                                 <input type="text" name="duration" value="{$info.duration}" class="form-control" style="width:30%;display: inline-block"><span style="padding-left:10px">秒</span> 
@@ -65,13 +65,13 @@
                                 <input type="text" name="sort" value="{$info.sort}" class="form-control">
                             </div>
                         </div>
-                        <div class="form-group">
+                        <div class="form-group top">
                             <label class="col-sm-2 control-label">祝福语颜色</label>
                             <div class="col-sm-9">
                                 <input type="color" name="color" value="{$info.color}" class="form-control">
                             </div>
                         </div>
-                        <div class="form-group">
+                        <div class="form-group top">
                             <label class="col-sm-2 control-label ">祝福语大小</label>
                             <div class="col-sm-9">
                                 <select name="font_size"  class="form-control">
@@ -89,7 +89,7 @@
                                 </select> 
                             </div>
                         </div>
-                        <div class="form-group">
+                        <div class="form-group top">
                             <label class="col-sm-2 control-label">是否加粗</label>
                             <div class="col-sm-9">
                                 <div class="radio radio-success radio-inline">
@@ -102,7 +102,7 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="form-group">
+                        <div class="form-group top">
                             <label class="col-sm-2 control-label">用户的图</label>
                             <div class="col-sm-9">
                                 <div class="radio radio-success radio-inline">
@@ -179,32 +179,6 @@
                 }
             }
         });
-        $('#pictur_btn2').change(function() {
-            if (!this.value) {
-                $("#img_show2").attr('src', '');
-                filedata = '';
-                pictur = '';
-                return false;
-            }
-            var file = this.files[0];
-            var ext = file.name.substr(-3, 3);
-            if (ext != 'jpg' && ext != 'gif' && ext != 'png') {
-                layer.msg("文件格式不正确", { icon: 5 });
-                window.location.reload();
-                return false;
-            }
-            if (file.size > 10240000) {
-                layer.msg("该文件太大无法上传", { icon: 5 });
-            } else {
-                var reader = new FileReader();
-                //将文件以Data URL形式读入页面  
-                reader.readAsDataURL(file);
-                reader.onload = function(e) {
-                    $('#img-preview2').show();
-                    $("#img_show2").attr('src', this.result);
-                }
-            }
-        });
     });
 
     //文件上传
@@ -241,5 +215,22 @@
         },'json')
         
     }
+
+    is_top();
+    //判断是不是顶级分类
+    function is_top(){
+        var pid = $('select[name="pid"]').val();
+        if(pid==0){
+            $('.top').css('display','none');
+            $('.tubiao').html('未选中的图标');
+            $('.tubiao_ed').html('选中的图标');
+            $('.jisuanan').css('display','none');
+        }else{
+            $('.top').css('display','block');
+            $('.tubiao').html('图片');
+            $('.tubiao_ed').html('GIF动图');
+            $('.jisuanan').css('display','inline-block');
+        }
+    } 
 </script>
 {/block}
