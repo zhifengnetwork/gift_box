@@ -12,6 +12,7 @@
                 <div class="ibox-content">
                     <form method="post" class="form-horizontal" id="ajaxForm2" action="{:url('box_cate/cate_post')}" enctype="multipart/form-data">
                         <input type="hidden" name="gif" value="">
+                        <input type="hidden" name="tail_img" value="">
                         <div class="form-group">
                             <label class="col-sm-2 control-label">名称</label>
                             <div class="col-sm-9">
@@ -49,6 +50,16 @@
                                 <label title="上传动图" for="image_file" class="btn btn-primary" id="pictur2"><strong class="dt">上传图像</strong>
                                 </label>
                                 <label title="重新计算"  class="btn btn-primary jisuanan" onclick="cxjs()" >重新计算</label>
+                            </div>
+                        </div>
+                        <div class="form-group top">
+                            <label class="col-sm-2 control-label">停留页图片</label>
+                            <div class="img-preview3" style="display:{$info.tail_img ? 'block':'none'};margin-left:-20%">
+                                <img src="{$info.tail_img |default=''}" id='img_show3' style=" max-width: 300px; max-height: 300px">
+                            </div>
+                            <div class="form-group" style="margin-left:18%;">
+                                <label title="上传动图" for="image_file2" class="btn btn-primary" id="pictur3">上传停留页图片
+                                </label>
                             </div>
                         </div>
                         <div class="form-group top">
@@ -137,6 +148,10 @@
                      <form method="post" class="form-horizontal" id="ajaxForm" action="{:url('goods/upload_file')}" enctype="multipart/form-data">
                         <input type="file" id="image_file" value="" accept="image/*" name="file" onchange="upload_file()" style="display: none">
                     </form>
+                    <!-- 图片上传 -->
+                    <form method="post" class="form-horizontal" id="ajaxForm3" action="{:url('goods/upload_file')}" enctype="multipart/form-data">
+                        <input type="file" id="image_file2" value="" accept="image/*" name="file" onchange="upload_file2()" style="display: none">
+                    </form>
                 </div>
             </div>
         </div>
@@ -200,10 +215,10 @@
     }
     //文件上传
     function upload_file2(){
-        $("#ajaxForm2").ajaxSubmit(function (data) {
+        $("#ajaxForm3").ajaxSubmit(function (data) {
             if(data.status == 1){
                 $('.img-preview3').show();
-                $('input[name="picture_ed"]').val(data.data);
+                $('input[name="tail_img"]').val(data.data);
                 $('#img_show3').attr('src',data.data);
             }else{
                 alert(data.msg);
