@@ -842,14 +842,11 @@ function update_pay_status($order_sn='',$data=array())
         Db::name('order')->where(['parent_id' => $order_id])->update($update);
 
         $order = Db::table('order')->where(['order_sn' => $order_sn])->field('order_id,user_id')->find();
-        $goods_res = Db::table('order_goods')->field('user_id,goods_name,goods_num,spec_key_name,goods_price,sku_id')->where('order_id',$order['order_id'])->select();
+        $goods_res = Db::table('order_goods')->field('goods_id,user_id,goods_name,goods_num,spec_key_name,goods_price,sku_id')->where('order_id',$order['order_id'])->select();
         foreach($goods_res as $key=>$value){
-            $goods = Db::table('goods')->where('user_id',$value['user_id'])->field('less_stock_type,gift_points')->find();
             //付款减库存
-            // if($goods['less_stock_type']==2){
-                Db::table('goods_sku')->where('sku_id',$value['sku_id'])->setDec('inventory',$value['goods_num']);
-                Db::table('goods')->where('user_id',$value['user_id'])->setDec('stock',$value['goods_num']);
-            // }
+            Db::table('goods_sku')->where('sku_id',$value['sku_id'])->setDec('inventory',$value['goods_num']);
+            Db::table('goods')->where('goods_id',$value['goods_id'])->setDec('stock',$value['goods_num']);
         }
         // 执行业务逻辑，成功后返回true
         return true;

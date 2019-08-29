@@ -702,6 +702,13 @@ class Order extends Common
             //修改订单状态
             if($status == 1 && $info){
                 Db::name('order')->where('order_id',$info['order_id'])->update(['pay_status'=>$status,'pay_time'=>time()]);
+                //减库存
+                $goods_res = Db::table('order_goods')->field('goods_id,user_id,goods_name,goods_num,spec_key_name,goods_price,sku_id')->where('order_id',$order['order_id'])->select();
+                foreach($goods_res as $key=>$value){
+                    //付款减库存
+                    Db::table('goods_sku')->where('sku_id',$value['sku_id'])->setDec('inventory',$value['goods_num']);
+                    Db::table('goods')->where('goods_id',$value['goods_id'])->setDec('stock',$value['goods_num']);
+                }
             }
             $this->success('操作成功',url('jifen'));
         }
