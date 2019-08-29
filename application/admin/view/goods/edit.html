@@ -464,6 +464,7 @@ function getSyfm(){
 
 //ajax获取二级栏目
 function ajaxGetAttr(obj){
+    getSyfm();
     var id = $(obj).val()
     if(!id){
         $('select[name="goods_attr2"]').html('<option>请选择二级栏目</option>');
@@ -474,7 +475,6 @@ function ajaxGetAttr(obj){
         return false;
     }
     $('#nmgb').css('display','block');
-    getSyfm();
     $.post("{:url('goods/ajaxGetAttr')}",{'id':id},function(data){
         if(data.status){
             var option = '<option  value="">请选择二级栏目</option>';
