@@ -44,7 +44,7 @@
                         </div>
                         <div class="form-group">
                             <label class="col-sm-2 control-label tubiao_ed">动图</label>
-                            <div class="img-preview2" id="img-preview2" style="display:{$info.gif? 'block':'none'};margin-left:-20%">
+                            <div class="img-preview2" id="img-preview2" style="display:block;margin-left:-20%">
                                 <img src="{$info.gif|default=''}" id='img_show2' style=" max-width: 300px; max-height: 300px">
                             </div>
                             <div class="form-group" style="margin-left:18%;margin-top: 20px;">
@@ -202,13 +202,15 @@
             if(data.status == 1){
                 $('input[name="gif"]').val(data.data);
                 $('#img_show2').attr('src',data.data);
-                $.get('{:url('index/index/getDuration')}',{'gifFilePath':data.data},function(res){
-                    if(res.status==1){
-                        $('input[name="duration"]').val(res.data);
-                    }else{
-                        layer.msg(res.msg);
-                    }
-                },'json')
+                if(data.data.substr(str.length-3,1) == 'gif'){
+                    $.get('{:url('index/index/getDuration')}',{'gifFilePath':data.data},function(res){
+                        if(res.status==1){
+                            $('input[name="duration"]').val(res.data);
+                        }else{
+                            layer.msg(res.msg);
+                        }
+                    },'json')
+                }
             }else{
                 alert(data.msg);
             }

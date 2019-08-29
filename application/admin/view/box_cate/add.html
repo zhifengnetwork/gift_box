@@ -201,13 +201,15 @@
                 $('.img-preview2').show();
                 $('input[name="gif"]').val(data.data);
                 $('#img_show2').attr('src',data.data);
-                $.get('{:url('index/index/getDuration')}',{'gifFilePath':data.data},function(res){
-                    if(res.status==1){
-                        $('input[name="duration"]').val(res.data);
-                    }else{
-                        layer.msg(res.msg);
-                    }
-                },'json')
+                if(data.data.substr(str.length-3,1) == 'gif'){
+                    $.get('{:url('index/index/getDuration')}',{'gifFilePath':data.data},function(res){
+                        if(res.status==1){
+                            $('input[name="duration"]').val(res.data);
+                        }else{
+                            layer.msg(res.msg);
+                        }
+                    },'json')
+                }
             }else{
                 alert(data.msg);
             }
