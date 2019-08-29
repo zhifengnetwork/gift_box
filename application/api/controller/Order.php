@@ -423,7 +423,7 @@ class Order extends ApiBase
             $order_goods[$key]['order_id'] = $order_id;
             //拍下减库存
             // Db::table('goods_sku')->where('sku_id',$value['sku_id'])->setDec('inventory',$value['goods_num']);
-            Db::table('goods')->where('goods_id',$value['goods_id'])->setDec('stock',$value['goods_num']);
+            // Db::table('goods')->where('goods_id',$value['goods_id'])->setDec('stock',$value['goods_num']);
             unset($order_goods[$key]['less_stock_type']);
         }
 
