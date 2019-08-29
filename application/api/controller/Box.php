@@ -15,13 +15,14 @@ class Box extends ApiBase
     public function box_scene_list()
     {
         //获取应用场景
-        $list = Db::name('box_scene')->field('id,name,picture')->where(['pid'=>0,'status'=>1])->order('sort')->select();
+        $list = Db::name('box_scene')->field('id,name,picture,gif')->where(['pid'=>0,'status'=>1])->order('sort')->select();
         foreach($list as $key=>$val){
             $list[$key]['list'] = Db::table('box_scene')->field('id,name,picture')->where('pid',$val['id'])->select();
             foreach($list[$key]['list'] as $k=>$v){
                 $list[$key]['list'][$k]['picture'] = $v['picture']?SITE_URL.$v['picture']:'';
             }
             $list[$key]['picture'] = $val['picture']?SITE_URL.$val['picture']:'';
+            $list[$key]['gif'] = $val['gif']?SITE_URL.$val['gif']:'';
         }
         $data['status'] = 1;
         $data['data'] = $list;
