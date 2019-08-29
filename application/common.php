@@ -835,12 +835,16 @@ function update_pay_status($order_sn='',$data=array())
             'pay_status'     => 1,
             'pay_time'       => time(),
         ];
+        $pay_status = Db::name('order')->where(['order_sn' => $order_sn])->value('pay_status');
+        if($pay_status == 1){
+            return false;
+        }
         // Db::startTrans();
         Db::name('order')->where(['order_sn' => $order_sn])->update($update);
         //修改子订单
         $order_id = Db::name('order')->where(['order_sn' => $order_sn])->value('order_id');
-        Db::name('order')->where(['parent_id' => $order_id])->update($update);
-
+        $res = Db::name('order')->where(['parent_id' => $order_id])->update($update);
+        
         $order = Db::table('order')->where(['order_sn' => $order_sn])->field('order_id,user_id')->find();
         $goods_res = Db::table('order_goods')->field('goods_id,user_id,goods_name,goods_num,spec_key_name,goods_price,sku_id')->where('order_id',$order['order_id'])->select();
         foreach($goods_res as $key=>$value){
