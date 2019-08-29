@@ -35,7 +35,7 @@
                                 <img src="{$info.picture|default=''}" id='img_show' style=" max-width: 300px; max-height: 300px">
                             </div>
                             <div class="form-group" style="margin-left:18%;margin-top: 20px;">
-                                <label title="上传图片" for="pictur_btn" class="btn btn-primary" id="pictur">上传图像
+                                <label title="上传图片" for="pictur_btn" class="btn btn-primary" id="pictur"><strong class="fmt">上传图像</strong>
                                     <input type="file" accept="image/jpg,image/jpeg,image/bmp,image/png,image/gif/*" name="file_img" id="pictur_btn" class="hide" />
                                 </label>
                             </div>
@@ -46,7 +46,7 @@
                                 <img src="{$info.gif|default=''}" id='img_show2' style=" max-width: 300px; max-height: 300px">
                             </div>
                             <div class="form-group" style="margin-left:18%;">
-                                <label title="上传动图" for="image_file" class="btn btn-primary" id="pictur2">上传图像
+                                <label title="上传动图" for="image_file" class="btn btn-primary" id="pictur2"><strong class="dt">上传图像</strong>
                                 </label>
                                 <label title="重新计算"  class="btn btn-primary jisuanan" onclick="cxjs()" >重新计算</label>
                             </div>
@@ -237,11 +237,15 @@
             $('.tubiao').html('未选中的图标');
             $('.tubiao_ed').html('选中的图标');
             $('.jisuanan').css('display','none');
+            $('.fmt').html('上传未选中图标');
+            $('.dt').html('上传已选中图标');
         }else{
             $('.top').css('display','block');
             $('.tubiao').html('图片');
             $('.tubiao_ed').html('GIF动图');
             $('.jisuanan').css('display','inline-block');
+            $('.fmt').html('上传新封面图');
+            $('.dt').html('上传动图');
         }
     } 
 </script>
