@@ -75,7 +75,7 @@ class Jifen extends ApiBase
 
 
         //  积分审核,先支付成功
-        $result = Db::name('order')->where(['order_id' => $order_id])->update(['pay_status'=>5,'transaction_id'=>'jifen']);
+        $result = Db::name('order')->where(['order_id' => $order_id])->update(['pay_status'=>1,'transaction_id'=>'jifen']);
         
         // if($result){
         //     $goods_res = Db::table('order_goods')->field('goods_id,user_id,goods_name,goods_num,spec_key_name,goods_price,sku_id')->where('order_id',$order_id)->select();
