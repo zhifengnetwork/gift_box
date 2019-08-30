@@ -161,6 +161,24 @@ class Sharing extends ApiBase
         $this->ajaxReturn(['status' => 1 , 'msg'=>'成功','data'=>$list]);
     }
 
+    //相关推荐
+    public function relevant_sharing()
+    {
+        $topic_id = input('topic_id',0);
+        $where['sc.status'] = 1;
+        $where['sc.topic_id'] = $topic_id;
+        $page = input('page',1);
+        $num = input('num',10);
+        $list = Db::name('sharing_circle')->alias('sc')->join('member m','m.id=sc.user_id','LEFT')->field('m.nickname,sc.id,sc.cover,sc.title,sc.point_num,m.avatar,sc.type')->where($where)->page($page,$num)->select();
+        foreach($list as $key=>$val){
+            $list[$key]['avatar'] = substr($val['avatar'],0,1) != 'h'?SITE_URL.$val['avatar']:$val['avatar'];
+            $list[$key]['cover'] = $val['cover']?SITE_URL.$val['cover']:'';
+            $list[$key]['show'] = false;
+            $list[$key]['point_count'] = $this->getCount('point',$val['id']);
+        }
+        $this->ajaxReturn(['status' => 1 , 'msg'=>'成功','data'=>$list]);
+    }
+
     //获取某一项是否点赞关注收藏
     public function getCount($table,$id)
     {
