@@ -56,7 +56,10 @@ class Gift extends ApiBase
             $this->ajaxReturn(['status' => -1 , 'msg'=>'订单不存在','data'=>'']);
         }elseif(($order['parent_id'] > 0) && ($join_type == 2)){
             $this->ajaxReturn(['status' => -1 , 'msg'=>'子订单不能进行此操作','data'=>'']);
-        }elseif($order['pay_status'] != 1){
+
+            // 暂时改成5 也可以
+
+        }elseif($order['pay_status'] != 1  || $order['pay_status'] != 5  ){
             $this->ajaxReturn(['status' => -1 , 'msg'=>'订单还未支付','data'=>'']);
         }elseif(!in_array($order['order_status'],[0,1])){
             $this->ajaxReturn(['status' => -1 , 'msg'=>'该订单状态已不允许执行此操作','data'=>'']);
@@ -180,7 +183,7 @@ class Gift extends ApiBase
         
         if(!$order){
             $this->ajaxReturn(['status' => -1 , 'msg'=>'订单不存在','data'=>'']);
-        }elseif($order['pay_status'] == 0){
+        }elseif($order['pay_status'] == 0 ){
             //等于0，未支付
             $this->ajaxReturn(['status' => -1 , 'msg'=>'订单还未支付','data'=>'']);
         }elseif(!in_array($order['order_status'],[0,1])){
