@@ -57,7 +57,7 @@ class Index extends Controller
         //类别
         if($info['cate_id']){
             $info['cate_url'] = $box_scene['gif'];
-            $info['picture'] = $box_scene['picture'];
+            $info['tail_img'] = $box_scene['tail_img'];
             $info['duration'] = $box_scene['duration'];
         }
         //音乐
@@ -73,7 +73,7 @@ class Index extends Controller
             $info['scene_url'] = $box_scene['scene_url'];
         }
         $info['cate_url'] = $info['cate_url']?SITE_URL.$info['cate_url']:'';//类别
-        $info['picture'] = $info['picture']?SITE_URL.$info['picture']:'';//静图
+        $info['tail_img'] = $info['tail_img']?SITE_URL.$info['tail_img']:'';//静图
         $info['music_url'] = $info['music_url']?SITE_URL.$info['music_url']:'';//音乐
         $info['video_url'] = $info['video_url']?SITE_URL.$info['video_url']:'';//相框
         $info['scene_url'] = $info['scene_url']?SITE_URL.$info['scene_url']:'';//场景
@@ -119,8 +119,8 @@ class Index extends Controller
             $duration = $info['duration'];
             $this->assign('duration',$duration);
 
-            $picture = $info['picture'];
-            $this->assign('picture',$picture);
+            $tail_img = $info['tail_img'];
+            $this->assign('tail_img',$tail_img);
         }
         
         //祝福语处理
@@ -130,7 +130,11 @@ class Index extends Controller
         //祝福语文字
         $is_strong = $box_scene['is_strong'] == 1 ? 'font-weight:bold;' : '';//是否加粗
 
+        //头像的圆形方形 圆形是0，方形是1
+        $user_img_type = $box_scene['user_img_type'] == 1 ? '' : 'border-radius: 50%;';
+
         $this->assign('style',"font-size:$font_size"."px; color: $color;$is_strong");
+        $this->assign('touxiang',$user_img_type);
 
         return $this->fetch($template);
     }
