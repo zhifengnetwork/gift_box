@@ -17,6 +17,7 @@ class Sharing extends Common
         $status = ['未审核','审核通过','审核不通过','草稿箱','已下架'];
         $where['status'] = array('neq',4);
         $where['is_del'] = array('neq',1);
+        $order = input('order','addtime desc');
         $status_ed = input('status_ed','');
         $keyword = input('keyword','');
         $pageParam = array();
@@ -30,7 +31,7 @@ class Sharing extends Common
             $where['title'] = array('like','%'.$keyword.'%');
             $pageParam['query']['keyword'] = $keyword;
         }
-        $list  = Db::name('sharing_circle')->where($where)->order('addtime desc')->paginate(10,false,$pageParam)->each(function($v,$k) use($status){
+        $list  = Db::name('sharing_circle')->where($where)->order($order)->paginate(10,false,$pageParam)->each(function($v,$k) use($status){
             $v['nickname'] = Db::name('member')->where('id',$v['user_id'])->value('nickname');
             if(mb_strlen( $v['title'],'UTF8') > 10){
                 $v['title'] = mb_substr($v['title'],0,10).'...';
@@ -39,9 +40,25 @@ class Sharing extends Common
             return $v;
         });
         $this->assign('list',$list);
+        $this->assign('order',$order);
         $this->assign('status_ed',$status_ed);
         $this->assign('keyword',$keyword);
         return $this->fetch();
+    }
+
+    //修改享物圈
+    public function edit_sort(){
+        $sort = input('sort');
+        $id = input('id');
+        if(!$id){
+            return false;
+        }
+        $res = Db::name('sharing_circle')->where('id',$id)->update(array('sort'=>$sort));
+        if($res){
+            return ['status'=>1,'msg'=>'修改成功'];
+        }else{
+            return ['status'=>0,'msg'=>'修改失败'];
+        }
     }
 
     //审核
