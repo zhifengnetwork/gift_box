@@ -430,7 +430,7 @@ class Order extends ApiBase
         //修改订单号
         if($order_id){
             $tmp_order_sn = date('YmdHis',time()).str_pad($order_id,6,"0",STR_PAD_LEFT);
-            Db::name('order')->where('order_id', $order_sn)->update(['order_sn'=>$tmp_order_sn]);
+            Db::name('order')->where('order_id',$order_id)->update(['order_sn'=>$tmp_order_sn]);
             $order_list = Db::name('order')->where('parent_id',$order_id)->field('order_id')->select();
             foreach($order_list as $key=>$val){
                 $tmp_order_sn = date('YmdHis',time()).str_pad($val['order_id'],6,"0",STR_PAD_LEFT);
