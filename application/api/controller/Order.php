@@ -427,6 +427,7 @@ class Order extends ApiBase
             unset($order_goods[$key]['less_stock_type']);
         }
 
+        $tmp_order_sn = date('YmdHis',time()).'000000';
         //修改订单号
         if($order_id){
             $tmp_order_sn = date('YmdHis',time()).str_pad($order_id,6,"0",STR_PAD_LEFT);
@@ -450,7 +451,7 @@ class Order extends ApiBase
             for($i=0; $i<$order_goods[0]['goods_num']; $i++){
                 $orderInfoData1 = $orderInfoData;
                 $orderInfoData1['parent_id'] = $order_id;
-                $order_sn_child = $orderInfoData['order_sn'];
+                $order_sn_child = $tmp_order_sn;
                 $order_sn_child .= '-'.$i;
                 $orderInfoData1['order_sn'] = $order_sn_child;
                 $order_id_child = Db::table('order')->insertGetId($orderInfoData1);  
