@@ -130,8 +130,11 @@ class Index extends Controller
         //祝福语文字
         $is_strong = $box_scene['is_strong'] == 1 ? 'font-weight:bold;' : '';//是否加粗
 
+        //头像的圆形方形 圆形是0，方形是1
+        $user_img_type = $box_scene['user_img_type'] == 1 ? '' : 'border-radius: 50%;';
+
         $this->assign('style',"font-size:$font_size"."px; color: $color;$is_strong");
-        $this->assign('touxiang','border-radius: 50%;');
+        $this->assign('touxiang',$user_img_type);
 
         return $this->fetch($template);
     }
