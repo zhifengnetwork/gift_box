@@ -59,7 +59,7 @@ class Gift extends ApiBase
 
             // 暂时改成5 也可以
 
-        }elseif($order['pay_status'] != 1  || $order['pay_status'] != 5  ){
+        }elseif($order['pay_status'] != 1  && $order['pay_status'] != 5  ){
             $this->ajaxReturn(['status' => -1 , 'msg'=>'订单还未支付','data'=>'']);
         }elseif(!in_array($order['order_status'],[0,1])){
             $this->ajaxReturn(['status' => -1 , 'msg'=>'该订单状态已不允许执行此操作','data'=>'']);
