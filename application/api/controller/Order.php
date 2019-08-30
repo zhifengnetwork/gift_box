@@ -427,6 +427,18 @@ class Order extends ApiBase
             unset($order_goods[$key]['less_stock_type']);
         }
 
+        //修改订单号
+        if($order_id){
+            $tmp_order_sn = date('YmdHis',time()).str_pad($order_id,6,"0",STR_PAD_LEFT);
+            Db::name('order')->where('order_id', $order_sn)->update(['order_sn'=>$tmp_order_sn]);
+            $order_list = Db::name('order')->where('parent_id',$order_id)->field('order_id')->select();
+            foreach($order_list as $key=>$val){
+                $tmp_order_sn = date('YmdHis',time()).str_pad($val['order_id'],6,"0",STR_PAD_LEFT);
+                Db::name('order')->where('order_id', $val['order_sn'])->update(['order_sn'=>$tmp_order_sn]);
+            }
+        }
+
+
         //添加使用优惠券记录
         if($coupon_price){
             Db::table('coupon_get')->where('user_id',$user_id)->where('coupon_id',$coupon_id)->update(['is_use'=>1,'use_time'=>time()]);
