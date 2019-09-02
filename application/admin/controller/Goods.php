@@ -62,13 +62,13 @@ class Goods extends Common
             $where['g.brand_id'] = $brand_id;
             $pageParam['query']['brand_id'] = $brand_id;
         }
-
+        $order = input('order','goods_id desc');
         $list  = Db::table('goods')->alias('g')
                 ->join('category c1','c1.cat_id=g.cat_id1','LEFT')
                 ->join('category c2','c2.cat_id=g.cat_id2','LEFT')
                 ->join('goods_attr t1','t1.id=g.goods_attr1','LEFT')
                 ->join('goods_brand gb','gb.id=g.brand_id','LEFT')
-                ->order('goods_id DESC')
+                ->order($order)
                 ->field('g.*,c1.cat_name c1_name,c2.cat_name c2_name,t1.name t1_name,gb.name as brand_name')
                 ->where($where)
                 ->paginate(10,false,$pageParam);
@@ -84,6 +84,7 @@ class Goods extends Common
 
         return $this->fetch('goods/index',[
             'list'          =>  $list,
+            'order'          =>  $order,
             'is_show'       =>  $is_show,
             'goods_name'    =>  $goods_name,
             'cat_id1'       =>  $cat_id1,

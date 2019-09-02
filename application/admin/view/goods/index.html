@@ -3,6 +3,8 @@
 {block name="content"}
 <style>
     .sort{    height: 24px; line-height: 24px; width: 50px; border: #FC6 solid 1px;}
+    th span{margin-left: 20px;cursor:pointer;}
+    .red{color: red;}
 </style>
     <div class="row">
         <div class="col-lg-12">
@@ -83,19 +85,19 @@
                             <tr>
 
                                 <th><input class="ch_all" type="checkbox">ID</th>
-                                <th>一级分类 </th>
-                                <th>一级栏目 </th>
-                                <th>商品 </th>
-                                <th>品牌 </th>
-                                <th>商品状态 </th>
-                                <th>商品价格（元）</th>
-                                <th>库存</th>
+                                <th>一级分类 <span data-id="cat_id1" onclick="order(this)">↑↑</span><span data-id="cat_id1 desc" onclick="order(this)">↓↓</span></th>
+                                <th>一级栏目 <span data-id="goods_attr1" onclick="order(this)">↑↑</span><span data-id="goods_attr1 desc" onclick="order(this)">↓↓</span></th>
+                                <th>商品 <span data-id="goods_name" onclick="order(this)">↑↑</span><span data-id="goods_name desc" onclick="order(this)">↓↓</span></th>
+                                <th>品牌 <span data-id="brand_name" onclick="order(this)">↑↑</span><span data-id="brand_name desc" onclick="order(this)">↓↓</span></th>
+                                <th>商品状态 <span data-id="is_show" onclick="order(this)">↑↑</span><span data-id="is_show desc" onclick="order(this)">↓↓</span></th>
+                                <th>商品价格（元）<span data-id="price" onclick="order(this)">↑↑</span><span data-id="price desc" onclick="order(this)">↓↓</span></th>
+                                <th>库存<span data-id="stock" onclick="order(this)">↑↑</span><span data-id="stock desc" onclick="order(this)">↓↓</span></th>
                                 <!-- <th>销量</th> -->
                                 {if condition="$goods_attr1 eq 5"}
-                                    <th>排序</th>
+                                    <th>排序<span data-id="sort" onclick="order(this)">↑↑</span><span data-id="sort desc" onclick="order(this)">↓↓</span></th>
                                 {/if}
-                                <th>上架时间</th>
-                                <th>首页推荐</th>
+                                <th>上架时间<span data-id="add_time" onclick="order(this)">↑↑</span><span data-id="add_time desc" onclick="order(this)">↓↓</span></th>
+                                <th>首页推荐<span data-id="is_recommend" onclick="order(this)">↑↑</span><span data-id="is_recommend desc" onclick="order(this)">↓↓</span></th>
                                 <th>操作</th>
                             </tr>
                             </thead>
@@ -258,6 +260,19 @@
             },'json');
         }
     }
+
+    //排序
+    function order(obj){
+        order = $(obj).attr('data-id');
+        location.href="{:url('index')}?order="+order;
+    }
+
+    $('th span').each(function(k,v){
+        var tmp_order = '{$order}';
+        if(tmp_order == $(v).attr('data-id')){
+            $(v).addClass('red');
+        }
+    })
 
 </script>
 {/block}
