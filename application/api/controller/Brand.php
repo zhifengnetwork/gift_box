@@ -26,6 +26,7 @@ class Brand extends ApiBase
         $where['g.is_show'] = 1;
         $where['g.is_del'] = 0;
         $where['i.main'] = 1;
+        $where['g.brand_id'] = $id;
         //判断排序方式
         switch ($order)
         {
