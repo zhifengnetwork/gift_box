@@ -2,9 +2,52 @@
 
 {block name="content"}
 <style>
-    .sort{    height: 24px; line-height: 24px; width: 50px; border: #FC6 solid 1px;}
-    th span{margin-left: 20px;cursor:pointer;}
-    .red{color: red;}
+  th span{
+    /* margin-left: 20px; */
+    cursor:pointer;
+  }
+  /* .red{
+    color: red;
+  } */
+  .sort{    height: 24px; line-height: 24px; width: 50px; border: #FC6 solid 1px;}
+  .triangle-box{
+    position: relative;
+    top: 3px;
+    margin-left: 5px;
+    width: 16px;
+    height: 16px;
+    display: inline-block;
+  }
+  .triangle-s{
+    position: absolute;
+    top:-10px;
+    width: 0;
+    height: 0;
+    border-width: 8px;
+    border-style: solid;
+    border-color:  transparent transparent #e7eaec transparent ;
+  }
+  .triangle-s:hover{
+    border-color:  transparent transparent #000 transparent ;
+  }
+  .Highlight-s{
+    border-color:  transparent transparent #000 transparent!important;
+  }
+  .Highlight-x{
+    border-color: #000 transparent transparent transparent!important;
+  }
+  .triangle-x{
+    position: absolute;
+    bottom:-10px;
+    width: 0;
+    height: 0;
+    border-width: 8px;
+    border-style: solid;
+    border-color:  #e7eaec transparent transparent transparent;
+  }
+  .triangle-x:hover{
+    border-color: #000 transparent transparent transparent;
+  }
 </style>
     <div class="row">
         <div class="col-lg-12">
@@ -27,7 +70,7 @@
                                 <option {if condition="$is_show heq 0 "} selected {/if} value="0">未上架</option>
                             </select>
                         </div>
-                        
+
                         <div class="col-sm-2">
                             <div class="input-group"><input type="text" name="goods_name" value="{$goods_name}" placeholder="搜索商品名称" class="input-sm form-control"> </div>
                         </div>
@@ -61,9 +104,9 @@
 
 
                         <div class="col-sm-3" style="width:10%;">
-                            <div class="input-group"> 
+                            <div class="input-group">
                                 <span class="input-group-btn">
-                                    <button type="submit" class="btn btn-sm btn-primary"> 搜索</button> 
+                                    <button type="submit" class="btn btn-sm btn-primary"> 搜索</button>
                                 </span>
                             </div>
                         </div>
@@ -85,23 +128,22 @@
                             <tr>
 
                                 <th><input class="ch_all" type="checkbox">ID</th>
-                                <th>一级分类 <span data-id="cat_id1" onclick="order(this)">↑↑</span><span data-id="cat_id1 desc" onclick="order(this)">↓↓</span></th>
-                                <th>一级栏目 <span data-id="goods_attr1" onclick="order(this)">↑↑</span><span data-id="goods_attr1 desc" onclick="order(this)">↓↓</span></th>
-                                <th>商品 <span data-id="goods_name" onclick="order(this)">↑↑</span><span data-id="goods_name desc" onclick="order(this)">↓↓</span></th>
-                                <th>品牌 <span data-id="brand_name" onclick="order(this)">↑↑</span><span data-id="brand_name desc" onclick="order(this)">↓↓</span></th>
-                                <th>商品状态 <span data-id="is_show" onclick="order(this)">↑↑</span><span data-id="is_show desc" onclick="order(this)">↓↓</span></th>
-                                <th>商品价格（元）<span data-id="price" onclick="order(this)">↑↑</span><span data-id="price desc" onclick="order(this)">↓↓</span></th>
-                                <th>库存<span data-id="stock" onclick="order(this)">↑↑</span><span data-id="stock desc" onclick="order(this)">↓↓</span></th>
-                                <!-- <th>销量</th> -->
+                                <th>一级分类 <span class="triangle-box"><span class="triangle-s" data-id="cat_id1" onclick="order(this)"></span><span class="triangle-x" data-id="cat_id1 desc" onclick="order(this)"></span></span></th>
+                                <th>一级栏目 <span class="triangle-box"><span class="triangle-s" data-id="goods_attr1" onclick="order(this)"></span><span class="triangle-x" data-id="goods_attr1 desc" onclick="order(this)"></span></span></th>
+                                <th>商品 <span class="triangle-box"><span class="triangle-s" data-id="goods_name" onclick="order(this)"></span><span class="triangle-x" data-id="goods_name desc" onclick="order(this)"></span></span></th>
+                                <th>品牌 <span class="triangle-box"><span class="triangle-s" data-id="brand_name" onclick="order(this)"></span><span class="triangle-x" data-id="brand_name desc" onclick="order(this)"></span></span></th>
+                                <th>商品状态 <span class="triangle-box"><span class="triangle-s" data-id="is_show" onclick="order(this)"></span><span class="triangle-x" data-id="is_show desc" onclick="order(this)"></span></span></th>
+                                <th>商品价格（元）<span class="triangle-box"><span class="triangle-s" data-id="price" onclick="order(this)"></span><span class="triangle-x" data-id="price desc" onclick="order(this)"></span></span></th>
+                                <th>库存<span class="triangle-box"><span class="triangle-s" data-id="stock" onclick="order(this)"></span><span class="triangle-x" data-id="stock desc" onclick="order(this)"></span></span></th>
                                 {if condition="$goods_attr1 eq 5"}
-                                    <th>排序<span data-id="sort" onclick="order(this)">↑↑</span><span data-id="sort desc" onclick="order(this)">↓↓</span></th>
+                                    <th>排序<span class="triangle-box"><span class="triangle-s" data-id="sort" onclick="order(this)"></span><span class="triangle-x" data-id="sort desc" onclick="order(this)"></span></span></th>
                                 {/if}
-                                <th>上架时间<span data-id="add_time" onclick="order(this)">↑↑</span><span data-id="add_time desc" onclick="order(this)">↓↓</span></th>
-                                <th>首页推荐<span data-id="is_recommend" onclick="order(this)">↑↑</span><span data-id="is_recommend desc" onclick="order(this)">↓↓</span></th>
+                                <th>上架时间<span class="triangle-box"><span class="triangle-s" data-id="add_time" onclick="order(this)"></span><span class="triangle-x" data-id="add_time desc" onclick="order(this)"></span></span></th>
+                                <th>首页推荐<span class="triangle-box"><span class="triangle-s" data-id="is_recommend" onclick="order(this)"></span><span class="triangle-x" data-id="is_recommend desc" onclick="order(this)"></span></span></th>
                                 <th>操作</th>
                             </tr>
                             </thead>
-                            <tbody> 
+                            <tbody>
                             {volist name="list" id="vo"}
                             <tr>
                                 <td><input type="checkbox" class="i-checks ch_item" name="goods_id[]"   value="{$vo.goods_id}">{$vo.goods_id}</td>
@@ -219,8 +261,8 @@
                 alert('请勾选需要批量下架的ID！');
             }
         }
-        goods_id = goods_id.substring(0, goods_id.length - 1);  
-        
+        goods_id = goods_id.substring(0, goods_id.length - 1);
+
         $.post("{:url('Goods/is_show_all')}",{'goods_id':goods_id,'is_show':is_show},function(data){
             if(data.code){
                 if( is_show ){
@@ -270,7 +312,13 @@
     $('th span').each(function(k,v){
         var tmp_order = '{$order}';
         if(tmp_order == $(v).attr('data-id')){
-            $(v).addClass('red');
+          if($(v).attr('class') == 'triangle-x'){
+              $(v).addClass('Highlight-x');
+          }
+          if($(v).attr('class') == 'triangle-s'){
+              $(v).addClass('Highlight-s');
+          }
+            // $(v).addClass('red');
         }
     })
 
