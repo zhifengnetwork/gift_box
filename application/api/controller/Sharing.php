@@ -123,6 +123,7 @@ class Sharing extends ApiBase
         $lon = input('lon',0);
         $topic_id = input('topic_id',0);//0推荐 -1附近
         $where['sc.status'] = 1;
+        $where['sc.is_del'] = 0;
         if($topic_id == '-1'){
             // $where['sc.is_rec'] = 1;//附近不处理
         }else if($topic_id){
@@ -166,6 +167,7 @@ class Sharing extends ApiBase
     {
         $topic_id = input('topic_id',0);
         $where['sc.status'] = 1;
+        $where['sc.is_del'] = 0;
         $where['sc.topic_id'] = $topic_id;
         $page = input('page',1);
         $num = input('num',10);
