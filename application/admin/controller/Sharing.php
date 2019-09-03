@@ -15,23 +15,29 @@ class Sharing extends Common
     public function index()
     {
         $status = ['未审核','审核通过','审核不通过','草稿箱','已下架'];
-        $where['status'] = array('neq',4);
+        $where['c.status'] = array('neq',4);
         $where['is_del'] = array('neq',1);
         $order = input('order','addtime desc');
         $status_ed = input('status_ed','');
         $keyword = input('keyword','');
         $pageParam = array();
         if($status_ed !== ''){
-            $where['status'] = $status_ed;
+            $where['c.status'] = $status_ed;
             $pageParam['query']['status'] = $status_ed;
         }else{
-            $where['status'] = array('in','0,1,2');
+            $where['c.status'] = array('in','0,1,2');
         }
         if($keyword){
             $where['title'] = array('like','%'.$keyword.'%');
             $pageParam['query']['keyword'] = $keyword;
         }
-        $list  = Db::name('sharing_circle')->where($where)->order($order)->paginate(10,false,$pageParam)->each(function($v,$k) use($status){
+        $list  = Db::name('sharing_circle')->alias('c')
+                ->field('c.*,t2.name as t2_name,t1.name as t1_name')
+                ->join('sharing_topic t2','t2.id=c.topic_id')
+                ->join('sharing_topic t1','t2.pid=t1.id')
+                ->where($where)
+                ->order($order)
+                ->paginate(10,false,$pageParam)->each(function($v,$k) use($status){
             $v['nickname'] = Db::name('member')->where('id',$v['user_id'])->value('nickname');
             if(mb_strlen( $v['title'],'UTF8') > 10){
                 $v['title'] = mb_substr($v['title'],0,10).'...';
