@@ -102,6 +102,8 @@
                               <th>操作</th> -->
                                 <th>ID</th>
                                 <th>标题<span class="triangle-box"><span class="triangle-s" data-id="title" onclick="order(this)"></span><span class="triangle-x" data-id="title desc" onclick="order(this)"></span></span></th>
+                                <th>一级话题<span class="triangle-box"><span class="triangle-s" data-id="t1.name" onclick="order(this)"></span><span class="triangle-x" data-id="t1.name desc" onclick="order(this)"></span></span</th>
+                                <th>二级话题<span class="triangle-box"><span class="triangle-s" data-id="t2.name" onclick="order(this)"></span><span class="triangle-x" data-id="t2.name desc" onclick="order(this)"></span></span</th>
                                 <th>发布人<span class="triangle-box"><span class="triangle-s" data-id="user_id" onclick="order(this)"></span><span class="triangle-x" data-id="user_id desc" onclick="order(this)"></span></span</th>
                                 <th>类别<span class="triangle-box"><span class="triangle-s" data-id="type" onclick="order(this)"></span><span class="triangle-x" data-id="type desc" onclick="order(this)"></span></span</th>
                                 <th>排序<span class="triangle-box"><span class="triangle-s" data-id="sort" onclick="order(this)"></span><span class="triangle-x" data-id="sort desc" onclick="order(this)"></span></span</th>
@@ -118,6 +120,8 @@
                             <tr>
                                 <td>{$vo.id}</td>
                                 <td>{$vo.title}</td>
+                                <td>{$vo.t1_name}</td>
+                                <td>{$vo.t2_name}</td>
                                 <td>{$vo.nickname}</td>
                                 <td>{if condition="$vo.type"}视频{else/}图文{/if}</td>
                                 <td><input type="text" name="1" data-id="{$vo.id}" value="{$vo.sort}" class="sort" onchange="goods_sort(this)"></td>
