@@ -71,7 +71,7 @@ class Index extends ApiBase
         $where['is_rec'] = 1;
         $where['is_home'] = 1;
         $where['is_del'] = 0;
-        $sharing = Db::name('sharing_circle')->field('id,cover,title,type')->where($where)->limit(8)->select();
+        $sharing = Db::name('sharing_circle')->field('id,cover,title,type')->where($where)->order('sort')->limit(8)->select();
         foreach($sharing as $key=>$val){
             if($val['cover']){
                 $sharing[$key]['cover'] = $val['cover']?SITE_URL.$val['cover']:'';
