@@ -33,8 +33,8 @@ class Sharing extends Common
         }
         $list  = Db::name('sharing_circle')->alias('c')
                 ->field('c.*,t2.name as t2_name,t1.name as t1_name')
-                ->join('sharing_topic t2','t2.id=c.topic_id')
-                ->join('sharing_topic t1','t2.pid=t1.id')
+                ->join('sharing_topic t2','t2.id=c.topic_id','LEFT')
+                ->join('sharing_topic t1','t2.pid=t1.id','LEFT')
                 ->where($where)
                 ->order($order)
                 ->paginate(10,false,$pageParam)->each(function($v,$k) use($status){
