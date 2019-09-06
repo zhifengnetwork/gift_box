@@ -701,7 +701,7 @@ class Goods extends ApiBase
         ->where('g.is_show',1)
         ->find($goods_id);
         //轮播图
-        $data['img'] = Db::name('goods_img')->where('goods_id',$goods_id)->column('picture');
+        $data['img'] = Db::name('goods_img')->where('goods_id',$goods_id)->order('main desc')->column('picture');
         if($data['img']){
             foreach($data['img'] as $key=>$val){
                 $data['img'][$key] = $val?SITE_URL.$val:'';
