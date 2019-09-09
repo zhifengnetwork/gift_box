@@ -1546,7 +1546,7 @@ class Goods extends Common
         $id = input('id');
         if($id){
             //看看有没有该品牌的商品
-            $goods =  Db::table('goods')->field('goods_id,goods_name')->where('brand_id',$id)->find();
+            $goods =  Db::table('goods')->field('goods_id,goods_name')->where( ['brand_id'=>$id,'is_del'=>0 ])->find();
             if($goods){
                 $result['status'] = -1;
                 $result['msg'] = '删除失败，该品牌下还有商品（'.$goods['goods_name'].'，商品ID：'.$goods['goods_id'].'）';
