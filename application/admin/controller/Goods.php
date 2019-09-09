@@ -1557,7 +1557,6 @@ class Goods extends Common
                 $result['msg'] = '删除成功';
                 return json($result);
             }
-    
         }
         
     }
