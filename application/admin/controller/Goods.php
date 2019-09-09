@@ -1545,14 +1545,21 @@ class Goods extends Common
     {
         $id = input('id');
         if($id){
-            $result['status'] = 1;
-            $result['msg'] = '删除成功';
-            return json($result);
+            //看看有没有该品牌的商品
+            $goods =  Db::table('goods')->field('goods_id,goods_name')->where('brand_id',$id)->find();
+            if($goods){
+                $result['status'] = -1;
+                $result['msg'] = '删除失败，该品牌下还有商品（'.$goods['goods_name'].'，商品ID：'.$goods['goods_id'].'）';
+                return json($result);
+            }else{
+                Db::table('goods_brand')->where('id',$id)->delete();
+                $result['status'] = 1;
+                $result['msg'] = '删除成功';
+                return json($result);
+            }
+    
         }
-        Db::table('goods_brand')->where('id',$id)->delete();
-        $result['status'] = 1;
-        $result['msg'] = '删除成功';
-        return json($result);
+        
     }
 
     /**
