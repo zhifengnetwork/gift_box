@@ -40,8 +40,8 @@ class Login extends ApiBase
             $newdata = array(
                 'openid' => $openid,
                 'createtime' => time(),
-                'nickname' => $data['nickname'],
-                'avatar' => $data['head_pic']
+                'nickname' => $arr['nickname'],
+                'avatar' => $arr['head_pic']
             );
 
             Db::table('member')->insert($newdata); 
