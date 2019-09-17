@@ -32,7 +32,7 @@ class Login extends ApiBase
         }
 
         $openid = $arr['openid'];
-
+        $this->ajaxReturn(['status' => 1 , 'msg'=>'获取成功','data'=>$arr]);
         // 查询数据库，判断是否有此openid
         $data = Db::table('member')->where('openid',$openid)->find(); 
         if(!$data){
