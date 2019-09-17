@@ -106,7 +106,7 @@ class Login extends ApiBase
         );
 
         Db::table('member')->where(['id'=>$id])->update($update);
-        $data = Db::table('member')->where('user_id',$id)->find(); 
+        $data = Db::table('member')->where('id',$id)->find(); 
 
         $this->ajaxReturn(['status' => 1 , 'msg'=>'修改成功','data'=>$data]);
     }
