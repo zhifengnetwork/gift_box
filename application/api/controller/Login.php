@@ -32,7 +32,7 @@ class Login extends ApiBase
         }
 
         $openid = $arr['openid'];
-        $this->ajaxReturn(['status' => 1 , 'msg'=>'获取成功','data'=>$arr]);
+      
         // 查询数据库，判断是否有此openid
         $data = Db::table('member')->where('openid',$openid)->find(); 
         if(!$data){
@@ -40,8 +40,8 @@ class Login extends ApiBase
             $newdata = array(
                 'openid' => $openid,
                 'createtime' => time(),
-                'nickname' => $arr['nickname'],
-                'avatar' => $arr['head_pic']
+                'nickname' => isset($arr['nickname']) ? $arr['nickname'] : '获取微信昵称',
+                'avatar' => isset($arr['head_pic']) ? $arr['head_pic'] : '/public/images/default.jpg',
             );
 
             Db::table('member')->insert($newdata); 
