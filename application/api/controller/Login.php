@@ -83,4 +83,31 @@ class Login extends ApiBase
         $this->ajaxReturn(['status' => 1 , 'msg'=>'获取成功','data'=>$url]);
     }
 
+
+    /**
+     * 更新用户信息
+     */
+    public function update_userinfo(){
+        $user_id = $this->get_user_id();
+
+        $avatar = I('avatar');
+        $nickname = I('nickname');
+        $gender = I('gender');
+        $province = I('province');
+        $city = I('city');
+
+
+        $update = array(
+            'avatar'=>$avatar,
+            'nickname'=>$nickname,
+            'gender' => $gender,
+            'province' => $province,
+            'city' => $city
+        );
+
+        Db::table('member')->where(['user_id'=>$user_id])->update($update);
+        $data = Db::table('member')->where('user_id',$user_id)->find(); 
+
+        $this->ajaxReturn(['status' => 1 , 'msg'=>'修改成功','data'=>$data]);
+    }
 }
