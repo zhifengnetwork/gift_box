@@ -88,7 +88,7 @@ class Login extends ApiBase
      * 更新用户信息
      */
     public function update_userinfo(){
-        $user_id = $this->get_user_id();
+        $id = $this->get_user_id();
 
         $avatar = I('avatar');
         $nickname = I('nickname');
@@ -105,8 +105,8 @@ class Login extends ApiBase
             'city' => $city
         );
 
-        Db::table('member')->where(['user_id'=>$user_id])->update($update);
-        $data = Db::table('member')->where('user_id',$user_id)->find(); 
+        Db::table('member')->where(['id'=>$id])->update($update);
+        $data = Db::table('member')->where('user_id',$id)->find(); 
 
         $this->ajaxReturn(['status' => 1 , 'msg'=>'修改成功','data'=>$data]);
     }
