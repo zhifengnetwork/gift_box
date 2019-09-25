@@ -12,3 +12,6 @@ runtime
 /logs
 logs
 /public/test
+.well-known
+*.tar.gz
+*.txt
