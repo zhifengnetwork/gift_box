@@ -795,6 +795,10 @@ class Sharing extends ApiBase
         }else{
             $user['follow_count'] = 0;
         }
+
+        //关掉 充值  页面
+        $user['is_charge_open'] = 0;
+
         $this->ajaxReturn(['status' => 1 , 'msg'=>'成功','data'=>$user]);
     }
 
