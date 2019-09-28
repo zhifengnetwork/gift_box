@@ -697,11 +697,12 @@ class Goods extends ApiBase
         $cart_num = Db::name('cart')->where('user_id',$user_id)->count();
         $data = Db::table('goods')->alias('g')
         ->join('goods_attr ga','FIND_IN_SET(ga.id,g.goods_attr)','LEFT')
-        ->field('g.goods_id,g.goods_name,g.price,g.goods_spec,g.desc,g.content,g.goods_attr,GROUP_CONCAT(ga.name) attr_name')
+        ->field('g.goods_id,g.goods_name,g.price,g.goods_spec,g.desc,g.content,g.goods_attr,GROUP_CONCAT(ga.name) attr_name,g.video')
         ->where('g.is_show',1)
         ->find($goods_id);
         //轮播图
         $data['img'] = Db::name('goods_img')->where('goods_id',$goods_id)->order('main desc')->column('picture');
+        $data['video'] = $data['video']?SITE_URL.$data['video']:'';
         if($data['img']){
             foreach($data['img'] as $key=>$val){
                 $data['img'][$key] = $val?SITE_URL.$val:'';

@@ -85,6 +85,7 @@
                     <form method="post" class="form-horizontal" onsubmit="return check()" action="">
                         <!-- 商品封面图 -->
                         <input type="hidden" name="picture" value="{$info.picture}">
+                        <input type="hidden" name="video" value="{$info.video}">
 
                         <div class="form-group">
                             <label class="col-sm-2 control-label"><span style="color:red;">*</span>商品名称</label>
@@ -258,6 +259,20 @@
                         </div>
 
                         <div class="form-group">
+                            <label class="col-sm-2 control-label">视频上传</label>
+                            <div class="col-sm-9">
+                                <dd class="upload_area clearfix" style="margin: 0 auto;">
+                                    <ul id="imglist3" class="post_imglist_syfm"  style="float: left;">
+                                        <video src="{$info.video}" controls="controls" id="video2t" style="max-width:300px !important;max-height:150px important;">
+                                    </ul>
+                                    <label for="upload_image3" style="float: left;"><div class="upload_btn" style="margin-top: 40px;margin-left: 20px;">
+                                    </div></label>
+                                    <div style=" margin-left: 10px;float: left;line-height: 60px;"><span class="jianyi" style="color: #5fb878;"></span></div>
+                                </dd>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
                             <label class="col-sm-2 control-label">商品价格</label>
                             <div class="col-sm-9">
                                 <div style="line-height:34px;">
@@ -395,6 +410,10 @@
                     <form method="post" class="form-horizontal" id="ajaxForm" action="{:url('goods/upload_file')}" enctype="multipart/form-data">
                         <input type="file" id="upload_image2" value="图片上传" accept="image/jpeg,image/gif,image/png" onchange="upload_file2()" name="file" capture="camera" style="display: none;">
                     </form>
+                    <!-- 视频上传 -->
+                    <form method="post" class="form-horizontal" id="ajaxForm2" action="{:url('goods/upload_file')}" enctype="multipart/form-data">
+                        <input type="file" id="upload_image3" value="视频上传"  onchange="upload_file3()" name="file" capture="camera" style="display: none;">
+                    </form>
                 </div>
             </div>
         </div>
@@ -432,6 +451,18 @@ function upload_file(obj){
         $(obj).prev().val('');
         $(obj).parent().next().children('img').attr('src',fr.result);
     }
+}
+
+//视频上传
+function upload_file3(){
+    $("#ajaxForm2").ajaxSubmit(function (data) {
+        if(data.status == 1){
+            $('input[name="video"]').val(data.data);
+            $('#video2t').attr('src',data.data);
+        }else{
+            alert(data.msg);
+        }
+    });
 }
 
 //首页封面图上传

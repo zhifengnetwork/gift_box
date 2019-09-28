@@ -1570,7 +1570,7 @@ class Goods extends Common
         $file = request()->file('file');
 	    // 移动到框架应用根目录/public/uploads/ 目录下
 	    if($file){
-	        $info = $file->validate(['size'=>1024*1024*10])->move(ROOT_PATH . 'public' . DS . 'uploads' . DS . 'goods' . DS);
+	        $info = $file->validate(['size'=>1024*1024*20])->move(ROOT_PATH . 'public' . DS . 'uploads' . DS . 'goods' . DS);
 	        if($info){
 	            // 成功上传后 获取上传信息
 	            $result['data'] = '/public/uploads/goods/'.$info->getSaveName();
