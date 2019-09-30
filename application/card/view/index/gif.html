@@ -618,7 +618,10 @@ body,html{
         $("#gif_url").attr('src','{$tail_img}'); 
 
         console.log('关掉')
-        $("#touxiangbox").show();
+        //默认的不显示
+        if("{$photo_url} != '/image/default.png' "){
+            $("#touxiangbox").show();
+        }
 
         $(".wenzisibox").show();
 
