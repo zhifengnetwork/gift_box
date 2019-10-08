@@ -4,6 +4,7 @@
  */
 namespace app\api\controller;
 
+use app\common\model\Config as ConfigModel;
 use think\Request;
 use think\Db;
 
@@ -240,6 +241,16 @@ class Sharing extends ApiBase
             $info['comment'][$key]['nickname'] = Db::name('member')->where('id',$val['user_id'])->value('nickname');
         }
         $info['topic_name'] = Db::name('sharing_topic')->where('id',$info['topic_id'])->value('name');
+
+        //审核
+        $shenhe = ConfigModel::where('name', 'shenhe')->value('value');
+        if($shenhe == 1){
+            $info['is_comment_open'] = 0;
+        }else{
+            $info['is_comment_open'] = 1;
+        }
+        //关掉 评论 
+
         $this->ajaxReturn(['status' => 1 , 'msg'=>'成功','data'=>$info]);
     }
 
@@ -785,6 +796,11 @@ class Sharing extends ApiBase
             $user_id = $this->get_user_id();
         }
         $user = Db::name('member')->field('id,nickname,avatar')->where('id',$user_id)->find();
+        
+        if(!$user){
+            $this->ajaxReturn(['status' => 1 , 'msg'=>'用户不存在','data'=>$user]); 
+        }
+
         $user['follow_num'] = Db::name('sharing_follow')->where('user_id',$user_id)->count();
         $user['fans_num'] = Db::name('sharing_follow')->where('follow_user_id',$user_id)->count();
         $user['article_num'] = Db::name('sharing_circle')->where('user_id',$user_id)->where('status',1)->count();
@@ -796,8 +812,14 @@ class Sharing extends ApiBase
             $user['follow_count'] = 0;
         }
 
+        //审核
+        $shenhe = ConfigModel::where('name', 'shenhe')->value('value');
+        if($shenhe == 1){
+            $user['is_charge_open'] = 0;
+        }else{
+            $user['is_charge_open'] = 1;
+        }
         //关掉 充值  页面
-        $user['is_charge_open'] = 0;
 
         $this->ajaxReturn(['status' => 1 , 'msg'=>'成功','data'=>$user]);
     }

@@ -194,4 +194,24 @@ class Config extends Common
         }
         echo 'SUCCESS';
     }
+
+
+    /**
+     * 审核配置
+     */
+    public function shenhe(){
+
+        if (request()->isPost()) {
+            $status = input('status');
+            ConfigModel::where('name', 'shenhe')->update(['value' => $status]);
+            $this->success('保存成功');
+        }
+
+        $shenhe = ConfigModel::where('name', 'shenhe')->value('value');
+      
+        $this->assign('shenhe',$shenhe);
+
+        $this->assign('meta_title', '审核配置');
+        return $this->fetch();
+    }
 }

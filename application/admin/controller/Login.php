@@ -63,6 +63,7 @@ class Login extends \think\Controller
      */
     public function login_out()
     {
+        session('all_menu', null);
         session('admin_user_auth', null);
         session('ALL_MENU_LIST', null);
         $this->redirect('login/index');
