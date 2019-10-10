@@ -15,8 +15,10 @@ class BoxMusic extends Common
      */
     public function index()
     {
-        $list = Db::table('box_music')->order('id desc')->paginate(10);
+		$order = input('order','id desc');
+        $list = Db::table('box_music')->order($order)->paginate(10);
         $this->assign('list',$list);
+        $this->assign('order',$order);
         return $this->fetch();
     }
 

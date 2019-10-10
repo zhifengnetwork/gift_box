@@ -1,7 +1,55 @@
 {extend name="common:base" /}
 
 {block name="content"}
-
+<style>
+    th span{
+      /* margin-left: 20px; */
+      cursor:pointer;
+    }
+    /* .red{
+      color: red;
+    } */
+    .sort{    height: 24px; line-height: 24px; width: 50px; border: #FC6 solid 1px;}
+    .triangle-box{
+      position: relative;
+      top: 3px;
+      margin-left: 5px;
+      width: 16px;
+      height: 16px;
+      display: inline-block;
+    }
+    .triangle-s{
+      position: absolute;
+      top:-10px;
+      width: 0;
+      height: 0;
+      border-width: 8px;
+      border-style: solid;
+      border-color:  transparent transparent #e7eaec transparent ;
+    }
+    .triangle-s:hover{
+      border-color:  transparent transparent #000 transparent ;
+    }
+    .Highlight-s{
+      border-color:  transparent transparent #000 transparent!important;
+    }
+    .Highlight-x{
+      border-color: #000 transparent transparent transparent!important;
+    }
+    .triangle-x{
+      position: absolute;
+      bottom:-10px;
+      width: 0;
+      height: 0;
+      border-width: 8px;
+      border-style: solid;
+      border-color:  #e7eaec transparent transparent transparent;
+    }
+    .triangle-x:hover{
+      border-color: #000 transparent transparent transparent;
+    }
+    .select.input-sm{height: 32px;}
+</style>
     <div class="row">
         <div class="col-lg-12">
             <div class="ibox float-e-margins">
@@ -18,13 +66,13 @@
                         <table class="table table-striped">
                             <thead>
                             <tr>
-                                <th>ID</th>
+                                <th>ID<span class="triangle-box"><span class="triangle-s" data-id="id" onclick="order(this)"></span><span class="triangle-x" data-id="id desc" onclick="order(this)"></span></span></th>
                                 <th>音乐名</th>
                                 <th>音乐人</th>
                                 <th>状态</th>
                                 <th>添加时间 </th>
                                 <th>操作</th>
-                            </tr>
+                            </tr> 
                             </thead>
                             <tbody>
                             {volist name="list" id="vo"}
@@ -96,5 +144,23 @@
         }
     }
 
+    $('th span').each(function(k,v){
+        var tmp_order = '{$order}';
+        if(tmp_order == $(v).attr('data-id')){
+          if($(v).attr('class') == 'triangle-x'){
+              $(v).addClass('Highlight-x');
+          }
+          if($(v).attr('class') == 'triangle-s'){
+              $(v).addClass('Highlight-s');
+          }
+            // $(v).addClass('red');
+        }
+    })
+
+    //排序
+    function order(obj){
+        order = $(obj).attr('data-id');
+        location.href="{:url('index')}?order="+order;
+    }
 </script>
 {/block}
