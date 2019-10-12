@@ -36,7 +36,7 @@
                                 <td>{$vo.id}</td>
                                 <!-- <td>{$vo.name}</td> -->
                                 <td>{$vo.u_nickname}</td>
-                                <td>{$vo.addtime|date="Y-m-d",###}</td>
+                                <td>{$vo.addtime|date="Y-m-d H:i:s",###}</td>
                                 <td>
                                     <a class="btn btn-default delete" href="{:url('box/edit',['id'=>$vo.id],false)}" >查看 </i></a>
                                     <!-- <a class="btn btn-default delete" onclick="del(this,{$vo.id})" href="javascript:;" >删除 </i></a> -->

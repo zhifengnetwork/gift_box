@@ -341,6 +341,14 @@ class Sharing extends Common
         return $this->fetch();
     }
 
+    //删除音乐
+    public function del_sticker()
+    {
+        $id = input('id');
+        Db::name('sharing_sticker')->where('id',$id)->delete();
+        return json(['status'=>1,'msg'=>'删除成功']);
+    }
+
     //添加文章
     public function add_sticker()
     {
