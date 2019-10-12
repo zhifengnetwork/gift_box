@@ -163,7 +163,7 @@ class Box extends ApiBase
             if($cate_id){
                 Db::name('box')->where('id',$id)->update(array('cate_id'=>$cate_id));
             }
-            $box_info = Db::table('box')->field('id,music_id,photo_url,voice_url,content')->where('id',$id)->find();
+            $box_info = Db::table('box')->field('id,music_id,photo_url,voice_url,content,cate_id')->where('id',$id)->find();
             $box_info['music_name'] = Db::name('box_music')->where('id',$box_info['music_id'])->value('name');
         }else{
             $data['addtime'] = time();
@@ -178,6 +178,11 @@ class Box extends ApiBase
             $result['data']['content'] = '';
             $result['status'] = 1;
             $result['msg'] = '获取数据成功';
+            //新加的功能
+            $scene_info = Db::name('box_scene')->field('is_photo,is_music,is_content')->where('id',$cate_id)->find();
+            $result['data']['is_photo'] = $scene_info['is_photo'];
+            $result['data']['is_music'] = $scene_info['is_music'];
+            $result['data']['is_content'] = $scene_info['is_content'];
             $this->ajaxReturn($result);
         }
         $info['data'] = $box_info;
@@ -187,6 +192,11 @@ class Box extends ApiBase
         $info['data']['id'] = $id;
         $info['status'] = 1;
         $info['msg'] = '获取数据成功';
+        //新加的功能
+        $scene_info = Db::name('box_scene')->field('is_photo,is_music,is_content')->where('id',$box_info['cate_id'])->find();
+        $result['data']['is_photo'] = $scene_info['is_photo'];
+        $result['data']['is_music'] = $scene_info['is_music'];
+        $result['data']['is_content'] = $scene_info['is_content'];
         $this->ajaxReturn($info);
     }
 
