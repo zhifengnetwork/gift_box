@@ -135,6 +135,7 @@ class Index extends Controller
 
         $this->assign('style',"font-size:$font_size"."px; color: $color;$is_strong");
         $this->assign('touxiang',$user_img_type);
+        $this->assign('box_scene',$box_scene);
 
         return $this->fetch($template);
     }
