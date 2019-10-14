@@ -918,6 +918,55 @@ class Sharing extends ApiBase
         $this->ajaxReturn(['status' => 1 , 'msg'=>'成功','data'=>$list]);
     }
 
+    //地点标签和影视标签
+    public function label_list_all()
+    {
+        $data = array();
+        $where = array();
+        $where2 = array();
+        $where3 = array();
+        //地点标签和影视标签
+        $keyword = input('keyword','');
+        if($keyword){
+            $where['title'] = array('like','%'.$keyword.'%');
+        }
+        $list = Db::name('sharing_label')->field('id,title,desc,img,type')->where($where)->order('addtime desc')->select();
+        foreach($list as $key=>$val){
+            $list[$key]['img'] = $val['img']?SITE_URL.$val['img']:'';
+            if($val['type'] == 1){
+                $data['address'][] = $list[$key];
+            }else{
+                $data['video'][] = $list[$key];
+            }
+        }
+        //商品
+        $where2['g.is_del'] = 0;
+        $where2['g.is_show'] = 1;
+        $where2['i.main'] = 1;
+        if($keyword){
+            $where2['g.goods_name'] = array('like','%'.$keyword.'%');
+        }
+        $list2 = Db::name('goods')->alias('g')->join('goods_img i','i.goods_id=g.goods_id')->field('g.goods_id,g.goods_name,g.desc,i.picture')->where($where2)->order('add_time desc')->select();
+        foreach($list2 as $key=>$val){
+            $list2[$key]['picture'] = $val['picture']?SITE_URL.$val['picture']:'';
+        }
+        //品牌
+        $where3['status'] = 0;
+        if($keyword){
+            $where3['name'] = array('like','%'.$keyword.'%');
+        }
+        $list3 = Db::name('goods_brand')->field('id,name,priture,introduce')->where($where3)->order('addtime desc')->select();
+        foreach($list3 as $key=>$val){
+            $list3[$key]['desc'] = $val['introduce'];
+            $list3[$key]['priture'] = $val['priture']?SITE_URL.$val['priture']:'';
+        }
+        $data['goods'] = $list2;
+        $data['brand'] = $list3;
+        $this->ajaxReturn(['status' => 1 , 'msg'=>'成功','data'=>$data]);
+    }
+
+
+
     //通知消息
     public function article_list()
     {
