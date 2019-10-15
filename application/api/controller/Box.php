@@ -194,9 +194,9 @@ class Box extends ApiBase
         $info['msg'] = '获取数据成功';
         //新加的功能
         $scene_info = Db::name('box_scene')->field('is_photo,is_music,is_content')->where('id',$box_info['cate_id'])->find();
-        $result['data']['is_photo'] = $scene_info['is_photo'];
-        $result['data']['is_music'] = $scene_info['is_music'];
-        $result['data']['is_content'] = $scene_info['is_content'];
+        $info['data']['is_photo'] = $scene_info['is_photo'];
+        $info['data']['is_music'] = $scene_info['is_music'];
+        $info['data']['is_content'] = $scene_info['is_content'];
         $this->ajaxReturn($info);
     }
 
