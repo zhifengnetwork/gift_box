@@ -205,7 +205,7 @@ class Box extends ApiBase
     {
         $id = input('post.id',0);
         $music_id = input('post.music_id',0);
-        $photo_url = input('post.photo_url','');
+        $photo_url = input('post.photo_url','null');
         $voice_url = input('post.voice_url','');
         $content = input('post.content','');
         $scene_id = input('post.scene_id','');//场景
@@ -221,7 +221,7 @@ class Box extends ApiBase
         if($scene_id){
             $data['scene_id'] = $scene_id;
         }
-        if($photo_url){
+        if($photo_url !== 'null'){
             $data['photo_url'] = str_replace(SITE_URL,'',$photo_url);
         }
         if($voice_url){
