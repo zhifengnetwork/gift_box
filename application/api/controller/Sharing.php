@@ -1010,9 +1010,9 @@ class Sharing extends ApiBase
         $page = input('page',1);
         $num = input('num',10);
         if($pid == '-1'){
-            $sharing_music = Db::name('sharing_music')->field('id,name,url,desc')->where(['status'=>0,'pid'=>array('neq',0)])->page($page,$num)->select();
+            $sharing_music = Db::name('sharing_music')->field('id,name,url,desc,length')->where(['status'=>0,'pid'=>array('neq',0)])->page($page,$num)->select();
         }else{
-            $sharing_music = Db::name('sharing_music')->field('id,name,url,desc')->where(['status'=>0,'pid'=>$pid])->page($page,$num)->select();
+            $sharing_music = Db::name('sharing_music')->field('id,name,url,desc,length')->where(['status'=>0,'pid'=>$pid])->page($page,$num)->select();
         }
         $data = array();
         if(!$pid){
@@ -1020,6 +1020,12 @@ class Sharing extends ApiBase
         }
         foreach($sharing_music as $key=>$val){
             $val['url'] = $val['url']?SITE_URL.$val['url']:'';
+            $f = '0'.intval($val['length'] / 60);
+            $m = $val['length'] - intval($val['length'] / 60)*60;
+            if(count($m)==1){
+                $m = '0'.$m;
+            }
+            $val['length'] =  $f.':'.$m;
             $data[] = $val;
         }
         $this->ajaxReturn(['status' => 1 , 'msg'=>'成功','data'=>$data]);
