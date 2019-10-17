@@ -279,6 +279,21 @@ class Sharing extends Common
         return $this->fetch();
     }
 
+    //获取音乐时长
+    public function getMusicLength($music='')
+    {
+        $music = substr($music,1,255);
+        if(!$music || !file_exists($music)){
+            return 0;
+        }
+        include_once ROOT_PATH.'extend/getid3/getid3/getid3.php';
+        $getID3 = new \getID3();    //实例化类
+        $ThisFileInfo = $getID3->analyze($music);   //分析文件
+        $time = $ThisFileInfo['playtime_seconds'];      //获取mp3的长度信息
+        $length =  intval($ThisFileInfo['playtime_seconds']);
+        return  $length;      //获取MP3文件时长
+    }
+
     //添加配乐
     public function add_music()
     {
@@ -297,12 +312,13 @@ class Sharing extends Common
             $data['status'] = $status;
             $data['url'] = $url;
             $data['pid'] = $pid;
+            $data['length'] = $this->getMusicLength($url);
             $data['desc'] = input('desc','');
             if($id){
                 if($pid){
                     $count = Db::name('sharing_music')->where('pid',$id)->count();
                     if($count){
-                        $this->error('该话题拥有下级，请先删除下级在规划到别的话题');
+                        $this->error('该配乐拥有下级，请先删除下级在规划到别的配乐');
                     }
                 }
                 Db::name('sharing_music')->where('id',$id)->update($data);
