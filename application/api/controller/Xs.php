@@ -12,7 +12,6 @@ class Xs extends ApiBase
      * $param file
      */
     public function upload(){
-
         $user_id = request()->param('user_id');
         // 获取表单上传文件 例如上传了001.jpg
         $file = request()->file('file');
@@ -31,27 +30,32 @@ class Xs extends ApiBase
             //echo $info->getFilename();
             //echo $info->pathName;
             //获取图片的存放相对路径
-            $filePath = 'public' . DS . 'uploads'.DS .$info->getSaveName();
+            $filePath = SITE_URL . DS . 'public' . DS . 'uploads' . DS .$info->getSaveName();
             $getInfo = $info->getInfo();
             //获取图片的原名称
             $name = $getInfo['name'];
             //整理数据,写入数据库
             $data = [
-                'user_id' => $user_id,
-                'diy_background' => $filePath,
-                'add_time' => time(),
+//                'user_id' => $user_id,
+                'user_diy_background' => $filePath,
+//                'add_time' => time(),
 //                date('Y-m-d H:i:s')
             ];
             // 插入数据库
-            $res = \think\Db::name('user_diy_background')->where(['user_id'=>$user_id])->find();
+            $res = \think\Db::name('member')->where(['id'=>$user_id])->find();
             if($res){
-            $affected = \think\Db::name('user_diy_background')->where(['user_id'=>$user_id])->update($data);
+                $affected = \think\Db::name('member')->where(['id'=>$user_id])->update($data);
+                if($affected){
+                    $this->ajaxReturn( ['status'=>1,'msg'=>'上传图片成功','data'=>$data]);
+                }
             }elseif (!$res){
-            $affected = \think\Db::name('user_diy_background')->insert($data);
+                echo '参数错误';die;
             }
         }else{
             // 上传失败获取错误信息
             echo $file->getError();
         }
     }
+
+
 }
